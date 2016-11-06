@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+ <div class="ag-abs-center login-panel">
+    <div class="ag-hor-center logo">
+        <img src="{{url_for('static', filename='images/logo.png')}}">
+    </div>
+
+    <form class="bs-example bs-example-form" data-example-id="simple-input-groups">
+        <div class="input-group input-group-lg">
+            <input type="email" id="login" class="form-control ag-input" placeholder="Логин">
+        </div>
+        <br>
+
+        <div class="input-group input-group-lg">
+            <input type="password" id="password" class="form-control ag-input" placeholder="Пароль">
+        </div>
+
+        <div id="login-status">
+            Wrong pair
+        </div>
+
+        <button type="button" class="btn single btn-lg btn-default ag-hor-center" onclick="dologin();">Войти</button>
+    </form>
+</div>
+
+{% endblock %}

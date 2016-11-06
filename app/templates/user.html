@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<script>
+    var fields_js_user = {};
+    var fields_js_family = {};
+    var i = 0;
+</script>
+
+<button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
+
+<div class="ag-hor-center ag-bottom-spacing">
+    <div class="alert alert-success" role="alert">
+        <strong>Статус:</strong> Одобрено
+    </div>
+
+    <form>
+        {% for field in fields %}
+        <script>
+            fields_js_user[i++] = "{{field.eng}}";
+        </script>
+        {% if field.eng!="id" and field.eng != "None" %}
+            <div class="input-group">
+                <span class="input-group-addon">{{field.rus}}</span>
+                <input class="form-control" name="{{field.eng}}" id="{{field.eng}}" placeholder="{{field.placeholder}}" type="{{field.inp_type}}" value="{{field.value}}">
+            </div>
+            <br>
+        {%endif%}
+        {% endfor %}
+        <script>
+            fields_js_user[i++] = "vus";
+        </script>
+
+        <div class="input-group">
+            <span class="input-group-addon">ВУС</span>
+            <select class="form-control" id="vus" name="vus">
+                {% for vus in vuses %}
+                <option>{{vus.to_string()}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br>
+
+
+        <label class="btn btn-default btn-file single ag-hor-center">
+            <div>Загрузить фото</div>
+            <input type="file" style="display: none;" id="select-file" name="photo">
+            <script>prepareFileUploader('select-file');</script>
+        </label>
+
+
+        <div class="page-header"> <h1>Родственники</h1> </div>
+        <div id="family-members"></div>
+        <button type="button" class="btn single btn-lg btn-default ag-hor-center" onclick="addFamilyMember();">Добавить</button>
+
+
+        <br>
+        <hr>
+        <br>
+    </form>
+    <button class="btn single btn-lg btn-success ag-hor-center" onclick="submitStudentInfo(fields_js_user)">Отправить</button>
+</div>
+
+{% endblock %}

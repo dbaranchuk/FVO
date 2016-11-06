@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="ag-hor-center">
+
+
+    <div class="page-header"> <h1>Пользователи</h1> </div>
+
+    <div class="ag-table-view-control row">
+        <!-- Here will be panel for filtering data -->
+    </div>
+
+    <div class="row">
+        <table class="table" id="checkbox-1">
+            <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" id="checkall1" onchange="checkAllElements(1);">
+                </th>
+                <th>Фамилия</th><th>Имя</th><th>Отчество</th><th>Место рождения</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><input type="checkbox" class="cb-user" id="cbu1"></td><td>Иванов</td><td>Иван</td><td>Иванович</td><td>Москва</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" class="cb-user" id="cbu2"></td><td>Колосов</td><td>Колос</td><td>Колосович</td><td>Москва</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <br>
+    <div class="page-header"> <h1>Документы</h1> </div>
+
+
+    <table class="table table-striped" id="checkbox-2">
+        <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="checkall2" onchange="checkAllElements(2);">
+            </th>
+            <th>Документ</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><input type="checkbox" class="cb-doc" id="cbd1"></td><td>Документ 1</td>
+        </tr>
+
+        <tr>
+            <td><input type="checkbox" class="cb-doc" id="cbd2"></td><td>Документ 2</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+
+    <button type="button" id="gen-button" class="ag-hor-center btn btn-lg btn-success" onclick="genAndDownload();">Сгенерировать и скачать</button>
+
+</div>
+{% endblock %}

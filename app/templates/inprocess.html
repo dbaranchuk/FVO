@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="ag-hor-center">
+
+    <h2>В процессе</h2>
+    <div class="ag-table-view-control">
+        <!-- Here will be panel for filtering data -->
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ФИО</th><th>ВУС</th><th>Кнопки</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{students_info[user.id].last_name}} {{students_info[user.id].first_name}} {{students_info[user.id].middle_name}}</td>
+            <td>{{user.vus.to_string()}}</td>
+            <td>
+
+                <a href="user-admin.html"><button class="btn btn-default" title="Проверить">Проверить</button></a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

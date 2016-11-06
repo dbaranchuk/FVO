@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="ag-hor-center">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="input-group input-group ag-hor-center ag-thin">
+                    <input type="text" id="login" class="form-control ag-input" placeholder="Логин">
+                </div>
+                <br>
+
+                <div class="input-group input-group ag-hor-center ag-thin">
+                    <input type="text" id="password" class="form-control ag-input" placeholder="Пароль">
+                </div>
+
+                <br><br><br>
+
+                <button class="btn btn-success ag-hor-center" type="button" id="create-but-1" onclick="addUser();">
+                    Создать аккаунт
+                </button>
+                <br>
+
+            </div>
+            <div class="col-md-9">
+                <div class="alert alert-info" role="alert">
+                    <strong>Информация</strong>
+                    Здесь должна быть некоторая информация о том, что нужно для создания новых аккаунтов
+                </div>
+                <!--a class="file-input-wrapper btn btn-default "><span>Выбрать файл</span><input type="file" style="left: -182.5px; top: 8px;"></a-->
+                <button class="btn btn-success ag-hor-center" id="create-but-2">Создать аккаунты</button>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="ag-hor-center ag-bottom-spacing">
+    <div class="alert alert-warning" role="alert">
+        <strong>Статус:</strong> На проверке
+    </div>
+
+    <form>
+        <div class="input-group">
+            <span class="input-group-addon">Фамилия</span>
+            <span class="input-group-addon"><b>Иванов</b></span>
+            <input class="form-control" name="surname" placeholder="Комментарий">
+        </div>
+        <br>
+
+
+        <div class="page-header"> <h1>Родственники</h1> </div>
+
+        <br>
+        <hr>
+        <br>
+        <button type="submit" class="btn single btn-lg btn-success ag-hor-center">Одобрить</button>
+    </form>
+</div>
+
+{% endblock %}

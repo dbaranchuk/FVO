@@ -1,0 +1,78 @@
+.ag-table, .ag-table tr, .ag-table td{
+    border: 1px black solid;
+}
+
+.ag-abs-center{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ag-hor-center{
+    display: block;
+    margin: 0 auto;
+}
+
+.single{
+    display: block;
+}
+
+.ag-status-bar{
+    display: table;
+    margin: 32px auto;
+}
+
+.ag-table-header{
+    background-color: lightgray;
+}
+
+.ag-bottom-spacing{
+    padding-bottom: 20px;
+}
+
+.inrow > *{
+    display: inline-block;
+}
+
+.right-flow{
+    float: right;
+}
+
+.login-panel{
+    background-image: url(/static/images/military-pattern.jpg);
+    padding: 20px;
+    border-radius: 10px;
+
+    border: 5px #646965 solid;
+}
+
+#login-status{
+    padding-top: 10px;
+    color: black;
+    text-align: center;
+    display: none;
+    font-weight: bold;
+}
+
+.ag-input {
+    border-radius: 5px !important;
+    text-align: center;
+    border-color: #646965;
+    border-width: 3px;
+    margin: 2px;
+}
+
+.logo > img{
+    margin: 0 auto 25px;
+    display: block;
+}
+
+.login-panel button {
+    margin: 20px auto 10px;
+    border: 3px #646965 solid;
+}
+
+.ag-thin > input {
+    border-width: 1px;
+}

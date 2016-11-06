@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="ag-hor-center">
+
+    <table class="table table-hover table-users table-striped">
+
+        <thead>
+            <tr>
+                <th>Документ</th>
+                <th>ВУС</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for doc in docs %}
+        <tr>
+            <td>{{doc.name}}</td><td>{{doc.vus.to_string()}}</td>
+            <td><button class="btn btn-default" onclick="delDoc({{doc.id}});">Удалить</button></td>
+            <td><a href="/static/user_data/documents/{{doc.filename}}" download><button type="button" class="btn btn-default">Скачать</button></a></td>
+        </tr>
+        {% endfor %}
+
+        <tr>
+            <td>
+                <div class="input-group">
+                    <input id="doc_name" class="form-control" name="doc_name" placeholder="Название">
+                </div>
+            </td>
+
+            <td>
+                <div class="form-group">
+                  <select class="form-control" id="vus">
+                      {% for vus in vuses %}
+                      <option>{{vus.to_string()}}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+            </td>
+
+            <td>
+                <label class="btn btn-default btn-file">
+                    <div>Выбрать файл</div>
+                    <input type="file" style="display: none;" id="select-file">
+                    <script>prepareFileUploader('select-file');</script>
+                </label>
+            </td>
+
+            <td>
+                <button class="btn btn-success btn-file" id="status-btn" onclick="addDocument();">Добавить</button>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
