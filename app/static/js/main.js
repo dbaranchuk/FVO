@@ -184,7 +184,7 @@ function addDocument(){
 
 
 function generate(functionOnSuccess){
-    var xhr = getXHR(), i;
+    var xmlhttp = getXHR(), i;
     var usersCB = document.getElementsByClassName('cb-user');
     var docsCB = document.getElementsByClassName('cb-doc');
 
@@ -217,12 +217,15 @@ function generate(functionOnSuccess){
 
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            document.getElementById('gen-button').innerHTML = '1';
             var ans = JSON.parse(xmlhttp.responseText);
 
             if (ans.status == 'ERROR'){
                 // TODO: Error on input data
             } else {
                 document.getElementById('gen-button').innerHTML = 'Сгенерировать и скачать';
+                //docpath = ans.url;
+                //document.getElementById('gen-button').innerHTML = ans.url;
                 functionOnSuccess(ans.url);
             }
         }
@@ -241,7 +244,7 @@ function download(url, renameTo){
 }
 
 function genAndDownload(){
-    generate(function(url){ download(url, 'test.txt'); });
+    generate(function(url){ download(url, 'Documents.zip'); });
 }
 
 function checkAllElements(checkerId) {

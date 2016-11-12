@@ -22,12 +22,13 @@
             </tr>
             </thead>
             <tbody>
+            {% for user in users %}
             <tr>
-                <td><input type="checkbox" class="cb-user" id="cbu1"></td><td>Иванов</td><td>Иван</td><td>Иванович</td><td>Москва</td>
+                <td><input type="checkbox" class="cb-user" id="cbu{{loop.index - 1}}"></td>
+                <td>{{students_info[user.id].last_name}}</td><td>{{students_info[user.id].first_name}}</td><td>{{students_info[user.id].middle_name}}</td>
+                <td>{{students_info[user.id].birth_place}}</td>
             </tr>
-            <tr>
-                <td><input type="checkbox" class="cb-user" id="cbu2"></td><td>Колосов</td><td>Колос</td><td>Колосович</td><td>Москва</td>
-            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
@@ -47,19 +48,18 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td><input type="checkbox" class="cb-doc" id="cbd1"></td><td>Документ 1</td>
-        </tr>
-
-        <tr>
-            <td><input type="checkbox" class="cb-doc" id="cbd2"></td><td>Документ 2</td>
-        </tr>
+            {% for doc in docs %}
+            <tr>
+                <td><input type="checkbox" class="cb-doc" id="cbd{{loop.index - 1}}"></td>
+                <td>{{doc.name}}</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 
     <br>
 
-    <button type="button" id="gen-button" class="ag-hor-center btn btn-lg btn-success" onclick="genAndDownload();">Сгенерировать и скачать</button>
+    <button type="button" id="gen-button" class="ag-hor-center btn btn-lg btn-success" onclick="genAndDownload();">Сгенерировать</button>
 
 </div>
 {% endblock %}
