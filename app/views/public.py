@@ -110,7 +110,6 @@ class InputValue:
 def fill_values(fields, user_info):
     for field in fields:
         field.value = user_info[field.eng];
-        print field.value;
 
 @app.route('/profile')
 @login_required

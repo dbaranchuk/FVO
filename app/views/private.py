@@ -1,7 +1,7 @@
 #-.- coding: utf-8 -.-
 from app import app, db
 from flask.ext.login import current_user
-from app.models import User, VUS, Document, Student_info
+from app.models import User, VUS, Document, Student_info, Family_member_info
 from werkzeug.security import generate_password_hash
 from flask import request
 import datetime
@@ -157,5 +157,32 @@ def add_data():
         vus_id = VUS.query.filter_by(number = spec[0], code = spec[1]).first().id
         if(vus_id):
             user.vus_id = vus_id
+
+    count_relatives = int(unicode(data['count_relatives']));
+
+    for i in range(count_relatives):
+        member = Family_member_info.query.filter_by(student_info_id = current_user.id, 
+                                                    membership_name = unicode(data['who-' + str(i)])).first()
+        if(member):
+            member.last_name = unicode(data['last-name-' + str(i)])
+            member.first_name = unicode(data['first-name-' + str(i)])
+            member.middle_name = unicode(data['middle-name-' + str(i)])
+            member.mobile_phone = unicode(data['phones-' + str(i)])
+            member.address_usual = unicode(data['address-usual-' + str(i)])
+            member.address_registration = unicode(data['address-registration-' + str(i)])
+        else:
+            member = Family_member_info(
+                    id = Family_member_info.query.count(),
+                    student_info_id = current_user.id,
+                    last_name = unicode(data['last-name-' + str(i)]),
+                    first_name = unicode(data['first-name-' + str(i)]),
+                    middle_name = unicode(data['middle-name-' + str(i)]),
+                    mobile_phone = unicode(data['phones-' + str(i)]),
+                    address_usual = unicode(data['address-usual-' + str(i)]),
+                    address_registration = unicode(data['address-registration-' + str(i)]),
+                    membership_name = unicode(data['who-' + str(i)])
+                )
+        db.session.add(member)
+
     db.session.commit()
     return gen_success()

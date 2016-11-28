@@ -2,6 +2,7 @@
  * Created by User on 08.08.2016.
  */
 
+var count_relatives = 0;
 
 if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
@@ -90,6 +91,25 @@ function submitStudentInfo(fields){
             params[fields[i]] = document.getElementById(fields[i]).value;
         }
     }
+    var relatives = ['who-', 'last-name-', 'first-name-', 'middle-name-',
+                        'phones-', 'address-usual-', 'address-registration-']
+    
+    var c_relat = 0;
+    var flag_get_relat = false;
+    for(var i = 1; i < count_relatives+1; i ++){
+        for(var j in relatives){
+            if(document.getElementById(relatives[j] + i)){
+                flag_get_relat = true;
+                params[relatives[j] + c_relat] = document.getElementById(relatives[j] + i).value;
+            }
+        }
+        if(flag_get_relat){
+            c_relat++;
+        }
+        flag_get_relat = false;
+    }
+
+    params['count_relatives'] = c_relat;
 
     var xmlhttp = getXHR();
     var formData = new FormData();
@@ -122,14 +142,15 @@ function deleteRelative(but){
 }
 
 function addFamilyMember(){
+    count_relatives++;
     var members = document.getElementById('family-members');
 
     function make_input(header, cls, values){
         var starter = '<div class="input-group"><span class="input-group-addon">'+
                 header + '</span>';
-        var end = '<input class="form-control" class="family-' + cls + '"></div>'
+        var end = '<input class="form-control" class="family-' + cls + '" id = "' + cls + '"></div>'
         if (values){
-            end = '<select class="form-control family-' + cls + '">';
+            end = '<select class="form-control family-' + cls + '" id = "' + cls + '">';
             for (var i = 0; i < values.length; ++i){
                 end += '<option>' + values[i] + '</option>';
             }
@@ -137,14 +158,15 @@ function addFamilyMember(){
         }
         return starter + end;
     }
+
     members.innerHTML += '<div class="well well-lg family-member">'+
-        make_input('Кем приходится', 'who', ['Отец', 'Мать', 'Брат', 'Сестра', 'Сын', 'Дочь', 'Жена'])+
-        make_input('Фамилия', 'last-name')+
-            make_input('Имя', 'first-name')+
-            make_input('Отчество', 'middle-name')+
-            make_input('Мобильные телефоны', 'phones')+
-            make_input('Фактический адрес', 'address-usual')+
-            make_input('Адрес по прописке', 'address-registration')+
+        make_input('Кем приходится', 'who-' + String(count_relatives), ['Отец', 'Мать', 'Брат', 'Сестра', 'Сын', 'Дочь', 'Жена'])+
+        make_input('Фамилия', 'last-name-' + count_relatives)+
+            make_input('Имя', 'first-name-' + count_relatives)+
+            make_input('Отчество', 'middle-name-' + count_relatives)+
+            make_input('Мобильные телефоны', 'phones-' + count_relatives)+
+            make_input('Фактический адрес', 'address-usual-' + count_relatives)+
+            make_input('Адрес по прописке', 'address-registration-' + count_relatives)+
             '<button class="btn btn-danger ag-hor-center" type="button" onclick="deleteRelative(this);">Удалить</button>'+
         '</div><br>';
 }
