@@ -16,7 +16,20 @@ from app.models.easy import get_fields
 def ready():
     if user_role() < 1:
         return redirect(url_for('profile'))
-    return render_template('ready.html', title=u'Готовые', tab_active=1)
+
+    users = User.query.filter_by(role = 0)
+    docs = Document.query.all()
+
+    user_ids = []
+    for user in users:
+        user_ids.append(user.id);
+    
+    students_info = {};
+    for id in user_ids:
+        students_info[id] = Student_info.query.get(id)    
+
+    return render_template('ready.html', title=u'Готовые', tab_active=1, users = users, 
+        docs = docs, students_info =students_info)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():

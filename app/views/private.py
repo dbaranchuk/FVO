@@ -1,14 +1,17 @@
 #-.- coding: utf-8 -.-
 from app import app, db
 from flask.ext.login import current_user
+from docx import Document as Doc
 from app.models import User, VUS, Document, Student_info, Family_member_info
 from werkzeug.security import generate_password_hash
-from flask import request
+from flask import request, send_from_directory
 import datetime
 import json
 from easy import *
 from app.config import USER_PATH
 import os
+from keywords import *
+from zipfile import ZipFile, ZIP_DEFLATED
 
 def create_account(login, password):
     hash = generate_password_hash(password)
@@ -61,6 +64,99 @@ def add_document():
     db.session.commit()
 
     return gen_success(filename=filename, message='Success!')
+
+@app.route('/generate_documents', methods=['POST'])
+def generate_documents():
+    data = json.loads(request.data)
+    userIdxs = data['users']
+    documentIdxs = data['documents']
+    
+    documents = Document.query.all()
+    users = User.query.filter_by(role = 0)
+
+    user_ids = []
+    for user in users:
+        user_ids.append(user.id);
+    
+    students_info = {};
+    for id in user_ids:
+        students_info[id] = Student_info.query.get(id)
+
+    for doc_index, document in enumerate(documents, start=0):
+        if doc_index in documentIdxs:
+            docPath = os.path.join(USER_PATH, 'documents', document.filename)
+
+            for usr_index, user in enumerate(users, start=0):
+                if usr_index in userIdxs:
+                    doc = Doc(docPath)
+                    
+                    #цикл по тексту
+                    for p in doc.paragraphs:
+                        #по ключевым слровам
+                        for item in keywords_usrinfo:
+                            if item['key'] in p.text:
+                                to_paste = unicode(students_info[user.id].__dict__[item['name']])
+                                text = p.text.replace(item['key'], to_paste)
+                                style = p.style
+                                p.text = text
+                                p.style = style
+                        for item in keywords_vusinfo:
+                            if item['key'] in p.text:
+                                to_paste = unicode(user.vus.__dict__[item['name']])
+                                text = p.text.replace(item['key'], to_paste)
+                                style = p.style
+                                p.text = text
+                                p.style = style
+                        if '&fio' in p.text:
+                                to_paste = unicode(students_info[user.id].last_name + ' ' + students_info[user.id].first_name + ' ' + students_info[user.id].middle_name)
+                                text = p.text.replace('&fio', to_paste)
+                                style = p.style
+                                p.text = text
+                                p.style = style
+
+                    #по таблицам
+                    for table in doc.tables:
+                        for row in table.rows:
+                            for cell in row.cells:
+                                for p in cell.paragraphs:
+                                    for item in keywords_usrinfo:
+                                        if item['key'] in p.text:
+                                            to_paste = unicode(students_info[user.id].__dict__[item['name']])
+                                            text = p.text.replace(item['key'], to_paste)
+                                            style = p.style
+                                            p.text = text
+                                            p.style = style
+                                    for item in keywords_vusinfo:
+                                        if item['key'] in p.text:
+                                            to_paste = unicode(user.vus.__dict__[item['name']])
+                                            text = p.text.replace(item['key'], to_paste)
+                                            style = p.style
+                                            p.text = text
+                                            p.style = style
+                                    if '&fio' in p.text:
+                                            to_paste = unicode(students_info[user.id].last_name + ' ' + students_info[user.id].first_name + ' ' + students_info[user.id].middle_name)
+                                            text = p.text.replace('&fio', to_paste)
+                                            style = p.style
+                                            p.text = text
+                                            p.style = style
+
+                    doc_name = os.path.join(USER_PATH, 'documents', 'temp', document.filename[:-5] + students_info[user.id].last_name + '.docx')
+                    doc.save(doc_name)
+
+    zippath = os.path.join(USER_PATH, 'Documents.zip')
+    zipf = ZipFile(zippath, 'w', ZIP_DEFLATED)
+
+    basedir = os.path.join(USER_PATH, 'documents', 'temp')
+    for root, dirs, files in os.walk(basedir):
+        for fn in files:
+            absfn = os.path.join(root, fn)
+            zfn = absfn[len(basedir)+len(os.sep):]
+            zipf.write(absfn, zfn)
+            os.remove(absfn)
+    zipf.close()
+
+    return gen_success(url = '/static/user_data/Documents.zip')
+    #return send_from_directory(directory = USER_PATH, filename = 'Documents.zip')
 
 @app.route('/add_data', methods=['POST'])
 def add_data():
@@ -158,6 +254,7 @@ def add_data():
         if(vus_id):
             user.vus_id = vus_id
 
+
     count_relatives = int(unicode(data['count_relatives']));
 
     for i in range(count_relatives):
@@ -183,6 +280,6 @@ def add_data():
                     membership_name = unicode(data['who-' + str(i)])
                 )
         db.session.add(member)
-
+        
     db.session.commit()
     return gen_success()
