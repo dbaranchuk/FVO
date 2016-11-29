@@ -2,7 +2,7 @@
 from app import app
 from flask import render_template, request, flash, redirect, url_for, abort
 from flask.ext.login import login_required, login_user, current_user, logout_user
-from app.models import User, VUS, Document, Student_info
+from app.models import User, VUS, Document, Student_info, Family_member_info
 from werkzeug.security import check_password_hash
 from easy import *
 import json
@@ -63,7 +63,7 @@ def logout():
 def inprocess():
     if user_role() < 1:
         abort(404)
-    users = User.query.filter_by(role = 0)
+    users = User.query.filter_by(role = 0, active = True)
     ids = []
     for user in users:
         ids.append(user.vus_id)
@@ -77,18 +77,44 @@ def inprocess():
     
     students_info = {};
     for id in user_ids:
-        students_info[id] = Student_info.query.get(id)    
+        students_info[id] = Student_info.query.get(id)  
+
+    relatives = {};
+    for id in students_info:
+        relatives[id] = Family_member_info.query.filter_by(student_info_id=id)  
 
     return render_template('inprocess.html', title=u'В процессе', tab_active=2, users = users, 
-        vuses = vuses, students_info =students_info)
+        vuses = vuses, students_info =students_info, relatives = relatives)
 
 
+@app.route('/inprocess/<user_id>')
+@login_required
+def to_page_approve_user(user_id):
+    if user_role() < 1:
+        abort(404)
+    s = Student_info()
+    fields = get_fields('student_info')
+    fields = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
+        s.placeholder(x[0])) for x in fields]
+    fields = filter(lambda x: x.valid is not None, fields)
+
+    user_info = Student_info.query.get(user_id)
+    if user_info is not None:
+        fill_values(fields, user_info)
+
+    relatives = Family_member_info.query.filter_by(student_info_id = user_id)
+    vuses = VUS.query.all()
+    return render_template('user-admin.html', title=u'Одобрение аккаунта', 
+        fields = fields, vuses = vuses, relatives = relatives, navprivate=True)
+        
+'''
 @app.route('/user-admin.html')
 @login_required
 def user_admin():
     if user_role() < 1:
         abort(404)
     return render_template('user-admin.html', title=u'Одобрение аккаунта')
+'''
 
 
 @app.route('/documents')

@@ -20,7 +20,7 @@
             <td>{{user.vus.to_string()}}</td>
             <td>
 
-                <a href="user-admin.html"><button class="btn btn-default" title="Проверить">Проверить</button></a>
+                <a href="{{ url_for('to_page_approve_user', user_id=user.id)}}"><button class="btn btn-default" title="Проверить">Проверить</button></a>
             </td>
         </tr>
         {% endfor %}

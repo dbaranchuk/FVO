@@ -8,15 +8,66 @@
     </div>
 
     <form>
-        <div class="input-group">
-            <span class="input-group-addon">Фамилия</span>
-            <span class="input-group-addon"><b>Иванов</b></span>
-            <input class="form-control" name="surname" placeholder="Комментарий">
+        {% for field in fields %}
+            {% if field.eng!="id" and field.eng != "None" %}
+                <div class="input-group">
+                    <span class="input-group-addon">{{field.rus}}</span>
+                    <span class="input-group-addon"><b>{{field.value}}</b></span>
+                    <input class="form-control" name="{{field.eng}}" placeholder="Комментарий">
+                </div>
+                <br>
+            {%endif%}
+        {% endfor %}
+
+
+        <div class="page-header"> <h1>Родственники</h1>
+        {% for relative in relatives %}
+                <div class="input-group">
+                    <span class="input-group-addon">Кто</span>
+                    <span class="input-group-addon"><b>{{relative.membership_name}}</b></span>
+                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Фамилия</span>
+                    <span class="input-group-addon"><b>{{relative.last_name}}</b></span>
+                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Имя</span>
+                    <span class="input-group-addon"><b>{{relative.first_name}}</b></span>
+                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Отчество</span>
+                    <span class="input-group-addon"><b>{{relative.middle_name}}</b></span>
+                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Телефон</span>
+                    <span class="input-group-addon"><b>{{relative.mobile_phone}}</b></span>
+                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Адрес (прописки)</span>
+                    <span class="input-group-addon"><b>{{relative.address_registration}}</b></span>
+                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Адрес (фактический)</span>
+                    <span class="input-group-addon"><b>{{relative.address_usual}}</b></span>
+                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                </div>
+                <br>
+                <hr>
+                <br>
+        {% endfor %}
         </div>
-        <br>
-
-
-        <div class="page-header"> <h1>Родственники</h1> </div>
 
         <br>
         <hr>

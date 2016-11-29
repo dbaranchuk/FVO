@@ -138,6 +138,35 @@ function submitStudentInfo(fields){
     xmlhttp.send(formData);
 }
 
+function to_page_approve_user(user_id){
+    var params = {};
+    params['id'] = user_id;
+
+    var xmlhttp = getXHR();
+    var formData = new FormData();
+    for(var i in params){
+        formData.append(i,params[i]);
+    }
+
+    xmlhttp.open("POST", "/to_page_approve_user", true);
+    xmlhttp.onerror = function (e) {
+        //alert('server error');
+    };
+/*
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            /*var ans = JSON.parse(xmlhttp.responseText);
+
+            if (ans.status == 'ERROR'){
+                btn.innerText(ans.message);
+            } else {
+                //location.reload();
+            //}
+        }
+    };*/
+
+    xmlhttp.send(formData);
+}
 function deleteRelative(but){
     but.parentElement.outerHTML = '';
 }
