@@ -187,7 +187,16 @@ def generate_documents():
 @app.route('/add_data', methods=['POST'])
 def add_data():
     data = request.form;
-    
+
+    comment = Comments.query.get(current_user.id);
+    if(comment):
+        comment.comment = ""
+        db.session.add(comment)
+
+    user = User.query.get(current_user.id)
+    user.active = True;
+    db.session.add(user);
+
     si = Student_info.query.get(current_user.id)
 
     if(si):
