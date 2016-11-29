@@ -52,3 +52,9 @@ class Document(db.Model):
     name = db.Column(db.String(120), index = True, unique = True)
     vus_id = db.Column(db.Integer, db.ForeignKey('VUS.id'), default = -1)
     filename = db.Column(db.String(120))
+    
+
+class Comments(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key = True)
+    comment = db.Column(db.String(8096))

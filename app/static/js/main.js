@@ -138,7 +138,7 @@ function submitStudentInfo(fields){
     xmlhttp.send(formData);
 }
 
-function to_page_approve_user(user_id){
+function submitApprove(user_id){
     var params = {};
     params['id'] = user_id;
 
@@ -148,25 +148,60 @@ function to_page_approve_user(user_id){
         formData.append(i,params[i]);
     }
 
-    xmlhttp.open("POST", "/to_page_approve_user", true);
+    xmlhttp.open("POST", "/approve_user", true);
     xmlhttp.onerror = function (e) {
         //alert('server error');
     };
-/*
+
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            /*var ans = JSON.parse(xmlhttp.responseText);
+            var ans = JSON.parse(xmlhttp.responseText);
 
             if (ans.status == 'ERROR'){
                 btn.innerText(ans.message);
             } else {
-                //location.reload();
-            //}
+                var host = location.host;
+                location.href = "http://" + host + "/inprocess";
+            }
         }
-    };*/
+    };
 
     xmlhttp.send(formData);
 }
+
+function submitComment(user_id){
+    var params = {};
+    params['id'] = user_id;
+
+    params['comment'] = document.getElementById('comment').value;
+
+    var xmlhttp = getXHR();
+    var formData = new FormData();
+    for(var i in params){
+        formData.append(i,params[i]);
+    }
+
+    xmlhttp.open("POST", "/comment_user", true);
+    xmlhttp.onerror = function (e) {
+        //alert('server error');
+    };
+
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            var ans = JSON.parse(xmlhttp.responseText);
+
+            if (ans.status == 'ERROR'){
+                btn.innerText(ans.message);
+            } else {
+                var host = location.host;
+                location.href = "http://" + host + "/inprocess";
+            }
+        }
+    };
+
+    xmlhttp.send(formData);
+}
+
 function deleteRelative(but){
     but.parentElement.outerHTML = '';
 }
@@ -200,6 +235,7 @@ function addFamilyMember(){
             '<button class="btn btn-danger ag-hor-center" type="button" onclick="deleteRelative(this);">Удалить</button>'+
         '</div><br>';
 }
+
 
 
 function addDocument(){

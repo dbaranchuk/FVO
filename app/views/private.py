@@ -2,7 +2,7 @@
 from app import app, db
 from flask.ext.login import current_user
 from docx import Document as Doc
-from app.models import User, VUS, Document, Student_info, Family_member_info
+from app.models import User, VUS, Document, Student_info, Family_member_info, Comments
 from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
 import datetime
@@ -19,6 +19,32 @@ def create_account(login, password):
     db.session.add(new_user)
     db.session.commit()
 
+@app.route('/approve_user', methods=['POST'])
+def approve_user():
+    data = request.form
+    user_id = data['id']
+    user = User.query.get(user_id)
+    user.active = False;
+    db.session.add(user)
+    db.session.commit()
+    return gen_success()
+
+@app.route('/comment_user', methods=['POST'])
+def comment_user():
+    data = request.form
+    user_id = data['id'];
+    comment = data['comment']
+    comment_user = Comments.query.get(user_id);
+    if(comment_user):
+        comment_user.comment = unicode(comment);
+    else:
+        comment_user = Comments(
+            id = user_id,
+            comment = unicode(comment)
+        )
+    db.session.add(comment_user)
+    db.session.commit()
+    return gen_success()
 
 @app.route('/make_account', methods=['POST'])
 def make_account():

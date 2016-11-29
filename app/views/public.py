@@ -1,8 +1,8 @@
 #-.- coding: utf-8 -.-
-from app import app
+from app import app, db
 from flask import render_template, request, flash, redirect, url_for, abort
 from flask.ext.login import login_required, login_user, current_user, logout_user
-from app.models import User, VUS, Document, Student_info, Family_member_info
+from app.models import User, VUS, Document, Student_info, Family_member_info, Comments
 from werkzeug.security import check_password_hash
 from easy import *
 import json
@@ -105,17 +105,29 @@ def to_page_approve_user(user_id):
     relatives = Family_member_info.query.filter_by(student_info_id = user_id)
     vuses = VUS.query.all()
     return render_template('user-admin.html', title=u'Одобрение аккаунта', 
-        fields = fields, vuses = vuses, relatives = relatives, navprivate=True)
-        
+        fields = fields, vuses = vuses, relatives = relatives, user_id = user_id,
+         navprivate=True)
+
 '''
-@app.route('/user-admin.html')
+@app.route('/approve_user/<user_id>')
 @login_required
-def user_admin():
+def approve_user(user_id):
+    print(user_id);
     if user_role() < 1:
         abort(404)
-    return render_template('user-admin.html', title=u'Одобрение аккаунта')
+    user = User.query.get(user_id)
+    user.active = False;
+    db.session.add(user)
+    db.session.commit()
+    return redirect(url_for('inprocess'))
 '''
 
+@app.route('/send_comments')
+@login_required
+def send_comments(user_id):
+    if user_role() < 1:
+        abort(404)
+    return redirect(url_for('inprocess'))
 
 @app.route('/documents')
 @login_required
@@ -166,5 +178,9 @@ def profile():
         fill_values(fields, user_info)
 
     vuses = VUS.query.all()
+    comment = ""
+    if(Comments.query.get(current_user.id)):
+        comment = Comments.query.get(current_user.id).comment
+    approved = User.query.get(current_user.id).active
     return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
-        navprivate=True)
+        comment = comment, approved = approved, navprivate=True)

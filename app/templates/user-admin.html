@@ -10,70 +10,56 @@
     <form>
         {% for field in fields %}
             {% if field.eng!="id" and field.eng != "None" %}
-                <div class="input-group">
-                    <span class="input-group-addon">{{field.rus}}</span>
-                    <span class="input-group-addon"><b>{{field.value}}</b></span>
-                    <input class="form-control" name="{{field.eng}}" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">{{field.rus}}</span>
+                    <span class="col-xs-6 list-group-item"><b>{{field.value}}</b></span>
                 </div>
-                <br>
             {%endif%}
         {% endfor %}
-
+        <br>
 
         <div class="page-header"> <h1>Родственники</h1>
         {% for relative in relatives %}
-                <div class="input-group">
-                    <span class="input-group-addon">Кто</span>
-                    <span class="input-group-addon"><b>{{relative.membership_name}}</b></span>
-                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">Кем приходится</span>
+                    <span class="col-xs-6 list-group-item"><b>{{relative.membership_name}}</b></span>
                 </div>
-                <br>
-                <div class="input-group">
-                    <span class="input-group-addon">Фамилия</span>
-                    <span class="input-group-addon"><b>{{relative.last_name}}</b></span>
-                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">Фамилия</span>
+                    <span class="col-xs-6 list-group-item"><b>{{relative.last_name}}</b></span>
                 </div>
-                <br>
-                <div class="input-group">
-                    <span class="input-group-addon">Имя</span>
-                    <span class="input-group-addon"><b>{{relative.first_name}}</b></span>
-                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">Имя</span>
+                    <span class="col-xs-6 list-group-item"><b>{{relative.first_name}}</b></span>
                 </div>
-                <br>
-                <div class="input-group">
-                    <span class="input-group-addon">Отчество</span>
-                    <span class="input-group-addon"><b>{{relative.middle_name}}</b></span>
-                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">Отчество</span>
+                    <span class="col-xs-6 list-group-item"><b>{{relative.middle_name}}</b></span>
                 </div>
-                <br>
-                <div class="input-group">
-                    <span class="input-group-addon">Телефон</span>
-                    <span class="input-group-addon"><b>{{relative.mobile_phone}}</b></span>
-                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">Телефон</span>
+                    <span class="col-xs-6 list-group-item"><b>{{relative.mobile_phone}}</b></span>
                 </div>
-                <br>
-                <div class="input-group">
-                    <span class="input-group-addon">Адрес (прописки)</span>
-                    <span class="input-group-addon"><b>{{relative.address_registration}}</b></span>
-                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">Адрес (прописки)</span>
+                    <span class="col-xs-6 list-group-item"><b>{{relative.address_registration}}</b></span>
                 </div>
-                <br>
-                <div class="input-group">
-                    <span class="input-group-addon">Адрес (фактический)</span>
-                    <span class="input-group-addon"><b>{{relative.address_usual}}</b></span>
-                    <input class="form-control" name="membership_name" placeholder="Комментарий">
+                <div class="row list-group">
+                    <span class="col-xs-6 list-group-item">Адрес (фактический)</span>
+                    <span class="col-xs-6 list-group-item"><b>{{relative.address_usual}}</b></span>
                 </div>
-                <br>
                 <hr>
                 <br>
         {% endfor %}
         </div>
 
+        <textarea id="comment" class="form-control" placeholder="Комментарий"></textarea>
         <br>
-        <hr>
-        <br>
-        <button type="submit" class="btn single btn-lg btn-success ag-hor-center">Одобрить</button>
     </form>
+    <div class="input-group">
+        <button class="btn btn-lg btn-success ag-hor-left" onclick="submitApprove({{user_id}})">Одобрить</button>
+        <button class="btn btn-lg btn-danger ag-hor-right" onclick="submitComment({{user_id}})">Повторное заполение</button>
+    </div>
 </div>
 
 {% endblock %}
