@@ -182,5 +182,13 @@ def profile():
     if(Comments.query.get(current_user.id)):
         comment = Comments.query.get(current_user.id).comment
     approved = User.query.get(current_user.id).active
+
+    curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
+
     return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
-        comment = comment, approved = approved, navprivate=True)
+        comment = comment, approved = approved, curr_vus = curr_vus, navprivate=True)
+
+
+
+
+

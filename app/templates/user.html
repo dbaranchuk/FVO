@@ -44,7 +44,11 @@
             <span class="input-group-addon">ВУС</span>
             <select class="form-control" id="vus" name="vus">
                 {% for vus in vuses %}
-                <option>{{vus.to_string()}}</option>
+                    {% if vus.to_string() == curr_vus.to_string() %}
+                        <option selected>{{vus.to_string()}}</option>
+                    {% else %}
+                        <option>{{vus.to_string()}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
         </div>

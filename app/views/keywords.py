@@ -26,3 +26,68 @@ keywords_vusinfo = [{'key': '&vus-number', 'name': 'number'},
 	{'key': '&vus-name1', 'name': 'name1'},
 	{'key': '&vus-name2', 'name': 'name2'}
 ]
+
+keywords_familyinfo = [
+	{'key': '&father-lastname', 'name': 'last_name'},
+	{'key': '&father-middlename', 'name': 'middle_name'},
+	{'key': '&father-firstname', 'name': 'first_name'},
+	{'key': '&father-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&father-address-usual', 'name': 'address_usual'},
+	{'key': '&father-address-registration', 'name': 'address_registration'},
+
+	{'key': '&mother-lastname', 'name': 'last_name'},
+	{'key': '&mother-middlename', 'name': 'middle_name'},
+	{'key': '&mother-firstname', 'name': 'first_name'},
+	{'key': '&mother-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&mother-address-usual', 'name': 'address_usual'},
+	{'key': '&mother-address-registration', 'name': 'address_registration'},
+
+	{'key': '&wife-lastname', 'name': 'last_name'},
+	{'key': '&wife-middlename', 'name': 'middle_name'},
+	{'key': '&wife-firstname', 'name': 'first_name'},
+	{'key': '&wife-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&wife-address-usual', 'name': 'address_usual'},
+	{'key': '&wife-address-registration', 'name': 'address_registration'},
+
+	{'key': '&brister1-lastname', 'name': 'last_name'},
+	{'key': '&brister1-middlename', 'name': 'middle_name'},
+	{'key': '&brister1-firstname', 'name': 'first_name'},
+	{'key': '&brister1-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&brister1-address-usual', 'name': 'address_usual'},
+	{'key': '&brister1-address-registration', 'name': 'address_registration'},
+
+	{'key': '&brister2-lastname', 'name': 'last_name'},
+	{'key': '&brister2-middlename', 'name': 'middle_name'},
+	{'key': '&brister2-firstname', 'name': 'first_name'},
+	{'key': '&brister2-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&brister2-address-usual', 'name': 'address_usual'},
+	{'key': '&brister2-address-registration', 'name': 'address_registration'},
+
+	{'key': '&brister3-lastname', 'name': 'last_name'},
+	{'key': '&brister3-middlename', 'name': 'middle_name'},
+	{'key': '&brister3-firstname', 'name': 'first_name'},
+	{'key': '&brister3-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&brister3-address-usual', 'name': 'address_usual'},
+	{'key': '&brister3-address-registration', 'name': 'address_registration'},
+
+	{'key': '&brister4-lastname', 'name': 'last_name'},
+	{'key': '&brister4-middlename', 'name': 'middle_name'},
+	{'key': '&brister4-firstname', 'name': 'first_name'},
+	{'key': '&brister4-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&brister4-address-usual', 'name': 'address_usual'},
+	{'key': '&brister4-address-registration', 'name': 'address_registration'},
+
+	{'key': '&child1-lastname', 'name': 'last_name'},
+	{'key': '&child1-middlename', 'name': 'middle_name'},
+	{'key': '&child1-firstname', 'name': 'first_name'},
+	{'key': '&child1-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&child1-address-usual', 'name': 'address_usual'},
+	{'key': '&child1-address-registration', 'name': 'address_registration'},
+
+	{'key': '&child2-lastname', 'name': 'last_name'},
+	{'key': '&child2-middlename', 'name': 'middle_name'},
+	{'key': '&child2-firstname', 'name': 'first_name'},
+	{'key': '&child2-mobilephone', 'name': 'mobile_phone'},
+	{'key': '&child2-address-usual', 'name': 'address_usual'},
+	{'key': '&child2-address-registration', 'name': 'address_registration'},
+]

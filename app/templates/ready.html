@@ -23,11 +23,13 @@
             </thead>
             <tbody>
             {% for user in users %}
-            <tr>
-                <td><input type="checkbox" class="cb-user" id="cbu{{loop.index - 1}}"></td>
-                <td>{{students_info[user.id].last_name}}</td><td>{{students_info[user.id].first_name}}</td><td>{{students_info[user.id].middle_name}}</td>
-                <td>{{students_info[user.id].birth_place}}</td>
-            </tr>
+                {% if not user.active %}
+                    <tr>
+                        <td><input type="checkbox" class="cb-user" id="cbu{{user.id}}"></td>
+                        <td>{{students_info[user.id].last_name}}</td><td>{{students_info[user.id].first_name}}</td><td>{{students_info[user.id].middle_name}}</td>
+                        <td>{{students_info[user.id].birth_place}}</td>
+                    </tr>
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>

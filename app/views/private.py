@@ -12,6 +12,7 @@ from app.config import USER_PATH
 import os
 from keywords import *
 from zipfile import ZipFile, ZIP_DEFLATED
+import sys
 
 def create_account(login, password):
     hash = generate_password_hash(password)
@@ -94,18 +95,18 @@ def add_document():
 @app.route('/generate_documents', methods=['POST'])
 def generate_documents():
     data = json.loads(request.data)
-    userIdxs = data['users']
+    userIds = data['users']
     documentIdxs = data['documents']
     
     documents = Document.query.all()
     users = User.query.filter_by(role = 0)
 
-    user_ids = []
-    for user in users:
-        user_ids.append(user.id);
+    #user_ids = []
+    #for user in users:
+    #    user_ids.append(user.id);
     
     students_info = {};
-    for id in user_ids:
+    for id in userIds:
         students_info[id] = Student_info.query.get(id)
 
     for doc_index, document in enumerate(documents, start=0):
@@ -113,8 +114,9 @@ def generate_documents():
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
 
             for usr_index, user in enumerate(users, start=0):
-                if usr_index in userIdxs:
+                if user.id in userIds:
                     doc = Doc(docPath)
+                    family_info = Family_member_info.query.filter_by(student_info_id = user.id)
                     
                     #цикл по тексту
                     for p in doc.paragraphs:
@@ -139,6 +141,26 @@ def generate_documents():
                                 style = p.style
                                 p.text = text
                                 p.style = style
+                        for item in keywords_familyinfo:
+                            if item['key'] in p.text:
+                                relative_info = {}
+                                for member in family_info:
+                                    if (unicode(member.membership_name) == unicode('Отец', 'utf-8')) and ('father' in item['key']):
+                                        relative_info = member;
+                                        break
+                                    if (unicode(member.membership_name) == unicode('Мать', 'utf-8')) and ('mother' in item['key']):
+                                        relative_info = member;
+                                        break
+                                    if (unicode(member.membership_name) == unicode('Жена', 'utf-8')) and ('wife' in item['key']):
+                                        relative_info = member;
+                                        break
+                                
+                                #print >> sys.stderr, member.last_name
+                                to_paste = unicode(member.__dict__[item['name']])
+                                text = p.text.replace(item['key'], to_paste)
+                                style = p.style
+                                p.text = text
+                                p.style = style    
 
                     #по таблицам
                     for table in doc.tables:
@@ -162,6 +184,26 @@ def generate_documents():
                                     if '&fio' in p.text:
                                             to_paste = unicode(students_info[user.id].last_name + ' ' + students_info[user.id].first_name + ' ' + students_info[user.id].middle_name)
                                             text = p.text.replace('&fio', to_paste)
+                                            style = p.style
+                                            p.text = text
+                                            p.style = style
+                                    for item in keywords_familyinfo:
+                                        if item['key'] in p.text:
+                                            relative_info = {}
+                                            for member in family_info:
+                                                if (unicode(member.membership_name) == unicode('Отец', 'utf-8')) and ('father' in item['key']):
+                                                    relative_info = member;
+                                                    break
+                                                if (unicode(member.membership_name) == unicode('Мать', 'utf-8')) and ('mother' in item['key']):
+                                                    relative_info = member;
+                                                    break
+                                                if (unicode(member.membership_name) == unicode('Жена', 'utf-8')) and ('wife' in item['key']):
+                                                    relative_info = member;
+                                                    break
+                                            
+                                            #print >> sys.stderr, member.last_name
+                                            to_paste = unicode(member.__dict__[item['name']])
+                                            text = p.text.replace(item['key'], to_paste)
                                             style = p.style
                                             p.text = text
                                             p.style = style
@@ -193,9 +235,7 @@ def add_data():
         comment.comment = ""
         db.session.add(comment)
 
-    user = User.query.get(current_user.id)
-    user.active = True;
-    db.session.add(user);
+
 
     si = Student_info.query.get(current_user.id)
 
@@ -281,6 +321,7 @@ def add_data():
         db.session.add(si)
     
     user = User.query.get(current_user.id)
+    user.active = True;
     spec = unicode(data["vus"]).split(' ');
     if(spec):
         spec[0] = int(spec[0]);
@@ -288,10 +329,11 @@ def add_data():
         vus_id = VUS.query.filter_by(number = spec[0], code = spec[1]).first().id
         if(vus_id):
             user.vus_id = vus_id
+    db.session.add(user)
 
 
     count_relatives = int(unicode(data['count_relatives']));
-
+    count_curr_rel = Family_member_info.query.count();
     for i in range(count_relatives):
         member = Family_member_info.query.filter_by(student_info_id = current_user.id, 
                                                     membership_name = unicode(data['who-' + str(i)])).first()
@@ -304,7 +346,7 @@ def add_data():
             member.address_registration = unicode(data['address-registration-' + str(i)])
         else:
             member = Family_member_info(
-                    id = Family_member_info.query.count(),
+                    id = count_curr_rel,
                     student_info_id = current_user.id,
                     last_name = unicode(data['last-name-' + str(i)]),
                     first_name = unicode(data['first-name-' + str(i)]),
@@ -314,6 +356,7 @@ def add_data():
                     address_registration = unicode(data['address-registration-' + str(i)]),
                     membership_name = unicode(data['who-' + str(i)])
                 )
+            count_curr_rel = count_curr_rel + 1
         db.session.add(member)
         
     db.session.commit()
