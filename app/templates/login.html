@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
- <div class="ag-abs-center login-panel">
+ <div class="ag-abs-center login-panel" onkeypress="pressEnter( event )">
     <div class="ag-hor-center logo">
         <img src="{{url_for('static', filename='images/logo.png')}}">
     </div>

@@ -1,3 +1,5 @@
 flask/
 
 .DS_Store
+
+*.pyc

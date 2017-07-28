@@ -47,7 +47,7 @@ function complexXHR(url, params, changeStatus, valueSet, onSuccess){
                 onSuccess(ans);
             }
         } else {
-            changeStatus(valueSet.resultError, 1);
+            changeStatus(valueSet.before, 1);
         }
     };
     xmlhttp.send(JSON.stringify(params));
@@ -83,6 +83,15 @@ function dologin(){
         }
     );
 }
+
+function pressEnter( e ){
+    if (e.keyCode == 13)
+    {
+        dologin();
+        return false;
+    }
+    return true;
+} 
 
 function submitStudentInfo(fields){
     var params = {};
