@@ -1,11 +1,6 @@
 /**
  * Created by User on 08.08.2016.
  */
-
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/master
 if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
@@ -220,10 +215,6 @@ function deleteRelative(but){
 function addFamilyMember(){
     count_relatives++;
     var members = document.getElementById('family-members');
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/master
     var member  = document.createElement('div');
     function make_input(header, cls, values){
         var starter = '<div class="input-group"><span class="input-group-addon">'+
@@ -252,7 +243,21 @@ function addFamilyMember(){
     members.appendChild(member);
 }
 
+function createAccounts(){
+    var xmlhttp = getXHR();
+    var file = document.getElementById('select-file').files[0];
+    var vus = document.getElementById('vus').value;
+    var btn = document.getElementById('status-btn');
 
+    var formData = new FormData();
+    formData.append('file', file);
+    formData.append('vus', vus);
+
+    xmlhttp.open("POST", "/create_accounts", true);
+    xmlhttp.onerror = function (e) {
+        btn.innerText('server error');
+    };
+}
 
 function addDocument(){
     var xmlhttp = getXHR();

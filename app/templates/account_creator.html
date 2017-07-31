@@ -3,8 +3,8 @@
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="ag-hor-center">
-        <div class="row">
-            <div class="col-md-3">
+        <!-- <div class="row">
+            <div class="col-md-3"> 
                 <div class="input-group input-group ag-hor-center ag-thin">
                     <input type="text" id="login" class="form-control ag-input" placeholder="Логин">
                 </div>
@@ -21,16 +21,56 @@
                 </button>
                 <br>
 
-            </div>
-            <div class="col-md-9">
+            </div> 
+            <div class="col-md-9"> -->
+                <table class="table table-hover table-users table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>Фамилия Имя Отчество студентов</th>
+                            <th>ВУС</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr>
+                        <td>
+                            <label class="btn btn-default btn-file">
+                                <div>Выбрать файл</div>
+                                <input type="file" style="display: none;" id="select-file">
+                                <script>prepareFileUploader('select-file');</script>
+                            </label>
+                        </td>
+
+                        <td>
+                            <div class="form-group">
+                              <select class="form-control" id="vus">
+                                  {% for vus in vuses %}
+                                  <option>{{vus.to_string()}}</option>
+                                  {% endfor %}
+                              </select>
+                            </div>
+                        </td>
+
+                        <td>
+                            <button class="btn btn-success btn-file" id="status-btn" onclick="createAccounts();">Добавить</button>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+
                 <div class="alert alert-info" role="alert">
                     <strong>Информация</strong>
-                    Здесь должна быть некоторая информация о том, что нужно для создания новых аккаунтов
+                    Файл с ФИО студентов должен быть следующего формата: таблица Excel в формате .xlsx, в первом столбце которой фамилии студентов, во втором - имена, в третьем - отчества
                 </div>
                 <!--a class="file-input-wrapper btn btn-default "><span>Выбрать файл</span><input type="file" style="left: -182.5px; top: 8px;"></a-->
                 <button class="btn btn-success ag-hor-center" id="create-but-2">Создать аккаунты</button>
-            </div>
-        </div>
+            <!-- </div>
+        </div> -->
     </div>
 
 {% endblock %}

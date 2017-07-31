@@ -145,7 +145,9 @@ def documents():
 def account_creator():
     if user_role() < 1:
         abort(404)
-    return render_template('account_creator.html', title=u'Создание аккаунтов', tab_active=4)
+    vuses = VUS.query.all()
+
+    return render_template('account_creator.html', title=u'Создание аккаунтов', tab_active=4, vuses=vuses)
 
 
 class InputValue:
