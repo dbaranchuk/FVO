@@ -2,6 +2,7 @@
 from app import app, db
 from flask.ext.login import current_user
 from docx import Document as Doc
+from openpyxl import load_workbook
 from app.models import User, VUS, Document, Student_info, Family_member_info, Comments
 from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
@@ -10,7 +11,9 @@ import json
 from easy import *
 from app.config import USER_PATH
 import os
+import random, string
 from keywords import *
+from transliteration import *
 from zipfile import ZipFile, ZIP_DEFLATED
 import sys
 
@@ -54,6 +57,61 @@ def make_account():
         return gen_error('Wrong data sent to server (must be [login, password]).')
     create_account(data['login'], data['password'])
     return gen_success()
+
+#
+#
+#
+# TODO: проверки на дауна
+#           формат входного файла(должен быть xlsx)
+#           наличие года выпуска
+#       добавление новых пользователей в базу
+#       выгрузка дока с логинами/паролями
+#
+#
+#
+@app.route('/create_accounts', methods=['POST'])
+def create_accounts():
+    if 'file' not in request.files:
+        return gen_error('No file sent')
+    file = request.files['file']
+
+    # if user does not select file, browser also
+    # submit a empty part without filename
+    if file.filename == '' or not file:
+        return gen_error('No file selected')
+
+    if 'vus' not in request.form:
+        return gen_error('No vus document could not be created')
+    if 'completionYear' not in request.form:
+        return gen_error('No completion year')
+
+    completionYear = request.form['completionYear']
+
+    vus = map(int, request.form['vus'].split())
+    vus = VUS.query.filter_by(number=vus[0], code=vus[1]).first()
+    if vus is None:
+        return gen_error('Such vus not yet exists in this system')
+
+    wb = load_workbook(file)
+    active = wb.active
+
+    for idx, row in enumerate(active.rows, start = 1):
+        login = ''
+        for cell in row:
+            for char in cell.value:
+                login += vocabulary[char.lower()]
+        
+        login += completionYear
+        password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
+        print >> sys.stderr, login, password
+
+        active.cell(row = idx, column = 4, value = login)
+        active.cell(row = idx, column = 5, value = password)
+        #print >> sys.stderr, password
+
+    #wb.save('test.xlsx')
+    return gen_success(message='Success!')
+
 
 @app.route('/add_document', methods=['POST'])
 def add_document():

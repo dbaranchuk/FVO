@@ -247,11 +247,13 @@ function createAccounts(){
     var xmlhttp = getXHR();
     var file = document.getElementById('select-file').files[0];
     var vus = document.getElementById('vus').value;
+    var completionYear = document.getElementById('completionYear').value;
     var btn = document.getElementById('status-btn');
 
     var formData = new FormData();
     formData.append('file', file);
     formData.append('vus', vus);
+    formData.append('completionYear', completionYear);
 
     xmlhttp.open("POST", "/create_accounts", true);
     xmlhttp.onerror = function (e) {
@@ -261,7 +263,7 @@ function createAccounts(){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var ans = JSON.parse(xmlhttp.responseText);
-
+            
             if (ans.status == 'ERROR'){
                 btn.innerText(ans.message);
             } else {
