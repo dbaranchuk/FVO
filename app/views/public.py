@@ -189,8 +189,7 @@ def profile():
     relationships = Family_member_info.query.filter_by(student_info_id = current_user.id)
 
     return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
-        comment = comment, approved = approved, curr_vus = curr_vus, relationships = relationships, 
-        navprivate=True)
+        comment = comment, approved = approved, curr_vus = curr_vus, relationships = relationships, navprivate=True)
 
 
 
