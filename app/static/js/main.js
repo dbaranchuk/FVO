@@ -2,10 +2,6 @@
  * Created by User on 08.08.2016.
  */
 
-<<<<<<< HEAD
-=======
-
->>>>>>> refs/remotes/origin/master
 if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
@@ -220,10 +216,6 @@ function deleteRelative(but){
 function addFamilyMember(){
     count_relatives++;
     var members = document.getElementById('family-members');
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/master
     var member  = document.createElement('div');
     function make_input(header, cls, values){
         var starter = '<div class="input-group"><span class="input-group-addon">'+
