@@ -1,10 +1,6 @@
 /**
  * Created by User on 08.08.2016.
  */
-<<<<<<< HEAD
-=======
-
->>>>>>> 01035076c62f6a3cf0129490cbba4618d28d5cca
 if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
@@ -261,6 +257,20 @@ function createAccounts(){
     xmlhttp.onerror = function (e) {
         btn.innerText('server error');
     };
+
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            var ans = JSON.parse(xmlhttp.responseText);
+
+            if (ans.status == 'ERROR'){
+                btn.innerText(ans.message);
+            } else {
+                location.reload();
+            }
+        }
+    };
+
+    xmlhttp.send(formData);
 }
 
 function addDocument(){
