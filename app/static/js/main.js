@@ -2,8 +2,6 @@
  * Created by User on 08.08.2016.
  */
 
-var count_relatives = 0;
-
 if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
@@ -219,6 +217,7 @@ function addFamilyMember(){
     count_relatives++;
     var members = document.getElementById('family-members');
 
+    var member  = document.createElement('div');
     function make_input(header, cls, values){
         var starter = '<div class="input-group"><span class="input-group-addon">'+
                 header + '</span>';
@@ -233,7 +232,7 @@ function addFamilyMember(){
         return starter + end;
     }
 
-    members.innerHTML += '<div class="well well-lg family-member">'+
+    member.innerHTML = '<div class="well well-lg family-member">'+
         make_input('Кем приходится', 'who-' + String(count_relatives), ['Отец', 'Мать', 'Брат', 'Сестра', 'Сын', 'Дочь', 'Жена'])+
         make_input('Фамилия', 'last-name-' + count_relatives)+
             make_input('Имя', 'first-name-' + count_relatives)+
@@ -243,6 +242,7 @@ function addFamilyMember(){
             make_input('Адрес по прописке', 'address-registration-' + count_relatives)+
             '<button class="btn btn-danger ag-hor-center" type="button" onclick="deleteRelative(this);">Удалить</button>'+
         '</div><br>';
+    members.appendChild(member);
 }
 
 
@@ -377,11 +377,13 @@ function delDoc(docId){
         docId: docId
     };
 
-    location.reload();      // TODO: DELETE THIS!
+    //var btn = document.getElementById('status-btn');
+
+    //location.reload();      // TODO: DELETE THIS!
 
     xmlhttp.open("POST", "/delete_document", true);
     xmlhttp.onerror = function (e) {
-        // TODO: server error
+        //btn.innerText('serverError');
     };
 
     xmlhttp.onreadystatechange = function() {

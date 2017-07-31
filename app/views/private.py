@@ -55,7 +55,6 @@ def make_account():
     create_account(data['login'], data['password'])
     return gen_success()
 
-
 @app.route('/add_document', methods=['POST'])
 def add_document():
     if 'file' not in request.files:
@@ -92,6 +91,24 @@ def add_document():
 
     return gen_success(filename=filename, message='Success!')
 
+@app.route('/delete_document', methods=['POST'])
+def delete_document():
+    data = json.loads(request.data)
+    docId = data['docId']
+
+    document = Document.query.filter_by(id = docId).first()
+    filePath = os.path.join(USER_PATH, 'documents', document.filename)
+
+
+    if document is None:
+        return gen_error('No document with such id')
+
+    print >> sys.stderr, document.name, filePath
+
+    return gen_success(message='Success!')
+
+
+
 @app.route('/generate_documents', methods=['POST'])
 def generate_documents():
     data = json.loads(request.data)
@@ -117,7 +134,16 @@ def generate_documents():
                 if user.id in userIds:
                     doc = Doc(docPath)
                     family_info = Family_member_info.query.filter_by(student_info_id = user.id)
-                    
+                    father = [member for member in family_info if unicode(member.membership_name) == unicode('Отец', 'utf-8') ]
+                    mother = [member for member in family_info if unicode(member.membership_name) == unicode('Мать', 'utf-8') ]
+                    wife = [member for member in family_info if unicode(member.membership_name) == unicode('Жена', 'utf-8') ]
+                    brister = [member for member in family_info if unicode(member.membership_name) == unicode('Брат', 'utf-8') or unicode(member.membership_name) == unicode('Сестра', 'utf-8') ]
+                    children = [member for member in family_info if unicode(member.membership_name) == unicode('Сын', 'utf-8') or unicode(member.membership_name) == unicode('Дочь', 'utf-8') ]
+
+                    #print >> sys.stderr, father, mother, wife, brister, children
+                    #for member in children:
+                    #    print >> sys.stderr, member.last_name
+
                     #цикл по тексту
                     for p in doc.paragraphs:
                         #по ключевым слровам
@@ -141,26 +167,88 @@ def generate_documents():
                                 style = p.style
                                 p.text = text
                                 p.style = style
+
+                        """brister_count = 0
+                        children_count = 0
+                        for member in family_info:
+
+                            #print >> sys.stderr, member.last_name
+
+                            for item in keywords_familyinfo:
+                                if ((unicode(member.membership_name) == unicode('Брат', 'utf-8')) and ('brister' in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Сестра', 'utf-8')) and ('brister' in item['key'])):
+                                    brister_count += 1
+                                if ((unicode(member.membership_name) == unicode('Сын', 'utf-8')) and ('child' in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Дочь', 'utf-8')) and ('child' in item['key'])):
+                                    children_count += 1
+                                if ((unicode(member.membership_name) == unicode('Отец', 'utf-8')) and ('father' in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Мать', 'utf-8')) and ('mother' in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Жена', 'utf-8')) and ('wife' in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Брат', 'utf-8')) and ('brister'+`brister_count` in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Сестра', 'utf-8')) and ('brister'+`brister_count` in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Сын', 'utf-8')) and ('child'+`children_count` in item['key'])
+                                    or (unicode(member.membership_name) == unicode('Дочь', 'utf-8')) and ('child'+`children_count` in item['key'])):
+                                    
+                                    to_paste = unicode(member.__dict__[item['name']])
+                                    text = p.text.replace(item['key'], to_paste)
+                                    style = p.style
+                                    p.text = text
+                                    p.style = style  """
+
                         for item in keywords_familyinfo:
                             if item['key'] in p.text:
-                                relative_info = {}
-                                for member in family_info:
-                                    if (unicode(member.membership_name) == unicode('Отец', 'utf-8')) and ('father' in item['key']):
-                                        relative_info = member;
+                                if 'father' in item['key']:
+                                    for member in father:
+                                        to_paste = unicode(member.__dict__[item['name']])
+                                        text = p.text.replace(item['key'], to_paste)
+                                        style = p.style
+                                        p.text = text
+                                        p.style = style
                                         break
-                                    if (unicode(member.membership_name) == unicode('Мать', 'utf-8')) and ('mother' in item['key']):
-                                        relative_info = member;
+                                if 'mother' in item['key']:
+                                    for member in mother:
+                                        to_paste = unicode(member.__dict__[item['name']])
+                                        text = p.text.replace(item['key'], to_paste)
+                                        style = p.style
+                                        p.text = text
+                                        p.style = style
                                         break
-                                    if (unicode(member.membership_name) == unicode('Жена', 'utf-8')) and ('wife' in item['key']):
-                                        relative_info = member;
+                                if 'wife' in item['key']:
+                                    for member in wife:
+                                        to_paste = unicode(member.__dict__[item['name']])
+                                        text = p.text.replace(item['key'], to_paste)
+                                        style = p.style
+                                        p.text = text
+                                        p.style = style
                                         break
-                                
-                                #print >> sys.stderr, member.last_name
-                                to_paste = unicode(member.__dict__[item['name']])
-                                text = p.text.replace(item['key'], to_paste)
-                                style = p.style
-                                p.text = text
-                                p.style = style    
+                                if 'brister' in item['key']:
+                                    number = int(item['key'][8:9])   
+                                    if number < len(brister):
+                                        to_paste = unicode(brister[number].__dict__[item['name']])
+                                        text = p.text.replace(item['key'], to_paste)
+                                        style = p.style
+                                        p.text = text
+                                        p.style = style
+                                    else:
+                                        to_paste = ''
+                                        text = p.text.replace(item['key'], to_paste)
+                                        style = p.style
+                                        p.text = text
+                                        p.style = style
+                                if 'child' in item['key']:
+                                    number = int(item['key'][6:7])
+                                    if number < len(children):
+                                        to_paste = unicode(children[number].__dict__[item['name']])
+                                        text = p.text.replace(item['key'], to_paste)
+                                        style = p.style
+                                        p.text = text
+                                        p.style = style
+                                    else:
+                                        to_paste = ''
+                                        text = p.text.replace(item['key'], to_paste)
+                                        style = p.style
+                                        p.text = text
+                                        p.style = style
 
                     #по таблицам
                     for table in doc.tables:
@@ -187,26 +275,63 @@ def generate_documents():
                                             style = p.style
                                             p.text = text
                                             p.style = style
+
                                     for item in keywords_familyinfo:
                                         if item['key'] in p.text:
-                                            relative_info = {}
-                                            for member in family_info:
-                                                if (unicode(member.membership_name) == unicode('Отец', 'utf-8')) and ('father' in item['key']):
-                                                    relative_info = member;
+                                            if 'father' in item['key']:
+                                                for member in father:
+                                                    to_paste = unicode(member.__dict__[item['name']])
+                                                    text = p.text.replace(item['key'], to_paste)
+                                                    style = p.style
+                                                    p.text = text
+                                                    p.style = style
                                                     break
-                                                if (unicode(member.membership_name) == unicode('Мать', 'utf-8')) and ('mother' in item['key']):
-                                                    relative_info = member;
+                                            if 'mother' in item['key']:
+                                                for member in mother:
+                                                    to_paste = unicode(member.__dict__[item['name']])
+                                                    text = p.text.replace(item['key'], to_paste)
+                                                    style = p.style
+                                                    p.text = text
+                                                    p.style = style
                                                     break
-                                                if (unicode(member.membership_name) == unicode('Жена', 'utf-8')) and ('wife' in item['key']):
-                                                    relative_info = member;
+                                            if 'wife' in item['key']:
+                                                for member in wife:
+                                                    to_paste = unicode(member.__dict__[item['name']])
+                                                    text = p.text.replace(item['key'], to_paste)
+                                                    style = p.style
+                                                    p.text = text
+                                                    p.style = style
                                                     break
-                                            
-                                            #print >> sys.stderr, member.last_name
-                                            to_paste = unicode(member.__dict__[item['name']])
-                                            text = p.text.replace(item['key'], to_paste)
-                                            style = p.style
-                                            p.text = text
-                                            p.style = style
+                                            if 'brister' in item['key']:
+                                                number = int(item['key'][8:9])   
+                                                if number < len(brister):
+                                                    to_paste = unicode(brister[number].__dict__[item['name']])
+                                                    text = p.text.replace(item['key'], to_paste)
+                                                    style = p.style
+                                                    p.text = text
+                                                    p.style = style
+                                                else:
+                                                    to_paste = ''
+                                                    text = p.text.replace(item['key'], to_paste)
+                                                    style = p.style
+                                                    p.text = text
+                                                    p.style = style
+                                            if 'child' in item['key']:
+                                                number = int(item['key'][6:7])
+                                                if number < len(children):
+                                                    to_paste = unicode(children[number].__dict__[item['name']])
+                                                    text = p.text.replace(item['key'], to_paste)
+                                                    style = p.style
+                                                    p.text = text
+                                                    p.style = style
+                                                else:
+                                                    to_paste = ''
+                                                    text = p.text.replace(item['key'], to_paste)
+                                                    style = p.style
+                                                    p.text = text
+                                                    p.style = style
+                                                
+
 
                     doc_name = os.path.join(USER_PATH, 'documents', 'temp', document.filename[:-5] + students_info[user.id].last_name + '.docx')
                     doc.save(doc_name)

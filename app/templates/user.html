@@ -6,6 +6,7 @@
     var fields_js_user = {};
     var fields_js_family = {};
     var i = 0;
+    var count_relatives = 0;
 </script>
 
 <button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
@@ -44,7 +45,7 @@
             <span class="input-group-addon">ВУС</span>
             <select class="form-control" id="vus" name="vus">
                 {% for vus in vuses %}
-                    {% if vus.to_string() == curr_vus.to_string() %}
+                    {% if curr_vus and vus.to_string() == curr_vus.to_string() %}
                         <option selected>{{vus.to_string()}}</option>
                     {% else %}
                         <option>{{vus.to_string()}}</option>
@@ -63,7 +64,80 @@
         -->
 
         <div class="page-header"> <h1>Родственники</h1> </div>
-        <div id="family-members"></div>
+        <div id="family-members">
+            {% for relationship in relationships %}
+                <script>
+                    ++count_relatives;
+                </script>
+                <div class="well well-lg family-member">
+                    <div class="input-group">
+                        <span class="input-group-addon">Кем приходится</span>
+                        <select id="who-1" class="form-control family-who-1">
+                            {% if relationship.membership_name == 'Отец' %}
+                            <option selected>Отец</option>
+                            {% else %}
+                            <option>Отец</option>
+                            {% endif %}
+                            {% if relationship.membership_name == 'Мать' %}
+                            <option selected>Мать</option>
+                            {% else %}
+                            <option>Мать</option>
+                            {% endif %}
+                            {% if relationship.membership_name == 'Брат' %}
+                            <option selected>Брат</option>
+                            {% else %}
+                            <option>Брат</option>
+                            {% endif %}
+                            {% if relationship.membership_name == 'Сестра' %}
+                            <option selected>Сестра</option>
+                            {% else %}
+                            <option>Сестра</option>
+                            {% endif %}
+                            {% if relationship.membership_name == 'Сын' %}
+                            <option selected>Сын</option>
+                            {% else %}
+                            <option>Сын</option>
+                            {% endif %}
+                            {% if relationship.membership_name == 'Дочь' %}
+                            <option selected>Дочь</option>
+                            {% else %}
+                            <option>Дочь</option>
+                            {% endif %}
+                            {% if relationship.membership_name == 'Жена' %}
+                            <option selected>Жена</option>
+                            {% else %}
+                            <option>Жена</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Фамилия</span>
+                        <input id="last-name-1" class="form-control" value="{{relationship.last_name}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Имя</span>
+                        <input id="first-name-1" class="form-control" value="{{relationship.first_name}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Отчество</span>
+                        <input id="middle-name-1" class="form-control" value="{{relationship.middle_name}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Мобильный телефон</span>
+                        <input id="phones-1" class="form-control" value="{{relationship.mobile_phone}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Фактический адрес</span>
+                        <input id="address-usual-1" class="form-control" value="{{relationship.address_usual}}">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon">Адрес по прописке</span>
+                        <input id="address-registration-1" class="form-control" value="{{relationship.address_registration}}">
+                    </div>
+                    <button class="btn btn-danger ag-hor-center" onclick="deleterelationship(this);" type="button">Удалить</button>
+                </div>
+            {% endfor %}
+        </div>
         <button type="button" class="btn single btn-lg btn-default ag-hor-center" onclick="addFamilyMember();">Добавить</button>
 
 

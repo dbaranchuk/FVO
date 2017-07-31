@@ -19,7 +19,7 @@
         {% for doc in docs %}
         <tr>
             <td>{{doc.name}}</td><td>{{doc.vus.to_string()}}</td>
-            <td><button class="btn btn-default" onclick="delDoc({{doc.id}});">Удалить</button></td>
+            <td><button class="btn btn-default" id="delete-btn" onclick="delDoc({{doc.id}});">Удалить</button></td>
             <td><a href="/static/user_data/documents/{{doc.filename}}" download><button type="button" class="btn btn-default">Скачать</button></a></td>
         </tr>
         {% endfor %}
