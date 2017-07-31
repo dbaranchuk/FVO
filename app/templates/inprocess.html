@@ -17,7 +17,11 @@
         {% for user in users %}
         <tr>
             <td>{{students_info[user.id].last_name}} {{students_info[user.id].first_name}} {{students_info[user.id].middle_name}}</td>
+            {% if user.vus %}
             <td>{{user.vus.to_string()}}</td>
+            {% else %}
+            <td>Не заполнено</td>
+            {% endif %}
             <td>
 
                 <a href="{{ url_for('to_page_approve_user', user_id=user.id)}}"><button class="btn btn-default" title="Проверить">Проверить</button></a>
