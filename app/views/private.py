@@ -103,7 +103,12 @@ def delete_document():
     if document is None:
         return gen_error('No document with such id')
 
-    print >> sys.stderr, document.name, filePath
+    #print >> sys.stderr, document.name, filePath
+
+    os.remove(filePath)
+
+    Document.query.filter_by(id = docId).delete()
+    db.session.commit()
 
     return gen_success(message='Success!')
 
