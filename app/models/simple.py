@@ -13,8 +13,8 @@ class VUS(db.Model):
     name1 = db.Column(db.String(120))
     name2 = db.Column(db.String(120))
 
-    users = db.relationship('User', backref = 'vus', lazy = 'dynamic')
-    documents = db.relationship('Document', backref = 'vus', lazy = 'dynamic')
+    users = db.relationship('User', backref = 'vus', lazy = 'dynamic' )
+    documents = db.relationship('Document', backref = 'vus', lazy = 'dynamic' )
 
     def to_string(self):
         return '%03d %03d' % (self.number, self.code)
