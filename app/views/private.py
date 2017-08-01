@@ -58,34 +58,29 @@ def make_account():
     create_account(data['login'], data['password'])
     return gen_success()
 
-#
-#
-#
-# TODO: проверки на дауна
-#           формат входного файла(должен быть xlsx)
-#           наличие года выпуска
-#       добавление новых пользователей в базу
-#       выгрузка дока с логинами/паролями
-#
-#
-#
+
 @app.route('/create_accounts', methods=['POST'])
 def create_accounts():
     if 'file' not in request.files:
-        return gen_error('No file sent')
+        return gen_error('Файл не выбран')
     file = request.files['file']
 
     # if user does not select file, browser also
     # submit a empty part without filename
     if file.filename == '' or not file:
-        return gen_error('No file selected')
+        return gen_error(u'Файл не выбран')
+    if file.filename[-4:] != 'xlsx':
+        return gen_error(u'Файл должен быть формата .xlsx')
 
     if 'vus' not in request.form:
-        return gen_error('No vus document could not be created')
+        return gen_error('Выберите ВУС')
     if 'completionYear' not in request.form:
-        return gen_error('No completion year')
+        return gen_error('Введите год поступления')
 
     completionYear = request.form['completionYear']
+    if completionYear == '':
+        return gen_error('Введите год поступления')
+
 
     vus = map(int, request.form['vus'].split())
     vus = VUS.query.filter_by(number=vus[0], code=vus[1]).first()
@@ -94,23 +89,40 @@ def create_accounts():
 
     wb = load_workbook(file)
     active = wb.active
+    userNames = User.query.with_entities(User.login)
 
     for idx, row in enumerate(active.rows, start = 1):
         login = ''
-        for cell in row:
-            for char in cell.value:
-                login += vocabulary[char.lower()]
+
+        #фамилия
+        for char in row[0].value:
+            login += vocabulary[char.lower()]
+        login += u'.'
+
+        #инициалы имени и отчества
+        firstNameShort = row[1].value[0].lower()
+        middleNameShort = row[2].value[0].lower()
+        login += vocabulary[firstNameShort] + u'.'
+        login += vocabulary[middleNameShort] + u'.'
         
         login += completionYear
         password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
-        print >> sys.stderr, login, password
+        #print >> sys.stderr, login, password
+
+        for name in userNames:
+            if login == name.login:
+                return gen_error(u'В системе уже существует аккаунт: ' + login)
+
+        create_account(login, password)
 
         active.cell(row = idx, column = 4, value = login)
         active.cell(row = idx, column = 5, value = password)
         #print >> sys.stderr, password
 
-    #wb.save('test.xlsx')
-    return gen_success(message='Success!')
+    path = os.path.join(USER_PATH, 'logins.xlsx')
+    wb.save(path)
+
+    return gen_success(url = '/static/user_data/logins.xlsx')
 
 
 @app.route('/add_document', methods=['POST'])
