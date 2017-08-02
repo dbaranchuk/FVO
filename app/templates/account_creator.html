@@ -23,12 +23,22 @@
 
             </div> 
             <div class="col-md-9"> -->
+
+                <div class="alert alert-info" role="alert">
+                    <strong>Информация</strong>
+                    Файл с ФИО студентов должен быть следующего формата: таблица Excel в формате .xlsx, в первом столбце которой фамилии студентов, во втором - имена, в третьем - отчества
+                </div>
+
+                <div id="alert-placeholder">
+                </div>
+
                 <table class="table table-hover table-users table-striped">
 
                     <thead>
                         <tr>
                             <th>Фамилия Имя Отчество студентов</th>
                             <th>ВУС</th>
+                            <th>Год поступления</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -55,6 +65,12 @@
                         </td>
 
                         <td>
+                            <div class="input-group input-group ag-hor-center ag-thin">
+                                <input type="text" id="completionYear" class="form-control ag-input">
+                            </div>  
+                        </td>
+
+                        <td>
                             <button class="btn btn-success btn-file" id="status-btn" onclick="createAccounts();">Добавить</button>
                         </td>
                     </tr>
@@ -62,13 +78,8 @@
 
                 </table>
 
-
-                <div class="alert alert-info" role="alert">
-                    <strong>Информация</strong>
-                    Файл с ФИО студентов должен быть следующего формата: таблица Excel в формате .xlsx, в первом столбце которой фамилии студентов, во втором - имена, в третьем - отчества
-                </div>
-                <!--a class="file-input-wrapper btn btn-default "><span>Выбрать файл</span><input type="file" style="left: -182.5px; top: 8px;"></a-->
-                <button class="btn btn-success ag-hor-center" id="create-but-2">Создать аккаунты</button>
+                <!--a class="file-input-wrapper btn btn-default "><span>Выбрать файл</span><input type="file" style="left: -182.5px; top: 8px;"></a>-->
+                <!-- <button class="btn btn-success ag-hor-center" id="create-but-2">Создать аккаунты</button> -->
             <!-- </div>
         </div> -->
     </div>

@@ -1,7 +1,6 @@
 /**
  * Created by User on 08.08.2016.
  */
-
 if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
@@ -248,16 +247,43 @@ function createAccounts(){
     var xmlhttp = getXHR();
     var file = document.getElementById('select-file').files[0];
     var vus = document.getElementById('vus').value;
+    var completionYear = document.getElementById('completionYear').value;
     var btn = document.getElementById('status-btn');
 
     var formData = new FormData();
     formData.append('file', file);
     formData.append('vus', vus);
+    formData.append('completionYear', completionYear);
 
     xmlhttp.open("POST", "/create_accounts", true);
     xmlhttp.onerror = function (e) {
         btn.innerText('server error');
     };
+
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            var ans = JSON.parse(xmlhttp.responseText);
+            var placeholder = document.getElementById('alert-placeholder')
+
+            if (ans.status == 'error'){
+                placeholder.removeChild(placeholder.firstChild)
+
+                var alert = document.createElement('div')
+
+                alert.innerHTML = '<div class="alert alert-danger" role="alert">' +
+                    '<strong>Ошибка </strong>' +
+                    ans.message +
+                    '</div>';
+
+                placeholder.appendChild(alert);
+            } else {
+                download(ans.url, 'logins.xlsx')
+                //location.reload();
+            }
+        }
+    };
+
+    xmlhttp.send(formData);
 }
 
 function addDocument(){
@@ -281,8 +307,8 @@ function addDocument(){
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var ans = JSON.parse(xmlhttp.responseText);
 
-            if (ans.status == 'ERROR'){
-                btn.innerText(ans.message);
+            if (ans.status == "error"){
+                btn.innerText = ans.message;
             } else {
                 location.reload();
             }
