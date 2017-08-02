@@ -2,7 +2,7 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for, abort
 from flask.ext.login import login_required, login_user, current_user, logout_user
-from app.models import User, VUS, Document, Student_info, Family_member_info, Comments
+from app.models import User, VUS, Document, Student_info, Comments
 from werkzeug.security import check_password_hash
 from easy import *
 import json
@@ -188,7 +188,7 @@ def profile():
     curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
 
     #get relationships
-    relationships = Family_member_info.query.filter_by(student_info_id = current_user.id)
+    #relationships = Family_member_info.query.filter_by(student_info_id = current_user.id)
 
     return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
         comment = comment, approved = approved, curr_vus = curr_vus, relationships = relationships, navprivate=True)
