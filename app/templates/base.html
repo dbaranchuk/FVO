@@ -70,6 +70,9 @@
                 <li {% if tab_active == 4 %} class="active" {% endif %}>
                     <a href="{% if tab_active == 4 %} # {% else %} {{url_for('account_creator')}} {% endif %}">Создать аккаунты</a>
                 </li>
+                <li {% if tab_active == 5 %} class="active" {% endif %}>
+                    <a href="{% if tab_active == 5 %} # {% else %} {{url_for('search')}} {% endif %}">Поиск</a>
+                </li>
             </ul>
             <button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
         </div><!--/.nav-collapse -->
