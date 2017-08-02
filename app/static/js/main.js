@@ -1,3 +1,28 @@
+//////////////////////////////////////////////// JQUERY 
+$(document).ready(function() {
+
+    $('#test_button').click(function() {
+        var data = {
+                     'do': 'test_method',
+                     'DATA': $('#middle_name').val()
+                   }
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: data,
+            success: function (res) {
+                var msg = res['message']//$.parseJSON(res['message']);
+                alert(msg)
+            },
+            dataType: 'json',
+            async: false,
+        });
+    });
+
+});
+
+/////////////////////////////////////////////////
+
 /**
  * Created by User on 08.08.2016.
  */
@@ -6,6 +31,7 @@ if(typeof(String.prototype.trim) === "undefined") {
         return String(this).replace(/^\s+|\s+$/g, '');
     };
 }
+
 
 function changeLoginStatus(text, color){
     var status = document.getElementById('login-status');
@@ -263,9 +289,9 @@ function createAccounts(){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var ans = JSON.parse(xmlhttp.responseText);
-            
-            if (ans.status == 'ERROR'){
-                btn.innerText(ans.message);
+
+            if (ans.status == 'error'){
+                btn.innerText = ans.message;
             } else {
                 location.reload();
             }

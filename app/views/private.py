@@ -2,7 +2,7 @@
 from app import app, db
 from flask.ext.login import current_user
 from docx import Document as Doc
-from openpyxl import load_workbook
+#from openpyxl import load_workbook
 from app.models import User, VUS, Document, Student_info, Family_member_info, Comments
 from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
@@ -78,7 +78,9 @@ def create_accounts():
     # if user does not select file, browser also
     # submit a empty part without filename
     if file.filename == '' or not file:
-        return gen_error('No file selected')
+        return gen_error(u'Файл не выбран')
+    if file.filename[-4:] != 'xlsx':
+        return gen_error(u'Файл должен быть формата .xlsx')
 
     if 'vus' not in request.form:
         return gen_error('No vus document could not be created')
@@ -86,6 +88,9 @@ def create_accounts():
         return gen_error('No completion year')
 
     completionYear = request.form['completionYear']
+    if completionYear == '':
+        return gen_error('Введите год окончания')
+
 
     vus = map(int, request.form['vus'].split())
     vus = VUS.query.filter_by(number=vus[0], code=vus[1]).first()
@@ -414,6 +419,7 @@ def generate_documents():
     return gen_success(url = '/static/user_data/Documents.zip')
     #return send_from_directory(directory = USER_PATH, filename = 'Documents.zip')
 
+
 @app.route('/add_data', methods=['POST'])
 def add_data():
     data = request.form;
@@ -549,3 +555,28 @@ def add_data():
         
     db.session.commit()
     return gen_success()
+
+### POSTs
+
+def test_method(data):
+    return gen_success(message = data['DATA'] + '_SERVER' )
+
+
+@app.route('/post_query', methods=['POST'])
+def post_query():
+    data = request.form
+    try:
+        if 'do' in data and data['do'] in POST_METHODS:
+            return POST_METHODS[data['do']](data)
+        else:
+            return gen_error(u'post method not defined!')
+    except Exception:
+        return gen_error(u'error in post method')
+
+
+POST_METHODS = {
+                'test_method': test_method,
+
+                }
+
+
