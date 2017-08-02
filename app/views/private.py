@@ -3,7 +3,7 @@ from app import app, db
 from flask.ext.login import current_user
 from docx import Document as Doc
 from openpyxl import load_workbook
-from app.models import User, VUS, Document, Student_info, Family_member_info, Comments
+from app.models import User, VUS, Document, Student_info, Comments
 from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
 import datetime
