@@ -289,11 +289,22 @@ function createAccounts(){
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var ans = JSON.parse(xmlhttp.responseText);
+            var placeholder = document.getElementById('alert-placeholder')
 
             if (ans.status == 'error'){
-                btn.innerText = ans.message;
+                placeholder.removeChild(placeholder.firstChild)
+
+                var alert = document.createElement('div')
+
+                alert.innerHTML = '<div class="alert alert-danger" role="alert">' +
+                    '<strong>Ошибка </strong>' +
+                    ans.message +
+                    '</div>';
+
+                placeholder.appendChild(alert);
             } else {
-                location.reload();
+                download(ans.url, 'logins.xlsx')
+                //location.reload();
             }
         }
     };
@@ -322,8 +333,8 @@ function addDocument(){
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var ans = JSON.parse(xmlhttp.responseText);
 
-            if (ans.status == 'ERROR'){
-                btn.innerText(ans.message);
+            if (ans.status == "error"){
+                btn.innerText = ans.message;
             } else {
                 location.reload();
             }
