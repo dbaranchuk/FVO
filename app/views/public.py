@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash
 from easy import *
 import json
 from hidden import user_role
-from app.models.easy import get_fields
+from app.models.easy import get_fields, get_tables
 
 @app.route('/')
 @app.route('/index')
@@ -180,29 +180,35 @@ def fill_values(fields, user_info):
 def profile():
     if user_role() > 0:
         return redirect('ready')
-    s = Student_info()
-    fields = get_fields('student_info')
-    fields = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
-        s.placeholder(x[0])) for x in fields]
-    fields = filter(lambda x: x.valid is not None, fields)
+    fields = {}
+    vuses = {}
+    comment = ''
+    approved = 0
+    curr_vus = ''
+    tables = get_tables()
+    tables.remove('student_info')
+    for table in tables:
+        print table 
+    #s = Student_info()
+    #fields = get_fields('student_info')
+    #fields = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
+    #    s.placeholder(x[0])) for x in fields]
+    #fields = filter(lambda x: x.valid is not None, fields)
 
-    user_info = Student_info.query.get(current_user.id)
-    if user_info is not None:
-        fill_values(fields, user_info)
+    #user_info = Student_info.query.get(current_user.id)
+    #if user_info is not None:
+    #    fill_values(fields, user_info)
 
-    vuses = VUS.query.all()
-    comment = ""
-    if(Comments.query.get(current_user.id)):
-        comment = Comments.query.get(current_user.id).comment
-    approved = User.query.get(current_user.id).active
+    #vuses = VUS.query.all()
+    #comment = ""
+    #if(Comments.query.get(current_user.id)):
+    #    comment = Comments.query.get(current_user.id).comment
+    #approved = User.query.get(current_user.id).active
 
-    curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
-
-    #get relationships
-    #relationships = Family_member_info.query.filter_by(student_info_id = current_user.id)
+    #curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
 
     return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
-        comment = comment, approved = approved, curr_vus = curr_vus, relationships = relationships, navprivate=True)
+        comment = comment, approved = approved, curr_vus = curr_vus,  navprivate=True)
 
 
 
