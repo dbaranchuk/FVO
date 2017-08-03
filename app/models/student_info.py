@@ -1,5 +1,6 @@
 #-.- coding: utf-8 -.-
 from app import db
+from simple import *
 
 # Mode of table
 NOT_EDIT    = 0

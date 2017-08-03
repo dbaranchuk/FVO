@@ -149,6 +149,17 @@ def account_creator():
 
     return render_template('account_creator.html', title=u'Создание аккаунтов', tab_active=4, vuses=vuses)
 
+@app.route('/search')
+@login_required
+def search():
+    if user_role() < 1:
+        abort(404)
+
+    vuses = VUS.query.all()
+    users = User.query.filter_by(role=0)
+
+    return render_template('search.html', title=u'Поиск', tab_active=5, vuses=vuses, users=users)
+
 
 class InputValue:
     def __init__(self, eng, rus, inp_type, placeholder, value='', comment=''):
