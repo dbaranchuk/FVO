@@ -81,7 +81,6 @@ def create_accounts():
     if completionYear == '':
         return gen_error('Введите год поступления')
 
-
     vus = map(int, request.form['vus'].split())
     vus = VUS.query.filter_by(number=vus[0], code=vus[1]).first()
     if vus is None:
@@ -426,6 +425,7 @@ def generate_documents():
     return gen_success(url = '/static/user_data/Documents.zip')
     #return send_from_directory(directory = USER_PATH, filename = 'Documents.zip')
 
+
 @app.route('/add_data', methods=['POST'])
 def add_data():
     data = request.form;
@@ -561,3 +561,28 @@ def add_data():
         
     db.session.commit()
     return gen_success()
+
+### POSTs
+
+def test_method(data):
+    return gen_success(message = data['DATA'] + '_SERVER' )
+
+
+@app.route('/post_query', methods=['POST'])
+def post_query():
+    data = request.form
+    try:
+        if 'do' in data and data['do'] in POST_METHODS:
+            return POST_METHODS[data['do']](data)
+        else:
+            return gen_error(u'post method not defined!')
+    except Exception:
+        return gen_error(u'error in post method')
+
+
+POST_METHODS = {
+                'test_method': test_method,
+
+                }
+
+
