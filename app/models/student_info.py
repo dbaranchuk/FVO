@@ -94,7 +94,8 @@ class Basic_information(db.Model):
 
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'last_name': u'Фамилия',
             'first_name': u'Имя',
             'middle_name': u'Отчество',
@@ -156,7 +157,8 @@ class Certificates_change_name(db.Model):
 
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдан',
@@ -204,7 +206,8 @@ class Communications( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'mobile_phone_1' : u'Мобильный 1',
             'mobile_phone_2' : u'Мобильный 2',
             'home_phone' : u'Домашний',
@@ -260,7 +263,8 @@ class Passports( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдан',
@@ -318,7 +322,8 @@ class International_passports( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдан',
@@ -370,7 +375,8 @@ class Registration_certificates( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдано',
@@ -416,7 +422,8 @@ class Middle_education( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'school' : u'Школа по аттестату',
             'school_address' : u'Адрес местонахождения'
         }
@@ -456,7 +463,8 @@ class Spec_middle_education( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'institution' : u'Учебное заведение',
             'institution_address' : u'Адрес местонахождения',
             'speciality' : u'Специальность по диплому'
@@ -504,7 +512,7 @@ class High_education(db.Model):
             'study_group_3' : u'339',
             'study_group_4' : u'467М',
             'form_study' : u'очная',
-            'quality' : 'Бакалавр'
+            'quality' : u'Бакалавр'
         }
         if eng not in placeholders:
             return ''
@@ -512,7 +520,8 @@ class High_education(db.Model):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'institution' : u'ВУЗ',
             'budgetary' : u'Бюджет',
             'full_faculty_name' : u'Факультет (полное название)',
@@ -522,7 +531,7 @@ class High_education(db.Model):
             'study_group_3' : u'Учебная группа 3 курс',
             'study_group_4' : u'Учебная группа 4 курс',
             'form_study' : u'Форма обучения',
-            'quality' : 'Квалификация'
+            'quality' : u'Квалификация'
         }
         if eng in en2ru:
             return en2ru[eng]
@@ -566,7 +575,8 @@ class Military_education( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'platoon_1' : u'Взвод 1 года обучения',
             'platoon_2' : u'Взвод 2 года обучения',
         }
@@ -606,7 +616,8 @@ class Languages( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'language' : u'Язык',
             'quality' : u'Степень владения',
             'certificates' : u'Сертификаты'
@@ -668,7 +679,8 @@ class Mothers_fathers( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'status' : u'Статус',
             'last_name': u'Фамилия',
             'first_name': u'Имя',
@@ -736,7 +748,8 @@ class Brothers_sisters_children( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'status' : u'Статус',
             'last_name': u'Фамилия',
             'first_name': u'Имя',
@@ -810,7 +823,8 @@ class Married_certificates( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдано',
@@ -898,7 +912,8 @@ class Personal_data( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'blood_group_resus' : u'Группа крови, резус фактор',
             'shoes_size' : u'Размер обуви',
             'uniform_size' : u'Размер одежды',

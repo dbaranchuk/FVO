@@ -173,11 +173,12 @@ class InputValue:
         self.placeholder = placeholder
         self.value = value
         self.comment = comment
-        self.valid = self.eng is not None
+        self.valid = ( self.eng is not None and self.rus is not None )
 
 def fill_values(fields, user_info):
     for field in fields:
-        field.value = user_info[field.eng];
+        if( user_info[field.eng] is not None):
+            field.value = user_info[field.eng]
 
 @app.route('/profile')
 @login_required
@@ -194,30 +195,32 @@ def profile():
         fields_table = get_fields( table )
         s = get_class_by_tablename( table )
         if not s:
-            continue
+            continue 
         fields_table = [InputValue(x[0], s().get_russian_name(x[0]), x[1], 
             s().placeholder(x[0])) for x in fields_table]
-        fields_table = filter(lambda x: x.valid is not None, fields_table)
+        fields_table = filter(lambda x: x.valid, fields_table)
         fields.update( { table : fields_table } )
 
-    student_info_id = Student_info.query.filter_by( user_id=current_user.id ).first() 
+    student_info = User.query.get( current_user.id ).students_info
 
-    if student_info_id==None:
+    if student_info==None:
         comment = u'ОБРАТИТЕСЬ К АДМИНИСТРАТОРУ'
         return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
             comment = comment, approved = approved, curr_vus = curr_vus,  navprivate=True)
 
+    
     for table in fields:
         fields_table = get_fields( table )
         s = get_class_by_tablename( table )
         if not s:
             continue
-        user_info = s.query.filter_by( student_info_id=student_info_id )
+        user_info = s.query.filter_by( student_info_id=student_info.id ).first()
+
         if user_info is not None:
-            fill_values(fields[table], user_info)
+            fill_values(fields[table], user_info) 
 
     vuses = VUS.query.all()
-    comment = ""
+    comment = u""
     if(Comments.query.get(current_user.id)):
         comment = Comments.query.get(current_user.id).comment
     approved = User.query.get(current_user.id).active
