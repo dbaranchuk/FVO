@@ -28,3 +28,14 @@ def get_tables():
 def get_fields(table):
     columns = db.metadata.tables[table].get_children()
     return [(x.name, get_form_type(str(x.type))) for x in columns]
+
+def get_class_by_tablename( tablename ):
+    for c in db.Model._decl_class_registry.values():
+        if ( 
+            hasattr( c, 'placeholder' ) 
+            and hasattr( c, '__tablename__' ) 
+            and hasattr( c, 'get_russian_name' ) 
+            and c.__tablename__ == tablename 
+        ):
+          return c
+    return None

@@ -2,12 +2,16 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for, abort
 from flask.ext.login import login_required, login_user, current_user, logout_user
-from app.models import User, VUS, Document, Student_info, Comments
+from app.models import User, VUS, Document, Comments, Student_info, Basic_information 
+from app.models import Certificates_change_name, Communications, Passports,International_passports
+from app.models import Registration_certificates, Middle_education, Spec_middle_education 
+from app.models import High_education, Military_education, Languages, Mothers_fathers 
+from app.models import Brothers_sisters_children, Married_certificates, Personal_data
 from werkzeug.security import check_password_hash
 from easy import *
 import json
 from hidden import user_role
-from app.models.easy import get_fields, get_tables
+from app.models.easy import get_fields, get_tables, get_class_by_tablename
 
 @app.route('/')
 @app.route('/index')
@@ -26,10 +30,10 @@ def ready():
     
     students_info = {};
     for id in user_ids:
-        students_info[id] = Student_info.query.get(id)    
+        students_info[id] = Student_info.query.filter_by( user_id=id )    
 
-    return render_template('ready.html', title=u'Готовые', tab_active=1, users = users, 
-        docs = docs, students_info =students_info)
+    return render_template('ready.html', title=u'Готовые', tab_active=1, users=users, 
+        docs=docs, students_info=students_info)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -187,29 +191,38 @@ def profile():
     curr_vus = ''
     tables = get_tables()
     for table in tables:
-        if( table != 'student_info' ):
-            print table
-            #fields_table = get_fields( table )
-            #fields_table = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
-            #    s.placeholder(x[0])) for x in fields_table]
-            #fields = filter(lambda x: x.valid is not None, fields)
-            #fields.update( { table : get } )
-    #fields = get_fields('student_info')
-    #fields = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
-    #    s.placeholder(x[0])) for x in fields]
-    #fields = filter(lambda x: x.valid is not None, fields)
+        fields_table = get_fields( table )
+        s = get_class_by_tablename( table )
+        if not s:
+            continue
+        fields_table = [InputValue(x[0], s().get_russian_name(x[0]), x[1], 
+            s().placeholder(x[0])) for x in fields_table]
+        fields_table = filter(lambda x: x.valid is not None, fields_table)
+        fields.update( { table : fields_table } )
 
-    #user_info = Student_info.query.get(current_user.id)
-    #if user_info is not None:
-    #    fill_values(fields, user_info)
+    student_info_id = Student_info.query.filter_by( user_id=current_user.id ).first() 
 
-    #vuses = VUS.query.all()
-    #comment = ""
-    #if(Comments.query.get(current_user.id)):
-    #    comment = Comments.query.get(current_user.id).comment
-    #approved = User.query.get(current_user.id).active
+    if student_info_id==None:
+        comment = u'ОБРАТИТЕСЬ К АДМИНИСТРАТОРУ'
+        return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
+            comment = comment, approved = approved, curr_vus = curr_vus,  navprivate=True)
 
-    #curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
+    for table in fields:
+        fields_table = get_fields( table )
+        s = get_class_by_tablename( table )
+        if not s:
+            continue
+        user_info = s.query.filter_by( student_info_id=student_info_id )
+        if user_info is not None:
+            fill_values(fields[table], user_info)
+
+    vuses = VUS.query.all()
+    comment = ""
+    if(Comments.query.get(current_user.id)):
+        comment = Comments.query.get(current_user.id).comment
+    approved = User.query.get(current_user.id).active
+
+    curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
 
     return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
         comment = comment, approved = approved, curr_vus = curr_vus,  navprivate=True)
