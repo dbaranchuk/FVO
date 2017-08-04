@@ -175,10 +175,14 @@ def profile():
     approved = 0
     curr_vus = ''
     tables = get_tables()
-    tables.remove('student_info')
     for table in tables:
-        print table 
-    #s = Student_info()
+        if( table != 'student_info' ):
+            print table
+            #fields_table = get_fields( table )
+            #fields_table = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
+            #    s.placeholder(x[0])) for x in fields_table]
+            #fields = filter(lambda x: x.valid is not None, fields)
+            #fields.update( { table : get } )
     #fields = get_fields('student_info')
     #fields = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
     #    s.placeholder(x[0])) for x in fields]
