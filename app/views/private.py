@@ -3,12 +3,13 @@ from app import app, db
 from flask.ext.login import current_user
 from docx import Document as Doc
 from openpyxl import load_workbook
-from app.models import User, VUS, Document, Student_info, Comments
+from app.models import User, VUS, Document, Student_info, Basic_information, Comments
 from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
 import datetime
 import json
 from easy import *
+from app.models.easy import *
 from app.config import USER_PATH
 import os
 import random, string
@@ -17,10 +18,24 @@ from transliteration import *
 from zipfile import ZipFile, ZIP_DEFLATED
 import sys
 
-def create_account(login, password):
+def create_account(login, password, userData):
     hash = generate_password_hash(password)
+
     new_user = User(login = login, password = hash)
+    info = Student_info()
+    basicInfo = Basic_information(last_name = userData['lastName'], first_name = userData['firstName'], middle_name = userData['middleName'])
+
+    new_user.students_info = info
+    new_user.VUS = userData['vus']
+    new_user.basic_information = basicInfo
+
+    info.table_basic_information = CHANGING
+
+    print >> sys.stderr, new_user.VUS, new_user.VUS.to_string()
+
     db.session.add(new_user)
+    db.session.add(info)
+    db.session.add(basicInfo)
     db.session.commit()
 
 @app.route('/approve_user', methods=['POST'])
@@ -112,7 +127,14 @@ def create_accounts():
             if login == name.login:
                 return gen_error(u'В системе уже существует аккаунт: ' + login)
 
-        create_account(login, password)
+        info = {
+            'lastName': row[0].value,
+            'firstName': row[1].value,
+            'middleName': row[2].value,
+            'vus': vus
+        }
+
+        create_account(login, password, info)
 
         active.cell(row = idx, column = 4, value = login)
         active.cell(row = idx, column = 5, value = password)

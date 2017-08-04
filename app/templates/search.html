@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="ag-hor-center">
+
+    <table class="table table-hover table-users table-striped">
+
+        <thead>
+            <tr>
+                <th>Фамилия</th>
+                <th>Год поступления</th>
+                <th>ВУС</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tr>
+            <td>
+                <div class="input-group">
+                    <input id="searchLastname" class="form-control" name="lastname" placeholder="Фамилия">
+                </div>
+            </td>
+
+            <td>
+                <div class="input-group">
+                    <input id="searchYear" class="form-control" name="searchYear" placeholder="Год поступления">
+                </div>
+            </td>
+
+            <td>
+                <div class="form-group">
+                  <select class="form-control" id="searchVus">
+                      <option>не выбрано</option>
+                      {% for vus in vuses %}
+                      <option>{{vus.to_string()}}</option>
+                      {% endfor %}
+                  </select>
+                </div>
+            </td>
+
+            <td>
+                <button class="btn btn-success btn-file" id="search-btn">Найти</button>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

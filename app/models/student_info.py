@@ -1,16 +1,7 @@
 #-.- coding: utf-8 -.-
 from app import db
 from simple import *
-
-# Mode of table
-NOT_EDIT    = 0
-EDIT        = 1
-CHANGING    = 2
-ABSENT      = 3 
-
-# Mode of budgetary
-NOT_BUDGET  = 0
-BUDGET      = 1
+from easy import *
 
 class Student_info(db.Model):
     __tablename__ = 'student_info'
@@ -33,35 +24,35 @@ class Student_info(db.Model):
     table_personal_data = db.Column( db.SmallInteger, default = NOT_EDIT )
 
     basic_information =  db.relationship('Basic_information', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info', uselist = False )
     certificates_change_name =  db.relationship('Certificates_change_name', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     communications =  db.relationship('Communications', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     passport =  db.relationship('Passports', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     international_passport =  db.relationship('International_passports', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     registration_certificate =  db.relationship('Registration_certificates', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     middle_education =  db.relationship('Middle_education', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     spec_middle_education =  db.relationship('Spec_middle_education', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     high_education =  db.relationship('High_education', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     military_education =  db.relationship('Military_education', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     languages =  db.relationship('Languages', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     mother_father =  db.relationship('Mothers_fathers', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     brothers_sisters_children =  db.relationship('Brothers_sisters_children', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     married_certificates =  db.relationship('Married_certificates', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
     personal_data =  db.relationship('Personal_data', 
-        backref = 'student_info', lazy = 'dynamic' )
+        back_populates = 'student_info' )
 
 
 class Basic_information(db.Model):
@@ -79,6 +70,9 @@ class Basic_information(db.Model):
     second_citizenship = db.Column( db.String( 50 ) )
     tin = db.Column( db.String( 12 ) )
     insurance_certificate = db.Column( db.String( 14 ) ) 
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'basic_information' )
 
     def placeholder(self, eng):
         placeholders = {
@@ -145,6 +139,9 @@ class Certificates_change_name(db.Model):
     issue_date = db.Column( db.Date )
     changing = db.Column( db.String( 128 ) )
 
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'certificates_change_name')
+
     def placeholder(self, eng):
         placeholders = {
             'serial' : u'12345',
@@ -190,6 +187,9 @@ class Communications( db.Model ):
     mobile_phone_2 = db.Column( db.String( 11 ) )
     home_phone = db.Column( db.String( 11 ) )
     email = db.Column( db.String( 64 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'communications' )
 
     def placeholder(self, eng):
         placeholders = {
@@ -238,6 +238,9 @@ class Passports( db.Model ):
     registration_address = db.Column( db.String( 256 ) )
     fact_index = db.Column( db.String( 6 ) )
     fact_address = db.Column( db.String( 256 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'passport' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -297,6 +300,9 @@ class International_passports( db.Model ):
     issuer = db.Column( db.String( 256 ) )
     issue_date = db.Column( db.Date )
     validity = db.Column( db.String( 10 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'international_passport' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -345,6 +351,9 @@ class Registration_certificates( db.Model ):
     date_issue = db.Column( db.Date )
     military_department = db.Column( db.String( 128 ) )
     shelf_category = db.Column( db.String( 32 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'registration_certificate' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -393,6 +402,9 @@ class Middle_education( db.Model ):
     school = db.Column( db.String( 128 ) )
     school_address = db.Column( db.String( 128 ) )
     
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'middle_education' )
+
     def placeholder(self, eng):
         placeholders = {
             'school' : u'МБОУ СОШ "Лицей № 5"',
@@ -428,6 +440,9 @@ class Spec_middle_education( db.Model ):
     institution = db.Column( db.String( 128 ) )
     institution_address = db.Column( db.String( 128 ) )
     speciality = db.Column( db.String( 128 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'spec_middle_education' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -474,6 +489,9 @@ class High_education(db.Model):
     study_group_4 = db.Column( db.String( 10 ) )
     form_study = db.Column( db.String( 20 ) )
     quality = db.Column( db.String( 20 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'high_education' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -533,6 +551,9 @@ class Military_education( db.Model ):
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     platoon_1 = db.Column( db.String( 10 ) )
     platoon_2 = db.Column( db.String( 10 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'military_education' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -569,6 +590,9 @@ class Languages( db.Model ):
     language = db.Column( db.String( 32 ) )
     quality = db.Column( db.String( 32 ) )
     certificates = db.Column( db.String( 256 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'languages' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -618,6 +642,9 @@ class Mothers_fathers( db.Model ):
     job_post = db.Column( db.String( 64 ) )
     fact_index = db.Column( db.String( 9 ) )
     fact_address = db.Column( db.String( 256 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'mother_father' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -690,6 +717,9 @@ class Brothers_sisters_children( db.Model ):
     middle_name = db.Column( db.String( 20 ) )
     birth_date = db.Column( db.Date )
     birth_place = db.Column( db.String( 64 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'brothers_sisters_children' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -751,6 +781,9 @@ class Married_certificates( db.Model ):
     job_post = db.Column( db.String( 64 ) )
     fact_index = db.Column( db.String( 9 ) )
     fact_address = db.Column( db.String( 256 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'married_certificates' )
     
     def placeholder(self, eng):
         placeholders = {
@@ -839,6 +872,9 @@ class Personal_data( db.Model ):
     civil_specialization = db.Column( db.String( 256 ) )
     hobbies = db.Column( db.String( 256 ) )
     sports = db.Column( db.String( 256 ) )
+
+    student_info =  db.relationship('Student_info', 
+        back_populates = 'personal_data' )
     
     def placeholder(self, eng):
         placeholders = {
