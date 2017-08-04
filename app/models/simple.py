@@ -29,7 +29,7 @@ class User(db.Model):
     active = db.Column(db.Boolean, default = True)
     vus_id = db.Column(db.Integer, db.ForeignKey('VUS.id'), default = -1)
 
-    students_info = db.relationship( 'Student_info', backref = 'user' )
+    students_info = db.relationship( 'Student_info', backref = 'user', uselist = False )
 
     def is_authenticated(self):
         return True
