@@ -1,5 +1,15 @@
 from app import db
 
+# Mode of table
+NOT_EDIT    = 0
+EDIT        = 1
+CHANGING    = 2
+ABSENT      = 3 
+
+# Mode of budgetary
+NOT_BUDGET  = 0
+BUDGET      = 1
+
 def get_form_type(table_type):
     table2form = {
         'INTEGER': 'number',
