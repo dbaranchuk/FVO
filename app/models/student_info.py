@@ -15,6 +15,7 @@ BUDGET      = 1
 class Student_info(db.Model):
     __tablename__ = 'student_info'
     id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column( db.Integer, db.ForeignKey( 'user.id' ) )
     table_basic_information = db.Column( db.SmallInteger, default = NOT_EDIT ) 
     table_certificates_change_name = db.Column( db.SmallInteger, default = NOT_EDIT )
     table_communications = db.Column( db.SmallInteger, default = NOT_EDIT )
@@ -32,35 +33,35 @@ class Student_info(db.Model):
     table_personal_data = db.Column( db.SmallInteger, default = NOT_EDIT )
 
     basic_information =  db.relationship('Basic_information', 
-        backref = 'basic_information', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     certificates_change_name =  db.relationship('Certificates_change_name', 
-        backref = 'certificates_change_name', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     communications =  db.relationship('Communications', 
-        backref = 'communications', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     passport =  db.relationship('Passports', 
-        backref = 'passport', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     international_passport =  db.relationship('International_passports', 
-        backref = 'international_passport', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     registration_certificate =  db.relationship('Registration_certificates', 
-        backref = 'registration_certificate', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     middle_education =  db.relationship('Middle_education', 
-        backref = 'middle_education', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     spec_middle_education =  db.relationship('Spec_middle_education', 
-        backref = 'spec_middle_education', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     high_education =  db.relationship('High_education', 
-        backref = 'high_education', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     military_education =  db.relationship('Military_education', 
-        backref = 'military_education', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     languages =  db.relationship('Languages', 
-        backref = 'languages', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     mother_father =  db.relationship('Mothers_fathers', 
-        backref = 'mother_father', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     brothers_sisters_children =  db.relationship('Brothers_sisters_children', 
-        backref = 'brothers_sisters_children', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     married_certificates =  db.relationship('Married_certificates', 
-        backref = 'married_certificates', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
     personal_data =  db.relationship('Personal_data', 
-        backref = 'personal_data', lazy = 'dynamic' )
+        backref = 'student_info', lazy = 'dynamic' )
 
 
 class Basic_information(db.Model):
