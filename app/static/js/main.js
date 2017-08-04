@@ -19,6 +19,26 @@ $(document).ready(function() {
         });
     });
 
+    $('#search-btn').click(function() {
+        var data = {
+            'do': 'searchUsers',
+            'lastName': $('#searchLastname').val(),
+            'year': $('#searchYear').val(),
+            'vus': $('#searchVus').val()
+        }
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: data,
+            success: function (res) {
+                var msg = res['message']//$.parseJSON(res['message']);
+                alert(msg)
+            },
+            dataType: 'json',
+            async: false,
+        });
+    });
+
 });
 
 /////////////////////////////////////////////////

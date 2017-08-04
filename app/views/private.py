@@ -1,6 +1,8 @@
 #-.- coding: utf-8 -.-
 from app import app, db
 from flask.ext.login import current_user
+from sqlalchemy import text
+from sqlalchemy.sql import select, and_
 from docx import Document as Doc
 from openpyxl import load_workbook
 from app.models import User, VUS, Document, Student_info, Basic_information, Comments
@@ -27,11 +29,9 @@ def create_account(login, password, userData):
 
     new_user.students_info = info
     new_user.VUS = userData['vus']
-    new_user.basic_information = basicInfo
+    info.basic_information = basicInfo
 
     info.table_basic_information = CHANGING
-
-    print >> sys.stderr, new_user.VUS, new_user.VUS.to_string()
 
     db.session.add(new_user)
     db.session.add(info)
@@ -590,6 +590,88 @@ def test_method(data):
     return gen_success(message = data['DATA'] + '_SERVER' )
 
 
+### SEARCH
+def searchUsers(data):
+
+    sqlRequest = getSqlRequest(data['lastName'], data['year'], data['vus'])
+    
+    print >> sys.stderr, sqlRequest
+    
+    vus = map(int, data['vus'].split())
+
+    requestResult = db.engine.execute(
+        sqlRequest,
+        w = data['lastName'],
+        x = data['year'],
+        y = str(vus[0]),
+        z = str(vus[1])
+    )
+
+    for row in requestResult:
+        print sys.stderr, row
+
+    return gen_success(message = sqlRequest)
+
+def getSqlRequest(lastName, year, vusStr):
+    '''
+    sqlString = 'SELECT * FROM user WHERE user.role=0'
+    #print >> sys.stderr, sqlString
+
+    if lastName != '':
+        sqlString += ' AND user.students_info.table_basic_information.last_name=' + lastName
+        #print >> sys.stderr, sqlString
+
+    if year != '':
+        sqlString += ' AND user.login LIKE %' + year
+        #print >> sys.stderr, sqlString
+
+    if vusStr != u'не выбрано':
+        vus = map(int, vusStr.split())
+        #print >> sys.stderr, type(vus[0])
+
+        sqlString += ' AND user.VUS.number=' + str(vus[0])
+        #print >> sys.stderr, sqlString
+        sqlString += ' AND user.VUS.code=' + str(vus[1])
+        #print >> sys.stderr, sqlString
+
+    return text(sqlString)
+    '''
+
+    lastnamePredicate = text('TRUE')
+    if lastName != '':
+        lastnamePredicate = text('user.students_info.table_basic_information.last_name=:w')
+        #print >> sys.stderr, sqlString
+
+    yearPredicate = text('TRUE')
+    if year != '':
+        yearPredicate = text('user.login LIKE :x')
+        #print >> sys.stderr, sqlString
+
+    vusNumberPredicate = text('TRUE')
+    vusCodePredicate = text('TRUE')
+    if vusStr != u'не выбрано':
+        vus = map(int, vusStr.split())
+        #print >> sys.stderr, type(vus[0])
+
+        vusNumberPredicate = text('user.VUS.number=:y')
+        #print >> sys.stderr, sqlString
+        vusCodePredicate = text('user.VUS.code=:z')
+        #print >> sys.stderr, sqlString
+
+    sqlRequest = select([User.id]).\
+        where(
+            and_(
+                lastnamePredicate,
+                yearPredicate,
+                vusNumberPredicate,
+                vusCodePredicate
+            )
+        )
+
+    return sqlRequest
+
+
+
 @app.route('/post_query', methods=['POST'])
 def post_query():
     data = request.form
@@ -598,13 +680,14 @@ def post_query():
             return POST_METHODS[data['do']](data)
         else:
             return gen_error(u'post method not defined!')
-    except Exception:
+    except Exception as err:
+        print >> sys.stderr, err
         return gen_error(u'error in post method')
 
 
 POST_METHODS = {
                 'test_method': test_method,
-
+                'searchUsers': searchUsers
                 }
 
 
