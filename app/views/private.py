@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.sql import select, and_
 from docx import Document as Doc
 
-#from openpyxl import load_workbook
+from openpyxl import load_workbook
 from app.models import User, VUS, Document, Student_info, Basic_information, Comments
 
 from werkzeug.security import generate_password_hash
@@ -638,83 +638,63 @@ def send_quiz_to_check(data):
 def searchUsers(data):
 
     sqlRequest = getSqlRequest(data['lastName'], data['year'], data['vus'])
-    
-    print >> sys.stderr, sqlRequest
-    
-    vus = map(int, data['vus'].split())
 
-    requestResult = db.engine.execute(
-        sqlRequest,
-        w = data['lastName'],
-        x = data['year'],
-        y = str(vus[0]),
-        z = str(vus[1])
-    )
+    requestResult = db.engine.execute(sqlRequest)
 
+    searchResult = []
     for row in requestResult:
-        print sys.stderr, row
+        matchedUser = {
+            'id' : row[0],
+            'lastName' : row[3],
+            'year' : row[2][-4:],
+            'vus' : '%03d %03d' % (row[4], row[5])
+        }
+        searchResult.append(matchedUser)
 
-    return gen_success(message = sqlRequest)
+    print >> sys.stderr, searchResult
+    return gen_success(result = searchResult)
 
 def getSqlRequest(lastName, year, vusStr):
-    '''
-    sqlString = 'SELECT * FROM user WHERE user.role=0'
-    #print >> sys.stderr, sqlString
+
+    sqlRequest = "select u_id, u_role, u_login, bi_last_name,\
+        VUS.number as 'vus_num',\
+        VUS.code as 'vus_code'\
+        from (\
+        select user.id as 'u_id',\
+        user.role as 'u_role',\
+        user.login as 'u_login',\
+        user.vus_id as 'u_vus_id',\
+        bi_last_name\
+        from (\
+        select\
+        student_info.user_id as 'si_user_id',\
+        basic_information.last_name as 'bi_last_name'\
+        from student_info left join basic_information\
+        on student_info.id = basic_information.student_info_id) as X\
+        left join user\
+        on X.si_user_id = user.id) as Y\
+        left join VUS\
+        on Y.u_vus_id = VUS.id "
+
+    conds = ["u_role = '0'"]
 
     if lastName != '':
-        sqlString += ' AND user.students_info.table_basic_information.last_name=' + lastName
-        #print >> sys.stderr, sqlString
+        conds.append("bi_last_name = '" + unicode(lastName) + "'")
 
     if year != '':
-        sqlString += ' AND user.login LIKE %' + year
-        #print >> sys.stderr, sqlString
+        conds.append("u_login like '%" + unicode(year) + "'")
 
     if vusStr != u'не выбрано':
         vus = map(int, vusStr.split())
-        #print >> sys.stderr, type(vus[0])
 
-        sqlString += ' AND user.VUS.number=' + str(vus[0])
-        #print >> sys.stderr, sqlString
-        sqlString += ' AND user.VUS.code=' + str(vus[1])
-        #print >> sys.stderr, sqlString
-
-    return text(sqlString)
-    '''
-
-    lastnamePredicate = text('TRUE')
-    if lastName != '':
-        lastnamePredicate = text('user.students_info.table_basic_information.last_name=:w')
-        #print >> sys.stderr, sqlString
-
-    yearPredicate = text('TRUE')
-    if year != '':
-        yearPredicate = text('user.login LIKE :x')
-        #print >> sys.stderr, sqlString
-
-    vusNumberPredicate = text('TRUE')
-    vusCodePredicate = text('TRUE')
-    if vusStr != u'не выбрано':
-        vus = map(int, vusStr.split())
-        #print >> sys.stderr, type(vus[0])
-
-        vusNumberPredicate = text('user.VUS.number=:y')
-        #print >> sys.stderr, sqlString
-        vusCodePredicate = text('user.VUS.code=:z')
-        #print >> sys.stderr, sqlString
-
-    sqlRequest = select([User.id]).\
-        where(
-            and_(
-                lastnamePredicate,
-                yearPredicate,
-                vusNumberPredicate,
-                vusCodePredicate
-            )
-        )
-
-    return sqlRequest
+        conds.append("vus_num = '" + str(vus[0]) + "'")
+        conds.append("vus_code = '" + str(vus[1]) + "'")
 
 
+    whereBlock = 'where ' + ' and '.join(conds) + ';'
+    print >> sys.stderr, whereBlock
+
+    return text(sqlRequest + whereBlock)
 
 @app.route('/post_query', methods=['POST'])
 def post_query():
