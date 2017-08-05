@@ -1,154 +1,151 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<script>
-    var fields_js_user = {};
-    var fields_js_family = {};
-    var i = 0;
-    var count_relatives = 0;
-</script>
-
 <button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
 
 <div class="ag-hor-center ag-bottom-spacing">
-    <div class="alert alert-success" role="alert">
-        {% if not approved %}
-            <strong>Статус:</strong> Одобрено
+    <div id="quiz_status_div" class="alert alert-info" role="alert">
+        {% if approved %}
+            <strong>Статус анкеты:</strong> Одобрено
         {% else %}
-            <strong>Статус:</strong> На проверке
+            <strong>Статус анкеты:</strong> На проверке
             {% if comment %}
                 <br>
                 <strong>Комментарий: </strong> {{comment}}
             {% endif %}
         {% endif %}
     </div>
-
-    <form>
-        {% for table in fields %}
-         <div class="page-header"> <h1>{{table}}</h1> </div>
-        {% for field in fields[table] %}
-        <script>
-            fields_js_user[i++] = "{{field.eng}}";
-        </script>
-        {% if field.eng!="id" and field.eng != "None" %}
-            <div class="input-group">
-                <span class="input-group-addon">{{field.rus}}</span>
-                <input class="form-control" name="{{field.eng}}" id="{{field.eng}}" placeholder="{{field.placeholder}}" type="{{field.inp_type}}" value="{{field.value}}">
-            </div>
-            <br>
-        {%endif%}
-        {% endfor %}
-        {% endfor %}
-        <script>
-            fields_js_user[i++] = "vus";
-        </script>
-
-        <div class="input-group">
-            <span class="input-group-addon">ВУС</span>
-            <select class="form-control" id="vus" name="vus">
-                {% for vus in vuses %}
-                    {% if curr_vus and vus.to_string() == curr_vus.to_string() %}
-                        <option selected>{{vus.to_string()}}</option>
-                    {% else %}
-                        <option>{{vus.to_string()}}</option>
-                    {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-        <br>
-
-        <!--
-        <label class="btn btn-default btn-file single ag-hor-center">
-            <div>Загрузить фото</div>
-            <input type="file" style="display: none;" id="select-file" name="photo">
-            <script>prepareFileUploader('select-file');</script>
-        </label>
-        -->
-
-        <div class="page-header"> <h1>Родственники</h1> </div>
-        <div id="family-members">
-            {% for relationship in relationships %}
-                <script>
-                    ++count_relatives;
-                </script>
-                <div class="well well-lg family-member">
-                    <div class="input-group">
-                        <span class="input-group-addon">Кем приходится</span>
-                        <select id="who-1" class="form-control family-who-1">
-                            {% if relationship.membership_name == 'Отец' %}
-                            <option selected>Отец</option>
-                            {% else %}
-                            <option>Отец</option>
-                            {% endif %}
-                            {% if relationship.membership_name == 'Мать' %}
-                            <option selected>Мать</option>
-                            {% else %}
-                            <option>Мать</option>
-                            {% endif %}
-                            {% if relationship.membership_name == 'Брат' %}
-                            <option selected>Брат</option>
-                            {% else %}
-                            <option>Брат</option>
-                            {% endif %}
-                            {% if relationship.membership_name == 'Сестра' %}
-                            <option selected>Сестра</option>
-                            {% else %}
-                            <option>Сестра</option>
-                            {% endif %}
-                            {% if relationship.membership_name == 'Сын' %}
-                            <option selected>Сын</option>
-                            {% else %}
-                            <option>Сын</option>
-                            {% endif %}
-                            {% if relationship.membership_name == 'Дочь' %}
-                            <option selected>Дочь</option>
-                            {% else %}
-                            <option>Дочь</option>
-                            {% endif %}
-                            {% if relationship.membership_name == 'Жена' %}
-                            <option selected>Жена</option>
-                            {% else %}
-                            <option>Жена</option>
-                            {% endif %}
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">Фамилия</span>
-                        <input id="last-name-1" class="form-control" value="{{relationship.last_name}}">
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">Имя</span>
-                        <input id="first-name-1" class="form-control" value="{{relationship.first_name}}">
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">Отчество</span>
-                        <input id="middle-name-1" class="form-control" value="{{relationship.middle_name}}">
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">Мобильный телефон</span>
-                        <input id="phones-1" class="form-control" value="{{relationship.mobile_phone}}">
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">Фактический адрес</span>
-                        <input id="address-usual-1" class="form-control" value="{{relationship.address_usual}}">
-                    </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">Адрес по прописке</span>
-                        <input id="address-registration-1" class="form-control" value="{{relationship.address_registration}}">
-                    </div>
-                    <button class="btn btn-danger ag-hor-center" onclick="deleterelationship(this);" type="button">Удалить</button>
+<!--- COMMON -->   
+    <input id="user_id" type="hidden" value="{{ user_id }}">
+<!--- -->
+<!--- 
+    <div class="section"> 
+        <h3>Тестовая секция <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-relatives').toggle();return false;">(развернуть/свернуть)</a>
+        <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        </h3>
+        <div class="no-display" id="spoiler-section-relatives">
+            <form class="section_form" method="post">
+                <input name="do" type="hidden" value="test_method">
+                <div class="input-group">
+                    <span class="input-group-addon">TEST</span>
+                    <input class="form-control" name="TEST" id="TEST" placeholder="TEST" type="TEST" value="TEST">
                 </div>
-            {% endfor %}
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">TEST2</span>
+                    <input class="form-control" name="TEST2" id="TEST" placeholder="TEST2" type="TEST" value="TEST2">
+                </div>
+                <br>
+                <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
+                <br>
+                <button type="submit" class="btn single btn-info ag-hor-center">Сохранить изменения</button>
+            </form>
         </div>
-        <button type="button" class="btn single btn-lg btn-default ag-hor-center" onclick="addFamilyMember();">Добавить</button>
-
-
-        <br>
         <hr>
+    </div>
+-->
+
+    {% for section in sections %}
+    {% if section.is_fixed %}
+    <div class="fixed_section"> 
+        <h3>{{section.section_name}} <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
+        <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        </h3>
+        <div class="no-display" id="spoiler-section-{{section.section_number}}">
+            <form class="section_form" method="post">
+                <input name="do" type="hidden" value="{{section.table_name}}">
+                {% for field in section.fields %}
+                    <div class="input-group">
+                        <span class="input-group-addon">{{field.rus}}</span>
+                        <input class="form-control" name="{{field.eng}}" placeholder="{{field.placeholder}}" type="text" value="{{field.value}}">
+                    </div><br>
+                {% endfor %}
+
+                <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
+                <br>
+                <button type="submit" class="btn single btn-info ag-hor-center">Сохранить изменения</button>
+            </form>
+        </div>
+        <hr>
+    </div> 
+    {% else %}
+    <div class="not_fixed_section">
+        <h3> {{section.section_name}} <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
+        <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        </h3>
+        <div class="no-display" id="spoiler-section-{{section.section_number}}">
+            <form class="section_form" method="post">
+                <input name="do" type="hidden" value="{{section.table_name}}">
+                <!--- TEMPLATE -->
+                <div class="well well-lg section_element_template_div no-display">
+                    <button type='button' class='btn_remove_not_fixed_element' style="float:right"><span class=" glyphicon glyphicon-remove"></span></button>
+                    <input name="new_element_start" type="hidden" value="new_element_start">
+                    {% for field in section.fields %}
+                    <div class="input-group">
+                        <span class="input-group-addon"> {{field.rus}} </span>
+                        <input class="form-control" name="{{field.eng}}" placeholder="{{field.placeholder}}" type="text" value="">
+                    </div>
+                    {% endfor %}
+                    <input name="new_element_end" type="hidden" value="new_element_end">
+                </div>
+                <!--- TEMPLATE END-->
+                {% if section.filled_fields %}
+                {% for filled_field in section.filled_fields %}
+                <div class="well well-lg not_fixed_element">
+                    <button type='button' class='btn_remove_not_fixed_element' style="float:right"><span class=" glyphicon glyphicon-remove"></span></button>
+                    <input name="new_element_start" type="hidden" value="new_element_start">
+                    {% for field in filled_field %}
+                    <div class="input-group">
+                        <span class="input-group-addon"> {{field.rus}} </span>
+                        <input class="form-control" name="{{field.eng}}" placeholder="{{field.placeholder}}" type="text" value="{{field.value}}">
+                    </div>
+                    {% endfor %}
+                    <input name="new_element_end" type="hidden" value="new_element_end">
+                </div>
+                {% endfor %}
+                {% else %}
+                <div align="center" class="well no-elements"> Элементов нет - добавьте новые и/или нажмите "сохранить изменения" <br></div>
+                {% endif %}
+                {% if section.table_name == 'brothers_sisters_children' %}
+                    <div class="place_to_insert_element no-display"></div>
+                    <div align="center">
+                     <button type="button" class="btn" id="btn_add_section_element_brother">Добавить брата</button>
+                     <button type="button" class="btn" id="btn_add_section_element_sister">Добавить сестру</button>
+                     <button type="button" class="btn" id="btn_add_section_element_son">Добавить сына</button>
+                     <button type="button" class="btn" id="btn_add_section_element_daughter">Добавить дочь</button>
+                    </div>
+                {% elif section.table_name == 'high_education' %}
+                    <div class="place_to_insert_element no-display"></div>
+                    <div align="center">
+                     <button type="button" class="btn" id="btn_add_section_element_bachelor">Добавить бакалавриат</button>
+                     <button type="button" class="btn" id="btn_add_section_element_master">Добавить магистратуру</button>
+                     <button type="button" class="btn" id="btn_add_section_element_phd">Добавить аспирантуру</button>
+                    </div>
+                {% elif section.table_name == 'mothers_fathers' %}
+                    <div class="place_to_insert_element no-display"></div>
+                    <div align="center">
+                     <button type="button" class="btn" id="btn_add_section_element_mother">Добавить мать</button>
+                     <button type="button" class="btn" id="btn_add_section_element_father">Добавить отца</button>
+                    </div>
+                {% else %}
+                    <button type="button" class="btn single ag-hor-center btn_add_section_element">Добавить</button>
+                {% endif %}
+                <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
+                <br>
+                <button type="submit" class="btn single btn-info ag-hor-center">Сохранить изменения</button>
+            </form>
+        </div>
+        <hr>
+    </div>
+    {% endif %}
+    {% endfor %}
+
         <br>
-    </form>
-    <button class="btn single btn-lg btn-success ag-hor-center" onclick="submitStudentInfo(fields_js_user)">Отправить</button>
+        <hr><hr><hr>
+        <br>
+    <div align="center" class="alert alert-danger ag-hor-center no-display send_quiz_result_div" role="alert"></div>
+    <br>
+    <button id="btn_send_quiz_to_check" class="btn single btn-lg btn-success ag-hor-center">Отправить анкету на проверку</button>
 </div>
 
 {% endblock %}

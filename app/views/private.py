@@ -4,8 +4,10 @@ from flask.ext.login import current_user
 from sqlalchemy import text
 from sqlalchemy.sql import select, and_
 from docx import Document as Doc
-from openpyxl import load_workbook
+
+#from openpyxl import load_workbook
 from app.models import User, VUS, Document, Student_info, Basic_information, Comments
+
 from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
 import datetime
@@ -586,9 +588,24 @@ def add_data():
 
 ### POSTs
 
-def test_method(data):
-    return gen_success(message = data['DATA'] + '_SERVER' )
+def save_not_fixed_section(data):
+    print >> sys.stderr, data
+    elements = json.loads(data['elements'])
+    print >> sys.stderr, elements
+    return gen_success(message = {'status':'ok', 'asd':'asd'})    
 
+def test_method(data): 
+#    return gen_success(message =  {'status':'ok', 'asd':'asd'})
+    errors = "error1\nerror2\nerror3\n"
+    errors = "<br>".join(errors.split("\n"))
+    return gen_success(message = {'status':'error', 'errors':errors})
+
+def save_basic_information(data):
+    print >> sys.stderr, data
+    return gen_success(message = {'status':'ok', 'input_data': json.dumps(data)} )
+
+def send_quiz_to_check(data):
+    return gen_success(message =  {'status':'ok', 'asd':'asd'})
 
 ### SEARCH
 def searchUsers(data):
@@ -684,10 +701,28 @@ def post_query():
         print >> sys.stderr, err
         return gen_error(u'error in post method')
 
-
+# list of post methods
 POST_METHODS = {
-                'test_method': test_method,
-                'searchUsers': searchUsers
+
+                'searchUsers': searchUsers,
+                'send_quiz_to_check': send_quiz_to_check,
+                'save_not_fixed_section': save_not_fixed_section,
+# обработчики таблиц
+                'basic_information':         save_basic_information,
+                'certificates_change_name':  save_basic_information,
+                'communications':            save_basic_information,
+                'passports':                 save_basic_information,
+                'international_passports':   save_basic_information,
+                'registration_certificates': save_basic_information,
+                'middle_education':          save_basic_information,
+                'spec_middle_education':     save_basic_information,
+                'high_education':            save_basic_information,
+                'military_education':        save_basic_information,
+                'languages':                 save_basic_information,
+                'mothers_fathers':           save_basic_information,
+                'married_certificates':      save_basic_information,
+                'brothers_sisters_children': save_basic_information,
+                'personal_data':             save_basic_information,
                 }
 
 
