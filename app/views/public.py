@@ -10,6 +10,7 @@ from app.models import Brothers_sisters_children, Married_certificates, Personal
 from werkzeug.security import check_password_hash
 from easy import *
 import json
+import sys
 from hidden import user_role
 from app.models.easy import get_fields, get_tables, get_class_by_tablename
 
@@ -173,59 +174,90 @@ class InputValue:
         self.placeholder = placeholder
         self.value = value
         self.comment = comment
-        self.valid = self.eng is not None
+        self.valid = ( self.eng is not None and self.rus is not None )
 
 def fill_values(fields, user_info):
     for field in fields:
-        field.value = user_info[field.eng];
+        if( user_info[field.eng] is not None):
+            field.value = user_info[field.eng]
+
+def get_sections_data_by_id(user_id):
+    fixed_sections = {}
+    not_fixed_sections = {}
+    tables = get_tables()
+    section_number = 0
+    for table in tables:
+        fields_table = get_fields( table )
+        s = get_class_by_tablename( table )
+        if not s:
+            continue
+        s = s() 
+        fields_table = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
+            s.placeholder(x[0])) for x in fields_table]
+        fields_table = filter(lambda x: x.valid, fields_table)
+        section_info = { 
+                         'fields': fields_table, 'is_fixed': s.is_fixed(), 'table_name':table, 
+                         'section_name': s.get_section_name(), 'section_number': section_number 
+                       }
+        if s.is_fixed():
+            fixed_sections.update({ table : section_info })
+        else:
+            not_fixed_sections.update({ table : section_info })
+        section_number += 1
+
+    student_info = User.query.get( user_id ).students_info
+
+    if student_info==None:
+        return False
+
+    for table in fixed_sections:
+        fields_table = get_fields( table )
+        s = get_class_by_tablename( table )
+        if not s:
+            continue
+        user_info = s.query.filter_by( student_info_id=student_info.id ).first()
+        if user_info is not None:
+            fill_values(fixed_sections[table]['fields'], user_info) 
+
+    for table in not_fixed_sections:
+        fields_table = get_fields( table )
+        s = get_class_by_tablename( table )
+        if not s:
+            continue
+        user_infos = s.query.filter_by( student_info_id=student_info.id ).all()
+        if user_infos is not None:
+            not_fixed_sections[table]['filled_fields'] = [not_fixed_sections[table]['fields'] for _ in range(len(user_infos))]
+            for i in range(len(user_infos)):
+                fill_values(not_fixed_sections[table]['filled_fields'][i], user_infos[i])
+
+    sections_arr = [fixed_sections[t] if t in fixed_sections else not_fixed_sections[t] for t in get_tables()]
+    return sections_arr
 
 @app.route('/profile')
 @login_required
 def profile():
     if user_role() > 0:
         return redirect('ready')
-    fields = {}
     vuses = {}
     comment = ''
     approved = 0
     curr_vus = ''
-    tables = get_tables()
-    for table in tables:
-        fields_table = get_fields( table )
-        s = get_class_by_tablename( table )
-        if not s:
-            continue
-        fields_table = [InputValue(x[0], s().get_russian_name(x[0]), x[1], 
-            s().placeholder(x[0])) for x in fields_table]
-        fields_table = filter(lambda x: x.valid is not None, fields_table)
-        fields.update( { table : fields_table } )
 
-    student_info_id = Student_info.query.filter_by( user_id=current_user.id ).first() 
-
-    if student_info_id==None:
+    sections_arr = get_sections_data_by_id(current_user.id)
+    if not sections_arr:
         comment = u'ОБРАТИТЕСЬ К АДМИНИСТРАТОРУ'
-        return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
-            comment = comment, approved = approved, curr_vus = curr_vus,  navprivate=True)
-
-    for table in fields:
-        fields_table = get_fields( table )
-        s = get_class_by_tablename( table )
-        if not s:
-            continue
-        user_info = s.query.filter_by( student_info_id=student_info_id )
-        if user_info is not None:
-            fill_values(fields[table], user_info)
+        return render_template('user.html', title=u'Данные', fixed_sections=fixed_sections, not_fixed_sections=not_fixed_sections, 
+            vuses=vuses, comment=comment, approved=approved, curr_vus=curr_vus, navprivate=True)
 
     vuses = VUS.query.all()
-    comment = ""
+    comment = u""
     if(Comments.query.get(current_user.id)):
         comment = Comments.query.get(current_user.id).comment
     approved = User.query.get(current_user.id).active
-
     curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
+    return render_template('user.html', title=u'Данные', sections=sections_arr, 
+        vuses=vuses, comment=comment, approved=approved, curr_vus=curr_vus, user_id=current_user.id, navprivate=True)
 
-    return render_template('user.html', title=u'Данные', fields = fields, vuses = vuses, 
-        comment = comment, approved = approved, curr_vus = curr_vus,  navprivate=True)
 
 
 

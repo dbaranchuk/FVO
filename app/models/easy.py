@@ -10,6 +10,8 @@ ABSENT      = 3
 NOT_BUDGET  = 0
 BUDGET      = 1
 
+
+
 def get_form_type(table_type):
     table2form = {
         'INTEGER': 'number',
@@ -23,7 +25,23 @@ def get_form_type(table_type):
     return 'text'
 
 def get_tables():
-    return db.metadata.tables
+    return [
+            'basic_information',
+            'certificates_change_name',
+            'communications',
+            'passports',
+            'international_passports',
+            'registration_certificates',
+            'middle_education',
+            'spec_middle_education',
+            'high_education',
+            'military_education',
+            'languages',
+            'mothers_fathers',
+            'married_certificates',
+            'brothers_sisters_children',
+            'personal_data',
+    ]
 
 def get_fields(table):
     columns = db.metadata.tables[table].get_children()

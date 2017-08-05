@@ -74,6 +74,12 @@ class Basic_information(db.Model):
     student_info =  db.relationship('Student_info', 
         back_populates = 'basic_information' )
 
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Основная информация'
+
     def placeholder(self, eng):
         placeholders = {
             'last_name': u'Иванов',
@@ -94,7 +100,8 @@ class Basic_information(db.Model):
 
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'last_name': u'Фамилия',
             'first_name': u'Имя',
             'middle_name': u'Отчество',
@@ -142,6 +149,12 @@ class Certificates_change_name(db.Model):
     student_info =  db.relationship('Student_info', 
         back_populates = 'certificates_change_name')
 
+    def is_fixed(self):
+        return False
+
+    def get_section_name(self):
+        return u'Свидетельство о перемене имени'
+
     def placeholder(self, eng):
         placeholders = {
             'serial' : u'12345',
@@ -156,7 +169,8 @@ class Certificates_change_name(db.Model):
 
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдан',
@@ -191,6 +205,12 @@ class Communications( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'communications' )
 
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Номера телефонов, электронная почта'
+
     def placeholder(self, eng):
         placeholders = {
             'mobile_phone_1' : u'89012345678',
@@ -204,7 +224,8 @@ class Communications( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'mobile_phone_1' : u'Мобильный 1',
             'mobile_phone_2' : u'Мобильный 2',
             'home_phone' : u'Домашний',
@@ -242,6 +263,12 @@ class Passports( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'passport' )
     
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Паспорт'
+
     def placeholder(self, eng):
         placeholders = {
             'serial' : u'1234',
@@ -260,7 +287,8 @@ class Passports( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдан',
@@ -304,6 +332,12 @@ class International_passports( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'international_passport' )
     
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Загранпаспорт'
+
     def placeholder(self, eng):
         placeholders = {
             'serial' : u'12',
@@ -318,7 +352,8 @@ class International_passports( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдан',
@@ -355,6 +390,12 @@ class Registration_certificates( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'registration_certificate' )
     
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Приписное свидетельство'
+
     def placeholder(self, eng):
         placeholders = {
             'serial' : u'АВ',
@@ -370,7 +411,8 @@ class Registration_certificates( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдано',
@@ -405,6 +447,12 @@ class Middle_education( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'middle_education' )
 
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Образование среднее'
+
     def placeholder(self, eng):
         placeholders = {
             'school' : u'МБОУ СОШ "Лицей № 5"',
@@ -416,7 +464,8 @@ class Middle_education( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'school' : u'Школа по аттестату',
             'school_address' : u'Адрес местонахождения'
         }
@@ -444,6 +493,12 @@ class Spec_middle_education( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'spec_middle_education' )
     
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Образование среднеспециальное'
+
     def placeholder(self, eng):
         placeholders = {
             'institution' : u'ПТУ № 43',
@@ -456,7 +511,8 @@ class Spec_middle_education( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'institution' : u'Учебное заведение',
             'institution_address' : u'Адрес местонахождения',
             'speciality' : u'Специальность по диплому'
@@ -493,6 +549,12 @@ class High_education(db.Model):
     student_info =  db.relationship('Student_info', 
         back_populates = 'high_education' )
     
+    def is_fixed(self):
+        return False
+
+    def get_section_name(self):
+        return u'Образование высшее'
+
     def placeholder(self, eng):
         placeholders = {
             'institution' : u'МГУ имени М. В. Ломоносова',
@@ -504,7 +566,7 @@ class High_education(db.Model):
             'study_group_3' : u'339',
             'study_group_4' : u'467М',
             'form_study' : u'очная',
-            'quality' : 'Бакалавр'
+            'quality' : u'Бакалавр'
         }
         if eng not in placeholders:
             return ''
@@ -512,7 +574,8 @@ class High_education(db.Model):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'institution' : u'ВУЗ',
             'budgetary' : u'Бюджет',
             'full_faculty_name' : u'Факультет (полное название)',
@@ -522,7 +585,7 @@ class High_education(db.Model):
             'study_group_3' : u'Учебная группа 3 курс',
             'study_group_4' : u'Учебная группа 4 курс',
             'form_study' : u'Форма обучения',
-            'quality' : 'Квалификация'
+            'quality' : u'Квалификация'
         }
         if eng in en2ru:
             return en2ru[eng]
@@ -555,6 +618,12 @@ class Military_education( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'military_education' )
     
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Военное образование в МГУ'
+
     def placeholder(self, eng):
         placeholders = {
             'platoon_1' : u'117',
@@ -566,7 +635,8 @@ class Military_education( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'platoon_1' : u'Взвод 1 года обучения',
             'platoon_2' : u'Взвод 2 года обучения',
         }
@@ -593,7 +663,13 @@ class Languages( db.Model ):
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'languages' )
-    
+
+    def is_fixed(self):
+        return False
+ 
+    def get_section_name(self):
+        return u'Иностранные языки'
+
     def placeholder(self, eng):
         placeholders = {
             'language' : u'Английский',
@@ -606,7 +682,8 @@ class Languages( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'language' : u'Язык',
             'quality' : u'Степень владения',
             'certificates' : u'Сертификаты'
@@ -646,6 +723,12 @@ class Mothers_fathers( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'mother_father' )
     
+    def is_fixed(self):
+        return False
+
+    def get_section_name(self):
+        return u'Родители'
+
     def placeholder(self, eng):
         placeholders = {
             'status' : u'мать',
@@ -668,7 +751,8 @@ class Mothers_fathers( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'status' : u'Статус',
             'last_name': u'Фамилия',
             'first_name': u'Имя',
@@ -720,7 +804,13 @@ class Brothers_sisters_children( db.Model ):
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'brothers_sisters_children' )
+
+    def is_fixed(self):
+        return False
     
+    def get_section_name(self):
+        return u'Родственники'
+
     def placeholder(self, eng):
         placeholders = {
             'status' : u'брат',
@@ -736,7 +826,8 @@ class Brothers_sisters_children( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'status' : u'Статус',
             'last_name': u'Фамилия',
             'first_name': u'Имя',
@@ -782,6 +873,12 @@ class Married_certificates( db.Model ):
     fact_index = db.Column( db.String( 9 ) )
     fact_address = db.Column( db.String( 256 ) )
 
+    def is_fixed(self):
+        return False
+
+    def get_section_name(self):
+        return u'Супруги'
+
     student_info =  db.relationship('Student_info', 
         back_populates = 'married_certificates' )
     
@@ -810,7 +907,8 @@ class Married_certificates( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'serial' : u'Серия',
             'number' : u'Номер',
             'issuer' : u'Кем выдано',
@@ -876,6 +974,12 @@ class Personal_data( db.Model ):
     student_info =  db.relationship('Student_info', 
         back_populates = 'personal_data' )
     
+    def is_fixed(self):
+        return True
+
+    def get_section_name(self):
+        return u'Личные данные'
+
     def placeholder(self, eng):
         placeholders = {
             'blood_group_resus' : u'2+',
@@ -898,7 +1002,8 @@ class Personal_data( db.Model ):
     
     def get_russian_name(self, eng):
         en2ru = {
-            'id': None,
+            'id': None, 
+            'student_info_id' : None,
             'blood_group_resus' : u'Группа крови, резус фактор',
             'shoes_size' : u'Размер обуви',
             'uniform_size' : u'Размер одежды',

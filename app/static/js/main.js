@@ -1,22 +1,131 @@
 //////////////////////////////////////////////// JQUERY 
 $(document).ready(function() {
 
-    $('#test_button').click(function() {
-        var data = {
-                     'do': 'test_method',
-                     'DATA': $('#middle_name').val()
-                   }
+// selectors hardcode
+    function set_and_fix_input_field(text, name, value) {
+        var p_name = text.indexOf('name="'+name+'"') + ('name="'+name+'"').length
+        var p_value = text.indexOf('value="', p_name) + 'value="'.length
+        return text.substring(0, p_name) + ' readonly="readonly" ' + 
+               text.substring(p_name, p_value) + value +
+               text.substring(p_value)
+    }
+
+    function copy_template_with_replace(selector, name, value) {
+        var $parent = $(selector).closest('form')
+        $parent.find('.no-elements').remove()
+        var $template = $parent.find(".section_element_template_div")
+        var element_html = "<div class='well well-lg not_fixed_element'>" + set_and_fix_input_field($template.html(), name, value) + "</div>"
+        $parent.find('.place_to_insert_element').before(element_html)
+        
+        return false;
+    }
+
+    $('#btn_add_section_element_son').click(function() {
+        copy_template_with_replace($(this), 'status', 'Сын')   
+    });
+
+    $('#btn_add_section_element_daughter').click(function() {
+        copy_template_with_replace($(this), 'status', 'Дочь')   
+    });
+
+    $('#btn_add_section_element_brother').click(function() {
+        copy_template_with_replace($(this), 'status', 'Брат')   
+    });
+
+    $('#btn_add_section_element_sister').click(function() {
+        copy_template_with_replace($(this), 'status', 'Сестра')   
+    });
+
+    $('#btn_add_section_element_bachelor').click(function() {
+        if ($(this).closest('form').html().indexOf('Бакалавриат') != -1) {
+            alert("Вы уже добавили бакалавриат")
+        } else {
+            copy_template_with_replace($(this), 'quality', 'Бакалавриат')   
+        }
+    });
+
+    $('#btn_add_section_element_master').click(function() {
+        if ($(this).closest('form').html().indexOf('Магистратура') != -1) {
+            alert("Вы уже добавили магистратуру")
+        } else {
+            copy_template_with_replace($(this), 'quality', 'Магистратура')  
+        } 
+    });
+
+    $('#btn_add_section_element_phd').click(function() {
+        if ($(this).closest('form').html().indexOf('Аспирантура') != -1) {
+            alert("Вы уже добавили аспирантуру")
+        } else {
+            copy_template_with_replace($(this), 'quality', 'Аспирантура')
+        }
+    });
+
+    $('#btn_add_section_element_mother').click(function() {
+        if ($(this).closest('form').html().indexOf('Мать') != -1) {
+            alert("Вы уже добавили мать")
+        } else {
+            copy_template_with_replace($(this), 'status', 'Мать')
+        }   
+    });
+
+    $('#btn_add_section_element_father').click(function() {
+        if ($(this).closest('form').html().indexOf('Отец') != -1) {
+            alert("Вы уже добавили отца")
+        } else {
+            copy_template_with_replace($(this), 'status', 'Отец')
+        }  
+    });
+
+
+// selectors hardcode end
+
+    $('.btn_add_section_element').click(function() {
+        var $parent = $(this).closest('form')
+        $parent.find('.no-elements').remove()
+        var $template = $parent.find(".section_element_template_div")
+        var element_html = "<div class='well well-lg not_fixed_element'>" + $template.html() + "</div>"
+        $(this).before(element_html)
+        
+        return false; 
+    });
+
+    $(document).on('click', '.btn_remove_not_fixed_element', function(){
+        $(this).closest('.not_fixed_element').remove();
+        return false;
+    });
+
+    $('#btn_send_quiz_to_check').click(function() {
+        var post_data = { 'do': 'send_quiz_to_check' }
+        var $send_quiz_result_div = $('#send_quiz_result_div')
+        alert("btn_send_quiz_to_check")
         $.ajax({
             type: 'post',
             url: 'post_query',
-            data: data,
+            data: post_data,
             success: function (res) {
-                var msg = res['message']//$.parseJSON(res['message']);
-                alert(msg)
+                var msg = res['message']
+                if (msg['status'] == 'ok') {
+                    $('#quiz_status_div').replaceWith("<div id='quiz_status_div' class='alert alert-success' role='alert'> \
+                                                        <strong>Статус анкеты:</strong> На проверке \
+                                                       </div>"
+                                                     );
+                    $send_quiz_result_div.removeClass('alert-danger')
+                    if (!$send_quiz_result_div.hasClass('alert-info')) {
+                        $send_quiz_result_div.addClass('alert-info')
+                    }
+                    $send_quiz_result_div.text('анкета отправлена на проверку')
+                } else {
+                    $send_quiz_result_div.removeClass('alert-info')
+                    if (!$send_quiz_result_div.hasClass('alert-danger')) {
+                        $send_quiz_result_div.addClass('alert-danger')
+                    }
+                    $send_quiz_result_div.text('необходимо корректно заполнить все секции')
+                }
             },
             dataType: 'json',
-            async: false,
+            async: true,
         });
+        return false;
     });
 
     $('#search-btn').click(function() {
@@ -40,6 +149,80 @@ $(document).ready(function() {
         });
     });
 
+    $('form.section_form').submit(function() {
+        var $inputs = $(this).find(':input');
+        var $section = $(this).parent('.section');
+        var $status_span = $section.find('.status_span');
+        var $save_result_div = $(this).find('.save_result_div');
+        
+        var post_data = { 'user_id' : $("#user_id").val() };
+        var data_sections = [];
+        var data_buffer = {};
+        var is_not_fixed = $(this).parents('div.not_fixed_section').length;
+        var cnt_elements = 0;
+        var is_inside_element = false;
+        $inputs.each(function() {
+            if ($(this).parents('.section_element_template_div').length > 0) {
+                return;
+            }
+            if (is_not_fixed) {
+                if (this.name == 'new_element_end') {
+                    if (Object.keys(data_buffer).length > 0) {
+                        data_sections.push( $.extend({}, data_buffer) );
+                        cnt_elements++;
+                        data_buffer = {};
+                    }    
+                    is_inside_element = false;
+                } else 
+                if (this.name == 'new_element_start') {
+                    is_inside_element = true;
+
+                } else if (is_inside_element) {
+                    data_buffer[this.name] = $(this).val();
+                } else {
+                    post_data[this.name] = $(this).val();   
+                }
+            } else {
+                post_data[this.name] = $(this).val();
+            }
+        });
+        if (is_not_fixed) {
+            post_data['elements'] = JSON.stringify(data_sections);
+        }
+        /*
+        Object.keys(post_data).forEach(function(key) {
+            alert(key+"=>"+post_data[key])
+        });*/
+
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: post_data,
+            success: function (res) {
+                var msg = res['message']
+                $save_result_div.removeClass('no-display')
+                if (msg['status'] == 'ok') {
+                    $status_span.replaceWith('<h5><span class="status_span alert-info">&nbsp на проверке &nbsp</span></h5>')
+                    $save_result_div.removeClass('alert-danger')
+                    if (!$save_result_div.hasClass('alert-info')) {
+                        $save_result_div.addClass('alert-info')
+                    }
+                    $save_result_div.text('изменения сохранены')
+                } else {
+                    $save_result_div.removeClass('alert-info')
+                    if (!$save_result_div.hasClass('alert-danger')) {
+                        $save_result_div.addClass('alert-danger')
+                    }
+                    $save_result_div.html(msg['errors'])
+                }
+                alert(msg['input_data'])
+            },
+            dataType: 'json',
+            async: true,
+        });
+        return false;
+    });
+    
 });
 
 /////////////////////////////////////////////////
