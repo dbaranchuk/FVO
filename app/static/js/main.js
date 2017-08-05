@@ -31,8 +31,9 @@ $(document).ready(function() {
             url: 'post_query',
             data: data,
             success: function (res) {
-                var msg = res['message']//$.parseJSON(res['message']);
-                alert(msg)
+                //var userData = $.parseJSON(res['result'])
+                var userData = res['result']
+                alert(userData)
             },
             dataType: 'json',
             async: false,
