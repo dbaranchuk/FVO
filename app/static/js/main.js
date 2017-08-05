@@ -128,27 +128,6 @@ $(document).ready(function() {
         return false;
     });
 
-    $('#search-btn').click(function() {
-        var data = {
-            'do': 'searchUsers',
-            'lastName': $('#searchLastname').val(),
-            'year': $('#searchYear').val(),
-            'vus': $('#searchVus').val()
-        }
-        $.ajax({
-            type: 'post',
-            url: 'post_query',
-            data: data,
-            success: function (res) {
-                //var userData = $.parseJSON(res['result'])
-                var userData = res['result']
-                alert(userData)
-            },
-            dataType: 'json',
-            async: false,
-        });
-    });
-
     $('form.section_form').submit(function() {
         var $inputs = $(this).find(':input');
         var $section = $(this).parent('.section');
@@ -222,6 +201,42 @@ $(document).ready(function() {
         });
         return false;
     });
+
+//SEARCH
+
+    $('#search-btn').click(function() {
+        var data = {
+            'do': 'searchUsers',
+            'lastName': $('#searchLastname').val(),
+            'year': $('#searchYear').val(),
+            'vus': $('#searchVus').val()
+        }
+
+        $('#user-search-result > tbody').empty();
+
+
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: data,
+            success: function (res) {
+                var userData = res['result']
+                for (i in userData) {
+                    var rowHtml = '<tr><td>' + userData[i]['lastName'] + '</td><td>' + userData[i]['year'] + 
+                    "</td><td>" + userData[i]['vus'] + "</td><td><button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + ">Показать</button></td></tr>";
+
+                    $('#user-search-result > tbody:last-child').append(rowHtml);
+                }
+            },
+            dataType: 'json',
+            async: false,
+        });
+    });
+
+    $(document).on('click', '.btn-show-from-search', function(){
+        var id = $(this).data('id')
+        alert(id)
+    })
     
 });
 

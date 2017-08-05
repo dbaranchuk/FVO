@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.sql import select, and_
 from docx import Document as Doc
 
-#from openpyxl import load_workbook
+from openpyxl import load_workbook
 from app.models import User, VUS, Document, Student_info, Basic_information, Comments
 
 from werkzeug.security import generate_password_hash
@@ -617,6 +617,7 @@ def searchUsers(data):
     searchResult = []
     for row in requestResult:
         matchedUser = {
+            'id' : row[0],
             'lastName' : row[3],
             'year' : row[2][-4:],
             'vus' : '%03d %03d' % (row[4], row[5])
