@@ -29,11 +29,11 @@ class Student_info(db.Model):
         back_populates = 'student_info' )
     communications =  db.relationship('Communications', 
         back_populates = 'student_info' )
-    passport =  db.relationship('Passports', 
+    passports =  db.relationship('Passports', 
         back_populates = 'student_info' )
-    international_passport =  db.relationship('International_passports', 
+    international_passports =  db.relationship('International_passports', 
         back_populates = 'student_info' )
-    registration_certificate =  db.relationship('Registration_certificates', 
+    registration_certificates =  db.relationship('Registration_certificates', 
         back_populates = 'student_info' )
     middle_education =  db.relationship('Middle_education', 
         back_populates = 'student_info' )
@@ -45,7 +45,7 @@ class Student_info(db.Model):
         back_populates = 'student_info' )
     languages =  db.relationship('Languages', 
         back_populates = 'student_info' )
-    mother_father =  db.relationship('Mothers_fathers', 
+    mothers_fathers =  db.relationship('Mothers_fathers', 
         back_populates = 'student_info' )
     brothers_sisters_children =  db.relationship('Brothers_sisters_children', 
         back_populates = 'student_info' )
@@ -53,6 +53,26 @@ class Student_info(db.Model):
         back_populates = 'student_info' )
     personal_data =  db.relationship('Personal_data', 
         back_populates = 'student_info' )
+
+    def __getitem__(self,item):
+        item2obj = {
+            'basic_information': self.basic_information,
+            'certificates_change_name': self.certificates_change_name,
+            'communications': self.communications,
+            'passports': self.passports,
+            'international_passports': self.international_passports,
+            'registration_certificates': self.registration_certificates,
+            'middle_education': self.middle_education,
+            'spec_middle_education': self.spec_middle_education,
+            'high_education': self.high_education,
+            'military_education': self.military_education,
+            'languages': self.languages,
+            'mothers_fathers': self.mothers_fathers,
+            'brothers_sisters_children': self.brothers_sisters_children,
+            'married_certificates': self.married_certificates,
+            'personal_data': self.personal_data,
+        }
+        return item2obj[item];
 
 
 class Basic_information(db.Model):
@@ -119,6 +139,23 @@ class Basic_information(db.Model):
         else:
             return unicode(eng[0].upper() + eng[1:])
 
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'last_name': self.last_name,
+            'first_name': self.first_name,
+            'middle_name': self.middle_name,
+            'birth_date': self.birth_date,
+            'birth_place': self.birth_place,
+            'nationality': self.nationality,
+            'family_status': self.family_status,
+            'citizenship': self.citizenship,
+            'second_citizenship': self.second_citizenship,
+            'tin': self.tin,
+            'insurance_certificate': self.insurance_certificate,
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -182,6 +219,17 @@ class Certificates_change_name(db.Model):
         else:
             return unicode(eng[0].upper() + eng[1:])
 
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'serial' : self.serial,
+            'number' : self.number,
+            'issuer' : self.issuer,
+            'issue_date' : self.issue_date,
+            'changing' : self.changing,
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -236,6 +284,16 @@ class Communications( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
 
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'mobile_phone_1' : self.mobile_phone_1,
+            'mobile_phone_2' : self.mobile_phone_2,
+            'home_phone' : self.home_phone,
+            'email' : self.email
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -261,7 +319,7 @@ class Passports( db.Model ):
     fact_address = db.Column( db.String( 256 ) )
 
     student_info =  db.relationship('Student_info', 
-        back_populates = 'passport' )
+        back_populates = 'passports' )
     
     def is_fixed(self):
         return True
@@ -304,6 +362,21 @@ class Passports( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'serial' : self.serial,
+            'number' : self.number,
+            'issuer' : self.issuer,
+            'issue_date' : self.issue_date,
+            'code' : self.code,
+            'registration_index' : self.registration_index,
+            'registration_address' : self.registration_address,
+            'fact_index' : self.fact_index,
+            'fact_address' : self.fact_address,
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -315,7 +388,7 @@ class Passports( db.Model ):
             'registration_index' : self.registration_index,
             'registration_address' : self.registration_address,
             'fact_index' : self.fact_index,
-            'fact_address' : self.fact_addresss,
+            'fact_address' : self.fact_address,
         }
         return item2obj[item];
 
@@ -330,7 +403,7 @@ class International_passports( db.Model ):
     validity = db.Column( db.String( 10 ) )
 
     student_info =  db.relationship('Student_info', 
-        back_populates = 'international_passport' )
+        back_populates = 'international_passports' )
     
     def is_fixed(self):
         return True
@@ -365,6 +438,17 @@ class International_passports( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'serial' : self.serial,
+            'number' : self.number,
+            'issuer' : self.issuer,
+            'issue_date' : self.issue_date,
+            'validity' : self.validity,
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -388,7 +472,7 @@ class Registration_certificates( db.Model ):
     shelf_category = db.Column( db.String( 32 ) )
 
     student_info =  db.relationship('Student_info', 
-        back_populates = 'registration_certificate' )
+        back_populates = 'registration_certificates' )
     
     def is_fixed(self):
         return True
@@ -425,6 +509,18 @@ class Registration_certificates( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'serial' : self.serial,
+            'number' : self.number,
+            'issuer' : self.issuer,
+            'date_issue' : self.date_issue,
+            'military_department' : self.military_department,
+            'shelf_category' : self.shelf_category
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -474,6 +570,14 @@ class Middle_education( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'school' : self.school,
+            'school_address' : self.school_address
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -522,6 +626,15 @@ class Spec_middle_education( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'institution' : self.institution,
+            'institution_address' : self.institution_address,
+            'speciality' : self.speciality
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -592,6 +705,22 @@ class High_education(db.Model):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'institution' : self.institution,
+            'budgetary' : self.budgetary,
+            'full_faculty_name' : self.full_faculty_name,
+            'short_faculty_name' : self.short_faculty_name,
+            'spec_diploma' : self.spec_diploma,
+            'study_group_2' : self.study_group_2,
+            'study_group_3' : self.study_group_3,
+            'study_group_4' : self.study_group_4,
+            'form_study' : self.form_study,
+            'quality' : self.quality
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -645,6 +774,14 @@ class Military_education( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'platoon_1' : self.platoon_1,
+            'platoon_2' : self.platoon_2,
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -693,6 +830,15 @@ class Languages( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'language' : self.language,
+            'quality' : self.quality,
+            'certificates' : self.certificates
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -721,7 +867,7 @@ class Mothers_fathers( db.Model ):
     fact_address = db.Column( db.String( 256 ) )
 
     student_info =  db.relationship('Student_info', 
-        back_populates = 'mother_father' )
+        back_populates = 'mothers_fathers' )
     
     def is_fixed(self):
         return False
@@ -772,6 +918,25 @@ class Mothers_fathers( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'status' : self.status,
+            'last_name': self.last_name,
+            'first_name': self.first_name,
+            'middle_name': self.middle_name,
+            'birth_date': self.birth_date,
+            'birth_place': self.birth_place,
+            'mobile_phone_1' : self.mobile_phone_1,
+            'mobile_phone_2' : self.mobile_phone_2,
+            'home_phone' : self.home_phone,
+            'job_place' : self.job_place,
+            'job_post' : self.job_post,
+            'fact_index' : self.fact_index,
+            'fact_address' : self.fact_address
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -840,6 +1005,18 @@ class Brothers_sisters_children( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'status' : self.status,
+            'last_name': self.last_name,
+            'first_name': self.first_name,
+            'middle_name': self.middle_name,
+            'birth_date': self.birth_date,
+            'birth_place': self.birth_place,
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -931,6 +1108,28 @@ class Married_certificates( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'serial' : self.serial,
+            'number' : self.number,
+            'issuer' : self.issuer,
+            'date_issue' : self.date_issue,
+            'last_name': self.last_name,
+            'first_name': self.first_name,
+            'middle_name': self.middle_name,
+            'birth_date': self.birth_date,
+            'birth_place': self.birth_place,
+            'mobile_phone_1' : self.mobile_phone_1,
+            'mobile_phone_2' : self.mobile_phone_2,
+            'home_phone' : self.home_phone,
+            'job_place' : self.job_place,
+            'job_post' : self.job_post,
+            'fact_index' : self.fact_index,
+            'fact_address' : self.fact_address
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,
@@ -1023,6 +1222,25 @@ class Personal_data( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
+    def __setitem__(self,item,value):
+        item2obj = {
+            'id': self.id,
+            'blood_group_resus' : self.blood_group_resus,
+            'shoes_size' : self.shoes_size,
+            'uniform_size' : self.uniform_size,
+            'head_size' : self.head_size,
+            'growth': self.growth,
+            'protivogaz_size': self.protivogaz_size,
+            'OZK_size': self.OZK_size,
+            'government_prize': self.government_prize,
+            'injuries' : self.injuries,
+            'criminals' : self.criminals,
+            'civil_specialization' : self.civil_specialization,
+            'hobbies' : self.hobbies,
+            'sports' : self.sports,
+        }
+        item2obj[item] = value;
+
     def __getitem__(self,item):
         item2obj = {
             'id': self.id,

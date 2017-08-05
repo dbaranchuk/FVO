@@ -601,7 +601,34 @@ def test_method(data):
     return gen_success(message = {'status':'error', 'errors':errors})
 
 def save_basic_information(data):
-    print >> sys.stderr, data
+    student_info = Student_info.query.get(current_user.id)
+    tableclass = student_info[data['do']];
+    errors = ''
+    if( tableclass ):
+        for field, value in data.iteritems():
+            if len( field ) and not len( value ):
+                errors += u'Заполните поле "' + tableclass.get_russian_name( field ) + u'"\n'
+        if len(errors):
+            errors = "<br>".join(errors.split("\n"))
+            return gen_success(message = {'status':'error', 'errors' : errors })
+    else:
+        tableclass = get_class_by_tablename(data['do'])
+        for field, value in data.iteritems():
+            if len( field ) and not len( value ):
+                errors += u'Заполните поле "' + tableclass().get_russian_name( field ) + u'"\n'
+        if len(errors):
+            errors = "<br>".join(errors.split("\n"))
+            return gen_success(message = {'status':'error', 'errors' : errors })
+        else:
+            sign_fields = { field : value for field, value in data.iteritems() if len(tableclass().placeholder(field))!=0 }
+            tabletuple = tableclass()
+            tabletuple.student_info_id = student_info.id
+            for field, value in sign_fields.iteritems():
+                print type(getattr(tabletuple,field))
+                setattr(tabletuple, field, value)
+            db.session.add(tabletuple)
+    
+    db.session.commit()
     return gen_success(message = {'status':'ok', 'input_data': json.dumps(data)} )
 
 def send_quiz_to_check(data):
