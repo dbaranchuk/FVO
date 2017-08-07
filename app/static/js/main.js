@@ -281,6 +281,48 @@ $(document).ready(function() {
         var id = $(this).data('id')
         alert(id)
     })
+
+/// READY 
+
+    $('#checkallUsers').change(function() {
+        $('.cb-user').prop( 'checked', this.checked )
+    })
+
+    $('#checkallDocuments').change(function() {
+        $('.cb-doc').prop( 'checked', this.checked)
+    })
+
+    $('#generateBtn').click(function() {
+        var checkedCbUsers = $('.cb-user:checkbox:checked')
+        var checkedCbDocs = $('.cb-doc:checkbox:checked')
+
+        var userIDs = checkedCbUsers.map(function() {
+            return this.value
+        }).get()
+        var docIDs = checkedCbDocs.map(function() {
+            return this.value
+        }).get()
+
+        var data = {
+            'do' : 'generateDocuments',
+            'userIDs' : userIDs,
+            'docIDs' : docIDs
+        }
+
+        $(this).html('Генерация...')
+
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: data,
+            success: function (res) {
+                $(this).html('Сгенерировать и скачать')
+                alert(res['message'])
+            },
+            dataType: 'json',
+            async: false
+        });
+    });
     
 });
 
@@ -670,16 +712,6 @@ function download(url, renameTo){
 
 function genAndDownload(){
     generate(function(url){ download(url, 'Documents.zip'); });
-}
-
-function checkAllElements(checkerId) {
-    var i;
-    var x = document.getElementById("checkbox-" + checkerId);
-    x = x.getElementsByTagName('tr');
-    var value = document.getElementById('checkall'+checkerId).checked;
-    for (i = 1; i < x.length; i++) {
-        x[i].childNodes[1].childNodes[0].checked=value;
-    }
 }
 
 function prepareFileUploader(idName){

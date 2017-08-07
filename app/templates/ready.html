@@ -12,25 +12,28 @@
     </div>
 
     <div class="row">
-        <table class="table" id="checkbox-1">
+        <table class="table">
             <thead>
             <tr>
                 <th>
-                    <input type="checkbox" id="checkall1" onchange="checkAllElements(1);">
+                    <input type="checkbox" id="checkallUsers">
                 </th>
-                <th>Фамилия</th><th>Имя</th><th>Отчество</th><th>Место рождения</th><th>Анкета</th>
+
+                <th>Фамилия</th><th>Имя</th><th>Отчество</th><th>Год поступления на ФВО</th>
+
             </tr>
             </thead>
             <tbody>
             {% for user in users %}
-                {% if user.active %}
-                    <tr>
-                        <td><input type="checkbox" class="cb-user" id="cbu{{user.id}}"></td>
-                        <td>{{students_info[user.id].last_name}}</td><td>{{students_info[user.id].first_name}}</td><td>{{students_info[user.id].middle_name}}</td>
-                        <td>{{students_info[user.id].birth_place}}</td>
-                        <td><a href="inprocess/{{user.id}}"> Просмотреть </td>
-                    </tr>
-                {% endif %}
+
+                <tr>
+                    <td><input type="checkbox" class="cb-user" value="{{user['id']}}"></td>
+                    <td>{{user['lastName']}}</td>
+                    <td>{{user['firstName']}}</td>
+                    <td>{{user['middleName']}}</td>
+                    <td>{{user['year']}}</td>
+                </tr>
+
             {% endfor %}
             </tbody>
         </table>
@@ -41,11 +44,11 @@
     <div class="page-header"> <h1>Документы</h1> </div>
 
 
-    <table class="table table-striped" id="checkbox-2">
+    <table class="table table-striped">
         <thead>
         <tr>
             <th>
-                <input type="checkbox" id="checkall2" onchange="checkAllElements(2);">
+                <input type="checkbox" id="checkallDocuments">
             </th>
             <th>Документ</th>
         </tr>
@@ -53,8 +56,8 @@
         <tbody>
             {% for doc in docs %}
             <tr>
-                <td><input type="checkbox" class="cb-doc" id="cbd{{loop.index - 1}}"></td>
-                <td>{{doc.name}}</td>
+                <td><input type="checkbox" class="cb-doc" value="{{doc['id']}}"></td>
+                <td>{{doc['name']}}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -62,7 +65,7 @@
 
     <br>
 
-    <button type="button" id="gen-button" class="ag-hor-center btn btn-lg btn-success" onclick="genAndDownload();">Сгенерировать</button>
+    <button type="button" id="generateBtn" class="ag-hor-center btn btn-lg btn-success" value="Сгенерировать">Сгенерировать</button>
 
 </div>
 {% endblock %}

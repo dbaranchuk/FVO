@@ -746,6 +746,13 @@ def getSqlRequest(lastName, year, vusStr):
 
     return text(sqlRequest + whereBlock)
 
+### GENERATING DOCUMENTS
+
+def generateDocuments(data):
+    return gen_success(message = 'ololo')
+
+
+
 @app.route('/post_query', methods=['POST'])
 def post_query():
     data = request.form
@@ -763,6 +770,7 @@ def post_query():
 POST_METHODS = dict( [ (table, save_section_information) for table in get_user_tables() ] )
 POST_METHODS.update( {
                 'searchUsers': searchUsers,
+                'generateDocuments': generateDocuments,
                 'send_quiz_to_check': send_quiz_to_check,
                 'save_not_fixed_section': save_not_fixed_section,
                 'change_section_state' : change_section_state,
