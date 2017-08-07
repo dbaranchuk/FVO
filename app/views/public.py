@@ -22,19 +22,28 @@ def ready():
     if user_role() < 1:
         return redirect(url_for('profile'))
 
-    users = User.query.filter_by(role = 0)
-    docs = Document.query.all()
+    users = User.query.filter_by(role = 0, active = False)
+    documents = Document.query.all()
 
-    user_ids = []
+    userInfo = []
     for user in users:
-        user_ids.append(user.id);
-    
-    students_info = {};
-    for id in user_ids:
-        students_info[id] = Student_info.query.filter_by( user_id=id )    
+        userInfo.append({
+            'id' : user.id,
+            'lastName' : user.students_info.basic_information.last_name,
+            'firstName' : user.students_info.basic_information.first_name,
+            'middleName' : user.students_info.basic_information.middle_name,
+            'year' : user.login[-4:]
+        })
 
-    return render_template('ready.html', title=u'Готовые', tab_active=1, users=users, 
-        docs=docs, students_info=students_info)
+    docs = []
+    for document in documents:
+        docs.append({
+            'id' : document.id,
+            'name' : document.name
+        })
+
+    return render_template('ready.html', title=u'Готовые', tab_active=1, users=userInfo, 
+        docs=docs)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
