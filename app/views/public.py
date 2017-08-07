@@ -208,7 +208,6 @@ def get_sections_data_by_id(user_id):
                     element = [x.copy() for x in section_info['fields']]
                     fill_section_values(element, table_records[i])
                     section_info['filled_fields'].append(element)
-            print >> sys.stderr, section_info['filled_fields']
         sections_arr.append(section_info)
 
     return sections_arr
