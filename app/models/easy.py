@@ -1,10 +1,18 @@
 from app import db
 
-# Mode of table
+# States of table
 TABLE_STATES = {
     'NOT_EDITED' : 0,
     'EDITED'     : 1,
     'DECLINED'   : 2,
+    'APPROVED'   : 3, 
+}
+
+# States of quiz
+QUIZ_STATES = {
+    'NOT_FILLED' : 0,
+    'DECLINED'   : 1,
+    'NOT_CHECKED': 2,
     'APPROVED'   : 3, 
 }
 

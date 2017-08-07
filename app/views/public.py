@@ -77,28 +77,46 @@ def inprocess():
     if user_role() < 1:
         abort(404)
     users = User.query.filter_by(role = 0, active = True)
-    ids = []
-    for user in users:
-        ids.append(user.vus_id)
-    vuses = {};
-    for id in ids:
-        vuses[id] = VUS.query.get(id)
 
-    user_ids = []
-    for user in users:
-        user_ids.append(user.id);
+    vuses = { vus.id : vus for vus in VUS.query.all() }
+
+#    user_ids = map(lambda user: user.id, users)
     
-    students_info = {};
-    for id in user_ids:
-        students_info[id] = Student_info.query.get(id)  
+#    students_info = {}
+#    for id in user_ids:
+#        students_info[id] = Student_info.query.get(id)  
 
-    relatives = {};
-    for id in students_info:
-        relatives[id] = Family_member_info.query.filter_by(student_info_id=id)  
+#    relatives = {};
+#    for id in students_info:
+#        relatives[id] = Family_member_info.query.filter_by(student_info_id=id)  
 
     return render_template('inprocess.html', title=u'В процессе', tab_active=2, users = users, 
-        vuses = vuses, students_info =students_info, relatives = relatives)
+        vuses = vuses)
 
+
+def get_quiz_state(user_id):
+    student_info = User.query.get(user_id).students_info
+
+    has_unchecked = False
+    has_unfilled  = False
+    has_declined  = False
+    for table in get_user_tables():
+        state = student_info['table_'+table]
+        if state == TABLE_STATES['DECLINED']:
+            has_declined = True 
+        elif state == TABLE_STATES['EDITED']:
+            has_unchecked = True
+        elif state == TABLE_STATES['NOT_EDITED']:
+            has_unfilled  = True
+
+    state = QUIZ_STATES['APPROVED']
+    if has_unchecked:
+        state = QUIZ_STATES['NOT_CHECKED']
+    elif has_declined:
+        state = QUIZ_STATES['DECLINED']
+    elif has_unfilled:
+        state = QUIZ_STATES['NOT_FILLED']
+    return state
 
 @app.route('/inprocess/<user_id>')
 @login_required
@@ -108,12 +126,12 @@ def to_page_approve_user(user_id):
 
     sections_arr = get_sections_data_by_id(user_id)
     section_statuses = get_section_statuses(user_id)
-    comment = u""
-
-    status = u'Имеются непроверенные секции | Анкета одобрена | Анкета отклонена'
+    comments = get_section_comments(user_id)
+    status = get_quiz_state(user_id)
 
     return render_template('user-admin.html', title=u'Одобрение аккаунта', sections=sections_arr, table_states=TABLE_STATES,
-         comment=comment, quiz_status=status, section_statuses=section_statuses, user_id=user_id, navprivate=True)
+        quiz_status=status, section_statuses=section_statuses, user_id=user_id, navprivate=True, quiz_states=QUIZ_STATES, 
+        comments=comments)
 
 '''
 @app.route('/approve_user/<user_id>')
@@ -169,20 +187,17 @@ def search():
 
 
 class InputValue:
-    def __init__(self, eng, rus, inp_type, placeholder, value='', comment=''):
+    def __init__(self, eng, rus, inp_type, placeholder, value=''):
         self.eng = eng
         self.rus = rus
         self.inp_type = inp_type
         self.placeholder = placeholder
         self.value = value
-        self.comment = comment
         self.valid = ( self.eng is not None and self.rus is not None )
 
     def copy(self):
-        return InputValue( 
-                           eng=self.eng, rus=self.rus, inp_type=self.inp_type, 
-                           placeholder=self.placeholder, value=self.value, comment=self.comment
-                         )
+        return InputValue( eng=self.eng, rus=self.rus, inp_type=self.inp_type, 
+                           placeholder=self.placeholder, value=self.value )
 
 def fill_section_values(fields, user_info):
     for field in fields:
@@ -218,39 +233,34 @@ def get_sections_data_by_id(user_id):
                     element = [x.copy() for x in section_info['fields']]
                     fill_section_values(element, table_records[i])
                     section_info['filled_fields'].append(element)
-            print >> sys.stderr, section_info['filled_fields']
         sections_arr.append(section_info)
 
     return sections_arr
 
 def get_section_statuses(user_id):
     student_info = User.query.get( user_id ).students_info
-    return dict(map(lambda s: (s[0][len('table_'):], student_info[s[0]]), get_fields('student_info')))
+    return dict( map(lambda s: (s[0][len('table_'):], student_info[s[0]]), get_fields('student_info')) )
+
+def get_section_comments(user_id):
+    student_info = User.query.get( user_id ).students_info
+    d = {}
+    for table in get_user_tables():
+        val = student_info['comments'][table + '_comment']
+        d[table] = val if val is not None else ''
+    return d
 
 @app.route('/profile')
 @login_required
 def profile():
     if user_role() > 0:
         return redirect('ready')
-    vuses = {}
-    comment = ''
-    approved = 0
-    curr_vus = ''
 
-    sections_arr = get_sections_data_by_id(current_user.id)
+    sections_arr     = get_sections_data_by_id(current_user.id)
     section_statuses = get_section_statuses(current_user.id)
-    if not sections_arr:
-        comment = u'ОБРАТИТЕСЬ К АДМИНИСТРАТОРУ'
-        return render_template('user.html', title=u'Данные', fixed_sections=fixed_sections, not_fixed_sections=not_fixed_sections, 
-            vuses=vuses, comment=comment, approved=approved, curr_vus=curr_vus, navprivate=True)
-
-    vuses = VUS.query.all()
-    comment = u""
-    if(Comments.query.get(current_user.id)):
-        comment = Comments.query.get(current_user.id).comment
-    approved = User.query.get(current_user.id).active
-    curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
+    is_approved      = User.query.get(current_user.id).approved
+    quiz_status      = get_quiz_state(current_user.id)
+    comments         = get_section_comments(current_user.id)
     return render_template('user.html', title=u'Данные', sections=sections_arr, table_states=TABLE_STATES,
-        vuses=vuses, comment=comment, approved=approved, section_statuses=section_statuses,
-        curr_vus=curr_vus, user_id=current_user.id, navprivate=True)
+         section_statuses=section_statuses, is_approved=is_approved, quiz_status=quiz_status, quiz_states=QUIZ_STATES,
+         user_id=current_user.id, comments=comments, navprivate=True)
 

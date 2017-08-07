@@ -1,6 +1,37 @@
 //////////////////////////////////////////////// JQUERY 
 $(document).ready(function() {
 // ADMIN PROFILE
+    $('#btn_approve_all_sections').click(function() {
+        if (!confirm('Вы уверены?')) {
+            return false
+        }
+        var $save_result_div = $("#div_all_sections_approve")
+        var post_data = { 
+                         'user_id'   : $("#user_id").val(),
+                         'do'        : 'approve_all_sections',
+                        }
+        $.ajax({
+            type: 'post',
+            url: '/post_query',
+            data: post_data,
+            success: function (res) {
+                var msg = res['message']
+                $save_result_div.removeClass('no-display')
+                if (!$save_result_div.hasClass('alert-success')) {
+                    $save_result_div.addClass('alert-success')
+                }
+                $.each( ['.status_span'], function( index, value ) {
+                    $( value ).replaceWith('<span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>')
+                })
+                $save_result_div.text('все секции одобрены')
+            },
+            dataType: 'json',
+            async: true,
+        });
+        return false
+    });
+
+
     $('.btn_change_section_state').click(function() {
         
         var approved = $(this).hasClass('approved')
@@ -136,40 +167,6 @@ $(document).ready(function() {
 
     $(document).on('click', '.btn_remove_not_fixed_element', function(){
         $(this).closest('.not_fixed_element').remove();
-        return false;
-    });
-
-    $('#btn_send_quiz_to_check').click(function() {
-        var post_data = { 'do': 'send_quiz_to_check' }
-        var $send_quiz_result_div = $('#send_quiz_result_div')
-        alert("btn_send_quiz_to_check")
-        $.ajax({
-            type: 'post',
-            url: 'post_query',
-            data: post_data,
-            success: function (res) {
-                var msg = res['message']
-                if (msg['status'] == 'ok') {
-                    $('#quiz_status_div').replaceWith("<div id='quiz_status_div' class='alert alert-success' role='alert'> \
-                                                        <strong>Статус анкеты:</strong> На проверке \
-                                                       </div>"
-                                                     );
-                    $send_quiz_result_div.removeClass('alert-danger')
-                    if (!$send_quiz_result_div.hasClass('alert-info')) {
-                        $send_quiz_result_div.addClass('alert-info')
-                    }
-                    $send_quiz_result_div.text('анкета отправлена на проверку')
-                } else {
-                    $send_quiz_result_div.removeClass('alert-info')
-                    if (!$send_quiz_result_div.hasClass('alert-danger')) {
-                        $send_quiz_result_div.addClass('alert-danger')
-                    }
-                    $send_quiz_result_div.text('необходимо корректно заполнить все секции')
-                }
-            },
-            dataType: 'json',
-            async: true,
-        });
         return false;
     });
 

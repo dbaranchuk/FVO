@@ -4,8 +4,15 @@
 <button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
 
 <div class="ag-hor-center ag-bottom-spacing">
-    <div id="quiz_status_div" class="alert alert-info" role="alert">{{ quiz_status }}</div>
-
+    {% if quiz_status == quiz_states['APPROVED'] %}
+        <div class="alert alert-success" >&nbsp Анкета одобрена &nbsp</div>
+    {% elif quiz_status == quiz_states['NOT_CHECKED'] %}
+        <div class="alert alert-warning" >&nbsp Имеются непроверенные секции &nbsp</div>
+    {% elif quiz_status == quiz_states['NOT_FILLED']%}
+        <div class="alert" >&nbsp Имеются незаполненные поля &nbsp</div>
+    {% else %}
+        <div class="alert alert-danger" >&nbsp Анкета отклонена &nbsp</div>
+    {% endif %}
 
 <!--- COMMON -->   
     <input id="user_id" type="hidden" value="{{ user_id }}">
@@ -35,7 +42,7 @@
                     </div><br>
                 {% endfor %}
                 <div align="center"> 
-                    Комментарий:<br> <textarea class="section_comment" placeholder="Добавьте комментарий по неверно заполненным полям" style="width: 450px; height: 50px;"></textarea> 
+                    Комментарий:<br> <textarea class="section_comment" placeholder="Добавьте комментарий по неверно заполненным полям" style="width: 450px; height: 50px;">{{ comments[section.table_name] }}</textarea> 
                 </div>
                 <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
                 <br>
@@ -79,6 +86,9 @@
                 {% else %}
                 <div align="center" class="well no-elements"> Пользователь не добавил ни одного элемента <br></div>
                 {% endif %}
+                <div align="center"> 
+                    Комментарий:<br> <textarea class="section_comment" placeholder="Добавьте комментарий по неверно заполненным полям" style="width: 450px; height: 50px;">{{ comments[section.table_name] }}</textarea> 
+                </div>
                 <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
                 <br>
                 <div align="center"> 
@@ -91,7 +101,10 @@
     </div>
     {% endif %}
     {% endfor %}
-
+    <div align="center">
+        <div class="alert ag-hor-center no-display" id="div_all_sections_approve" role="alert"></div>
+        <button type="button" class="btn btn-success" id="btn_approve_all_sections"> Одобрить все секции </button>
+    </div>
 </div>
 
 {% endblock %}
