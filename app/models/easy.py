@@ -1,30 +1,19 @@
 from app import db
 
 # Mode of table
-NOT_EDIT    = 0
-EDIT        = 1
-CHANGING    = 2
-ABSENT      = 3 
+TABLE_STATES = {
+    'NOT_EDITED' : 0,
+    'EDITED'     : 1,
+    'DECLINED'   : 2,
+    'APPROVED'   : 3, 
+}
 
 # Mode of budgetary
-NOT_BUDGET  = 0
-BUDGET      = 1
+NOT_BUDGET = 0
+BUDGET     = 1
 
 
-
-def get_form_type(table_type):
-    table2form = {
-        'INTEGER': 'number',
-        'DATE': 'date',
-        'VARCHAR': 'text'
-    }
-    if '(' in table_type:
-        table_type = table_type[:table_type.index('(')]
-    if table_type in table2form:
-        return table2form[table_type]
-    return 'text'
-
-def get_tables():
+def get_user_tables():
     return [
             'basic_information',
             'certificates_change_name',
@@ -42,6 +31,20 @@ def get_tables():
             'brothers_sisters_children',
             'personal_data',
     ]
+
+def get_form_type(table_type):
+    table2form = {
+        'INTEGER': 'number',
+        'DATE': 'date',
+        'VARCHAR': 'text'
+    }
+    if '(' in table_type:
+        table_type = table_type[:table_type.index('(')]
+    if table_type in table2form:
+        return table2form[table_type]
+    return 'text'
+
+
 
 def get_fields(table):
     columns = db.metadata.tables[table].get_children()

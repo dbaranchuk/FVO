@@ -18,11 +18,14 @@
                 <th>
                     <input type="checkbox" id="checkallUsers">
                 </th>
+
                 <th>Фамилия</th><th>Имя</th><th>Отчество</th><th>Год поступления на ФВО</th>
+
             </tr>
             </thead>
             <tbody>
             {% for user in users %}
+
                 <tr>
                     <td><input type="checkbox" class="cb-user" value="{{user['id']}}"></td>
                     <td>{{user['lastName']}}</td>
@@ -30,6 +33,7 @@
                     <td>{{user['middleName']}}</td>
                     <td>{{user['year']}}</td>
                 </tr>
+
             {% endfor %}
             </tbody>
         </table>

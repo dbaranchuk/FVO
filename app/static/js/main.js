@@ -1,5 +1,50 @@
 //////////////////////////////////////////////// JQUERY 
 $(document).ready(function() {
+// ADMIN PROFILE
+    $('.btn_change_section_state').click(function() {
+        
+        var approved = $(this).hasClass('approved')
+        var new_state = $(this).attr('data')
+        var $section = $(this).closest('.section');
+        var $status_span = $section.find('.status_span');
+        var $save_result_div = $section.find('.save_result_div');
+        var post_data = { 
+                         'user_id'   : $("#user_id").val(),
+                         'new_state' : new_state,
+                         'comment'   : $section.find(".section_comment").val(),
+                         'table'     : $section.find("input[name='table']").val(),
+                         'do'        : $section.find("input[name='do']").val(),
+                        };
+
+        $.ajax({
+            type: 'post',
+            url: '/post_query',
+            data: post_data,
+            success: function (res) {
+                var msg = res['message']
+                $save_result_div.removeClass('no-display')
+                if (approved) {
+                    $status_span.replaceWith('<span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>')
+                    $save_result_div.removeClass('alert-danger')
+                    if (!$save_result_div.hasClass('alert-success')) {
+                        $save_result_div.addClass('alert-success')
+                    }
+                    $save_result_div.text('секция одобрена')
+                } else {
+                    $status_span.replaceWith('<span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>')
+                    $save_result_div.removeClass('alert-success')
+                    if (!$save_result_div.hasClass('alert-danger')) {
+                        $save_result_div.addClass('alert-danger')
+                    }
+                    $save_result_div.text('секция отклонена')
+                }
+            },
+            dataType: 'json',
+            async: true,
+        });
+        return false;
+    });
+// **************
 
 // selectors hardcode
     function set_and_fix_input_field(text, name, value) {
@@ -130,7 +175,7 @@ $(document).ready(function() {
 
     $('form.section_form').submit(function() {
         var $inputs = $(this).find(':input');
-        var $section = $(this).parent('.section');
+        var $section = $(this).closest('.section');
         var $status_span = $section.find('.status_span');
         var $save_result_div = $(this).find('.save_result_div');
         
@@ -175,13 +220,13 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'post',
-            url: 'post_query',
+            url: '/post_query',
             data: post_data,
             success: function (res) {
                 var msg = res['message']
                 $save_result_div.removeClass('no-display')
                 if (msg['status'] == 'ok') {
-                    $status_span.replaceWith('<h5><span class="status_span alert-info">&nbsp на проверке &nbsp</span></h5>')
+                    $status_span.replaceWith('<span class="status_span alert-info" style="float:right">&nbsp на проверке &nbsp</span>')
                     $save_result_div.removeClass('alert-danger')
                     if (!$save_result_div.hasClass('alert-info')) {
                         $save_result_div.addClass('alert-info')
@@ -194,7 +239,6 @@ $(document).ready(function() {
                     }
                     $save_result_div.html(msg['errors'])
                 }
-                alert(msg['input_data'])
             },
             dataType: 'json',
             async: true,

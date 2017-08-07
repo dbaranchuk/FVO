@@ -1,65 +1,97 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Main jumbotron for a primary marketing message or call to action -->
+<button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
+
 <div class="ag-hor-center ag-bottom-spacing">
-    <div class="alert alert-warning" role="alert">
-        <strong>Статус:</strong> На проверке
-    </div>
+    <div id="quiz_status_div" class="alert alert-info" role="alert">{{ quiz_status }}</div>
 
-    <form>
-        {% for field in fields %}
-            {% if field.eng!="id" and field.eng != "None" %}
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">{{field.rus}}</span>
-                    <span class="col-xs-6 list-group-item"><b>{{field.value}}</b></span>
-                </div>
-            {%endif%}
-        {% endfor %}
-        <br>
 
-        <div class="page-header"> <h1>Родственники</h1>
-        {% for relative in relatives %}
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">Кем приходится</span>
-                    <span class="col-xs-6 list-group-item"><b>{{relative.membership_name}}</b></span>
+<!--- COMMON -->   
+    <input id="user_id" type="hidden" value="{{ user_id }}">
+
+    {% for section in sections %}
+    {% if section.is_fixed %}
+    <div class="section fixed_section"> 
+        <h3>{{section.section_name}} <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
+        {% if section_statuses[section.table_name] == table_states['APPROVED'] %}
+            <span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['EDITED'] %}
+            <span class="status_span alert-warning" style="float:right">&nbsp изменено &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['NOT_EDITED']%}
+            <span class="status_span" style="float:right">&nbsp не заполнялось &nbsp</span>
+        {% else %}
+            <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        {% endif %}
+        </h3>
+        <div class="no-display" id="spoiler-section-{{section.section_number}}">
+            <form class="section_form" method="post">
+                <input name="do" type="hidden" value="change_section_state">
+                <input name="table" type="hidden" value="{{section.table_name}}">
+                {% for field in section.fields %}
+                    <div class="input-group">
+                        <span class="input-group-addon">{{field.rus}}</span>
+                        <input class="form-control" name="{{field.eng}}" readonly="readonly" type="text" value="{{field.value}}">
+                    </div><br>
+                {% endfor %}
+                <div align="center"> 
+                    Комментарий:<br> <textarea class="section_comment" placeholder="Добавьте комментарий по неверно заполненным полям" style="width: 450px; height: 50px;"></textarea> 
                 </div>
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">Фамилия</span>
-                    <span class="col-xs-6 list-group-item"><b>{{relative.last_name}}</b></span>
-                </div>
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">Имя</span>
-                    <span class="col-xs-6 list-group-item"><b>{{relative.first_name}}</b></span>
-                </div>
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">Отчество</span>
-                    <span class="col-xs-6 list-group-item"><b>{{relative.middle_name}}</b></span>
-                </div>
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">Телефон</span>
-                    <span class="col-xs-6 list-group-item"><b>{{relative.mobile_phone}}</b></span>
-                </div>
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">Адрес (прописки)</span>
-                    <span class="col-xs-6 list-group-item"><b>{{relative.address_registration}}</b></span>
-                </div>
-                <div class="row list-group">
-                    <span class="col-xs-6 list-group-item">Адрес (фактический)</span>
-                    <span class="col-xs-6 list-group-item"><b>{{relative.address_usual}}</b></span>
-                </div>
-                <hr>
+                <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
                 <br>
-        {% endfor %}
+                <div align="center"> 
+                    <button type="button" class="btn btn-danger btn_change_section_state" data="{{ table_states['DECLINED'] }}">Отклонить секцию</button>
+                    <button type="button" class="btn btn-success btn_change_section_state approved" data="{{ table_states['APPROVED'] }}">Одобрить секцию</button>
+                </div>
+            </form>
         </div>
+        <hr>
+    </div> 
+    {% else %}
+    <div class="section not_fixed_section">
+        <h3> {{section.section_name}} <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
+        {% if section_statuses[section.table_name] == table_states['APPROVED'] %}
+            <span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['EDITED'] %}
+            <span class="status_span alert-warning" style="float:right">&nbsp изменено &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['NOT_EDITED']%}
+            <span class="status_span" style="float:right">&nbsp не заполнялось &nbsp</span>
+        {% else %}
+            <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        {% endif %}
+        </h3>
+        <div class="no-display" id="spoiler-section-{{section.section_number}}">
+            <form class="section_form" method="post">
+                <input name="do" type="hidden" value="change_section_state">
+                <input name="table" type="hidden" value="{{section.table_name}}">
 
-        <textarea id="comment" class="form-control" placeholder="Комментарий"></textarea>
-        <br>
-    </form>
-    <div class="input-group">
-        <button class="btn btn-lg btn-success ag-hor-left" onclick="submitApprove({{user_id}})">Одобрить</button>
-        <button class="btn btn-lg btn-danger ag-hor-right" onclick="submitComment({{user_id}})">Повторное заполение</button>
+                {% if section.filled_fields %}
+                {% for filled_field in section.filled_fields %}
+                <div class="well well-lg not_fixed_element">
+                    {% for field in filled_field %}
+                    <div class="input-group">
+                        <span class="input-group-addon"> {{field.rus}} </span>
+                        <input class="form-control" name="{{field.eng}}" readonly="readonly" type="text" value="{{field.value}}">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                {% else %}
+                <div align="center" class="well no-elements"> Пользователь не добавил ни одного элемента <br></div>
+                {% endif %}
+                <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
+                <br>
+                <div align="center"> 
+                    <button type="button" class="btn btn-danger btn_change_section_state" data="{{ table_states['DECLINED'] }}">Отклонить секцию</button>
+                    <button type="button" class="btn btn-success btn_change_section_state approved" data="{{ table_states['APPROVED'] }}">Одобрить секцию</button>
+                </div>
+            </form>
+        </div>
+        <hr>
     </div>
+    {% endif %}
+    {% endfor %}
+
 </div>
 
 {% endblock %}
