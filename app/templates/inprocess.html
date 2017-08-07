@@ -16,9 +16,9 @@
         <tbody>
         {% for user in users %}
         <tr>
-            <td>{{students_info[user.id].last_name}} {{students_info[user.id].first_name}} {{students_info[user.id].middle_name}}</td>
-            {% if user.vus %}
-            <td>{{user.vus.to_string()}}</td>
+            <td>{{ user['students_info']['basic_information']['last_name']}} {{user['students_info']['basic_information']['first_name']}} {{user['students_info']['basic_information']['middle_name'] }}</td>
+            {% if user['vus_id'] %}
+            <td>{{vuses[user['vus_id']].to_string()}}</td>
             {% else %}
             <td>Не заполнено</td>
             {% endif %}

@@ -17,11 +17,11 @@ class Class_with_attrs_access():
         except all:
             return ''    
 
+
 class Student_info(db.Model, Class_with_attrs_access):
     __tablename__ = 'student_info'
     id = db.Column(db.Integer, primary_key = True)
     user_id                         = db.Column( db.Integer, db.ForeignKey( 'user.id' ) )
-#    is_ready                        = db.Column( db.Boolean, default=0)
     table_basic_information         = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] ) 
     table_certificates_change_name  = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
     table_communications            = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
@@ -38,6 +38,8 @@ class Student_info(db.Model, Class_with_attrs_access):
     table_married_certificates      = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
     table_personal_data             = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
 
+    comments = db.relationship('Comments', 
+        back_populates = 'student_info', uselist = False )
     basic_information =  db.relationship('Basic_information', 
         back_populates = 'student_info', uselist = False )
     certificates_change_name =  db.relationship('Certificates_change_name', 
@@ -68,6 +70,31 @@ class Student_info(db.Model, Class_with_attrs_access):
         back_populates = 'student_info' )
     personal_data =  db.relationship('Personal_data', 
         back_populates = 'student_info' )
+
+class Comments(db.Model, Class_with_attrs_access):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key = True)
+    student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id'))
+
+    # поля с комментариями админа к секции
+    basic_information_comment         = db.Column( db.String( 512 ), default='' ) 
+    certificates_change_name_comment  = db.Column( db.String( 512 ), default='' )
+    communications_comment            = db.Column( db.String( 512 ), default='' )
+    passports_comment                 = db.Column( db.String( 512 ), default='' )
+    international_passports_comment   = db.Column( db.String( 512 ), default='' )
+    registration_certificates_comment = db.Column( db.String( 512 ), default='' )
+    middle_education_comment          = db.Column( db.String( 512 ), default='' )
+    spec_middle_education_comment     = db.Column( db.String( 512 ), default='' )
+    high_education_comment            = db.Column( db.String( 512 ), default='' )
+    military_education_comment        = db.Column( db.String( 512 ), default='' )
+    languages_comment                 = db.Column( db.String( 512 ), default='' )
+    mothers_fathers_comment           = db.Column( db.String( 512 ), default='' )
+    brothers_sisters_children_comment = db.Column( db.String( 512 ), default='' )
+    married_certificates_comment      = db.Column( db.String( 512 ), default='' )
+    personal_data_comment             = db.Column( db.String( 512 ), default='' )
+
+    student_info = db.relationship( 'Student_info', back_populates = 'comments' )
+
 
 class Basic_information(db.Model, Class_with_attrs_access):
     __tablename__ = 'basic_information'
@@ -381,6 +408,8 @@ class Middle_education( db.Model, Class_with_attrs_access ):
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     school = db.Column( db.String( 128 ) )
     school_address = db.Column( db.String( 128 ) )
+    entrance_year = db.Column( db.String( 4 ) )
+    graduation_year = db.Column( db.String( 4 ) )
     
     student_info =  db.relationship('Student_info', 
         back_populates = 'middle_education' )
@@ -394,7 +423,9 @@ class Middle_education( db.Model, Class_with_attrs_access ):
     def placeholder(self, eng):
         placeholders = {
             'school' : u'МБОУ СОШ "Лицей № 5"',
-            'school_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56'
+            'school_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56',
+            'entrance_year' : u'2005',
+            'graduation_year' : u'2013',
         }
         if eng not in placeholders:
             return ''
@@ -405,7 +436,9 @@ class Middle_education( db.Model, Class_with_attrs_access ):
             'id': None, 
             'student_info_id' : None,
             'school' : u'Школа по аттестату',
-            'school_address' : u'Адрес местонахождения'
+            'school_address' : u'Адрес местонахождения',
+            'entrance_year' : u'Год поступления',
+            'graduation_year' : u'Год окончания',
         }
         if eng in en2ru:
             return en2ru[eng]
@@ -419,6 +452,8 @@ class Spec_middle_education( db.Model, Class_with_attrs_access ):
     institution = db.Column( db.String( 128 ) )
     institution_address = db.Column( db.String( 128 ) )
     speciality = db.Column( db.String( 128 ) )
+    entrance_year = db.Column( db.String( 4 ) )
+    graduation_year = db.Column( db.String( 4 ) )
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'spec_middle_education' )
@@ -433,7 +468,9 @@ class Spec_middle_education( db.Model, Class_with_attrs_access ):
         placeholders = {
             'institution' : u'ПТУ № 43',
             'institution_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56',
-            'speciality' : u'Сварщик'
+            'speciality' : u'Сварщик',
+            'entrance_year' : u'2005',
+            'graduation_year' : u'2013',
         }
         if eng not in placeholders:
             return ''
@@ -445,7 +482,9 @@ class Spec_middle_education( db.Model, Class_with_attrs_access ):
             'student_info_id' : None,
             'institution' : u'Учебное заведение',
             'institution_address' : u'Адрес местонахождения',
-            'speciality' : u'Специальность по диплому'
+            'speciality' : u'Специальность по диплому',
+            'entrance_year' : u'Год поступления',
+            'graduation_year' : u'Год окончания',
         }
         if eng in en2ru:
             return en2ru[eng]
@@ -466,6 +505,8 @@ class High_education(db.Model, Class_with_attrs_access):
     study_group_4 = db.Column( db.String( 10 ) )
     form_study = db.Column( db.String( 20 ) )
     quality = db.Column( db.String( 20 ) )
+    entrance_year = db.Column( db.String( 4 ) )
+    graduation_year = db.Column( db.String( 4 ) )
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'high_education' )
@@ -487,7 +528,9 @@ class High_education(db.Model, Class_with_attrs_access):
             'study_group_3' : u'339',
             'study_group_4' : u'467М',
             'form_study' : u'очная',
-            'quality' : u'Бакалавр'
+            'quality' : u'Бакалавр',
+            'entrance_year' : u'2005',
+            'graduation_year' : u'2013',
         }
         if eng not in placeholders:
             return ''
@@ -506,7 +549,9 @@ class High_education(db.Model, Class_with_attrs_access):
             'study_group_3' : u'Учебная группа 3 курс',
             'study_group_4' : u'Учебная группа 4 курс',
             'form_study' : u'Форма обучения',
-            'quality' : u'Квалификация'
+            'quality' : u'Квалификация',
+            'entrance_year' : u'Год поступления',
+            'graduation_year' : u'Год окончания',
         }
         if eng in en2ru:
             return en2ru[eng]
@@ -607,6 +652,8 @@ class Mothers_fathers( db.Model, Class_with_attrs_access ):
     job_post = db.Column( db.String( 64 ) )
     fact_index = db.Column( db.String( 9 ) )
     fact_address = db.Column( db.String( 256 ) )
+    foreign_citizenship = db.Column( db.String( 256 ) )
+    conviction = db.Column( db.String( 256 ) )
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'mothers_fathers' )
@@ -631,7 +678,9 @@ class Mothers_fathers( db.Model, Class_with_attrs_access ):
             'job_place' : u'ТЭЦ-5 гор. Караганда',
             'job_post' : u'Сварщик',
             'fact_index' : u'123456',
-            'fact_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56'
+            'fact_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56',
+            'foreign_citizenship' : u'Гражданство Белорусии',
+            'conviction' : u'Не судим / судим в nnnn году, оправдан',
         }
         if eng not in placeholders:
             return ''
@@ -653,7 +702,9 @@ class Mothers_fathers( db.Model, Class_with_attrs_access ):
             'job_place' : u'Место работы',
             'job_post' : u'Должность',
             'fact_index' : u'Индекс фактического проживания',
-            'fact_address' : u'Адрес фактического проживания'
+            'fact_address' : u'Адрес фактического проживания',
+            'foreign_citizenship' : u'Иностранное гражданство или подданство',
+            'conviction' : u'Судимость',
         }
         if eng in en2ru:
             return en2ru[eng]
@@ -670,6 +721,8 @@ class Brothers_sisters_children( db.Model, Class_with_attrs_access ):
     middle_name = db.Column( db.String( 20 ) )
     birth_date = db.Column(db.String(10))
     birth_place = db.Column( db.String( 64 ) )
+    foreign_citizenship = db.Column( db.String( 256 ) )
+    conviction = db.Column( db.String( 256 ) )
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'brothers_sisters_children' )
@@ -688,6 +741,8 @@ class Brothers_sisters_children( db.Model, Class_with_attrs_access ):
             'middle_name': u'Иванович',
             'birth_date': u'yyyy-mm-dd',
             'birth_place': u'гор. Нижние Пупки',
+            'foreign_citizenship' : u'Гражданство Белорусии',
+            'conviction' : u'Не судим / судим в nnnn году, оправдан',
         }
         if eng not in placeholders:
             return ''
@@ -703,6 +758,8 @@ class Brothers_sisters_children( db.Model, Class_with_attrs_access ):
             'middle_name': u'Отчество',
             'birth_date': u'Дата рождения',
             'birth_place': u'Место рождения',
+            'foreign_citizenship' : u'Иностранное гражданство или подданство',
+            'conviction' : u'Судимость',
         }
         if eng in en2ru:
             return en2ru[eng]
@@ -805,6 +862,8 @@ class Personal_data( db.Model, Class_with_attrs_access ):
     civil_specialization = db.Column( db.String( 256 ) )
     hobbies = db.Column( db.String( 256 ) )
     sports = db.Column( db.String( 256 ) )
+    scientific_results = db.Column( db.String( 256 ) )
+    work_experience = db.Column( db.String( 256 ) )
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'personal_data' )
@@ -830,6 +889,8 @@ class Personal_data( db.Model, Class_with_attrs_access ):
             'civil_specialization' : u'Программист-математик',
             'hobbies' : u'Играю на гитаре, бегаю по утрам',
             'sports' : u'шахматы - КМС; вольная борьба - 1-й взрослый',
+            'scientific_results' : u'Статья "Интерполяция экспоненты кривыми первого порядка" в Вестнике Томского университета',
+            'work_experience' : u'ООО Компания, младший аналитик nnnn-nnnn г.',
         }
         if eng not in placeholders:
             return ''
@@ -852,6 +913,8 @@ class Personal_data( db.Model, Class_with_attrs_access ):
             'civil_specialization' : u'Гражданские специальности',
             'hobbies' : u'Хобби, увлечения',
             'sports' : u'Спортивные достижения, разряды',
+            'scientific_results': u'Научные труды и изобретения',
+            'work_experience': u'Трудовая деятельность (опыт работы)',
         }
         if eng in en2ru:
             return en2ru[eng]

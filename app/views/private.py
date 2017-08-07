@@ -588,18 +588,6 @@ def add_data():
 
 ### POSTs
 
-def save_not_fixed_section(data):
-    print >> sys.stderr, data
-    elements = json.loads(data['elements'])
-    print >> sys.stderr, elements
-    return gen_success(message = {'status':'ok', 'asd':'asd'})    
-
-def test_method(data): 
-#    return gen_success(message =  {'status':'ok', 'asd':'asd'})
-    errors = "error1\nerror2\nerror3\n"
-    errors = "<br>".join(errors.split("\n"))
-    return gen_success(message = {'status':'error', 'errors':errors})
-
 def check_errors_in_input_data(data):
     errors = []
     #for field, value in data.iteritems():
@@ -640,7 +628,6 @@ def save_not_fixed_section_information(data):
         db.session.commit()
 
     student_info['table_' + data['table']] = TABLE_STATES['EDITED']
-    #student_info['is_ready'] = 0
     db.session.commit()
 
     return gen_success(message = {'status':'ok'} )
@@ -665,19 +652,32 @@ def save_section_information(data):
         for field, value in table_fields.iteritems():
             table[field] = value
         student_info['table_' + data['table']] = TABLE_STATES['EDITED']
-        #student_info['is_ready'] = 0
         db.session.commit()
 
     return gen_success(message = {'status':'ok'} )
 
+def approve_all_sections(data):
+    user = User.query.get( int(data['user_id']) )
+    student_info = user.students_info
+    for table in get_user_tables():
+        student_info['table_' + table] = TABLE_STATES['APPROVED']
+    user.approved = True
+    db.session.commit()
+    return gen_success(message = {'status':'ok'} )
+
 def change_section_state(data):
-    new_values = { 
-                    ('table_' + data['table'])              : int(data['new_state']),
-                 #   ('table_' + data['table'] + '_comment') : data['comment'],
-                 }
-    student_info = User.query.get( int(data['user_id']) ).students_info
-    for field, value in new_values.iteritems():
-        student_info[field] = value
+                    
+    new_state = int(data['new_state'])
+    user = User.query.get( int(data['user_id']) )
+    student_info = user.students_info
+    
+    student_info['table_' + data['table']] = new_state
+    if new_state == TABLE_STATES['DECLINED']:
+        user.approved = False
+        student_info['comments'][data['table'] + '_comment'] = data['comment']
+    else:
+        student_info['comments'][data['table'] + '_comment'] = ''
+
     db.session.commit()
     return gen_success(message = {'status':'ok'} )
 
@@ -772,8 +772,8 @@ POST_METHODS.update( {
                 'searchUsers': searchUsers,
                 'generateDocuments': generateDocuments,
                 'send_quiz_to_check': send_quiz_to_check,
-                'save_not_fixed_section': save_not_fixed_section,
                 'change_section_state' : change_section_state,
+                'approve_all_sections' : approve_all_sections,
 
                 })
 
