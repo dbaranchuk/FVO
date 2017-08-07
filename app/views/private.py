@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.sql import select, and_
 from docx import Document as Doc
 
-from openpyxl import load_workbook
+#from openpyxl import load_workbook
 from app.models import User, VUS, Document, Student_info, Basic_information, Comments
 
 from werkzeug.security import generate_password_hash
@@ -600,39 +600,89 @@ def test_method(data):
     errors = "<br>".join(errors.split("\n"))
     return gen_success(message = {'status':'error', 'errors':errors})
 
-def save_basic_information(data):
-    student_info = Student_info.query.get(current_user.id)
-    tableclass = student_info[data['do']];
-    errors = ''
-    if( tableclass ):
-        for field, value in data.iteritems():
-            if len( field ) and not len( value ):
-                errors += u'Заполните поле "' + tableclass.get_russian_name( field ) + u'"\n'
-        if len(errors):
-            errors = "<br>".join(errors.split("\n"))
-            return gen_success(message = {'status':'error', 'errors' : errors })
-    else:
-        tableclass = get_class_by_tablename(data['do'])
-        for field, value in data.iteritems():
-            if len( field ) and not len( value ):
-                errors += u'Заполните поле "' + tableclass().get_russian_name( field ) + u'"\n'
-        if len(errors):
-            errors = "<br>".join(errors.split("\n"))
-            return gen_success(message = {'status':'error', 'errors' : errors })
-        else:
-            sign_fields = { field : value for field, value in data.iteritems() if len(tableclass().placeholder(field))!=0 }
-            tabletuple = tableclass()
-            tabletuple.student_info_id = student_info.id
-            for field, value in sign_fields.iteritems():
-                print type(getattr(tabletuple,field))
-                setattr(tabletuple, field, value)
-            db.session.add(tabletuple)
+def check_errors_in_input_data(data):
+    errors = []
+    #for field, value in data.iteritems():
+    #    if len(field) and not len(value):
+    #        errors.append( u'Заполните поле "' + tableclass.get_russian_name( field ) )
+    return errors
+
+def save_not_fixed_section_information(data):
+    elements = json.loads(data['elements'])
+    # проверяем пустые поля
+    errors = []
+    for element in elements:
+        errors += check_errors_in_input_data(element)
+
+    if len(errors):
+        return gen_success(message = {'status':'error', 'errors' : "<br>".join(errors) })
+
+    student_info = User.query.get( current_user.id ).students_info
+    records = student_info[data['table']]
+    tableclass = get_class_by_tablename(data['table'])
     
+    ### delete existing
+    if records and len(records):
+        for record in records:
+            db.session.delete(record)
+
+    print >> sys.stderr, elements
+    ### add new records
+    for element in elements:
+        element_fields = { field : element[field] for field in element if hasattr(tableclass, field) }
+        new_record = tableclass()
+        for field, value in element_fields.iteritems():
+            new_record[field] = value
+        #student_info[table] ???
+        new_record.student_info    = student_info
+        new_record.student_info_id = student_info.id
+        db.session.add(new_record)
+        db.session.commit()
+
+    student_info['table_' + data['table']] = TABLE_STATES['EDITED']
+    #student_info['is_ready'] = 0
     db.session.commit()
-    return gen_success(message = {'status':'ok', 'input_data': json.dumps(data)} )
+
+    return gen_success(message = {'status':'ok'} )
+        
+
+def save_section_information(data):
+    
+    # проверяем пустые поля
+    if 'elements' in data:
+        return save_not_fixed_section_information(data)
+
+    errors = check_errors_in_input_data(data)
+    if len(errors):
+        return gen_success(message = {'status':'error', 'errors' : "<br>".join(errors) })
+    
+    student_info = User.query.get( current_user.id ).students_info
+    table = student_info[data['table']]
+    # обновляем таблицу
+    if table:
+        tableclass = get_class_by_tablename(data['table'])
+        table_fields = { field : data[field] for field in data if hasattr(tableclass, field) }
+        for field, value in table_fields.iteritems():
+            table[field] = value
+        student_info['table_' + data['table']] = TABLE_STATES['EDITED']
+        #student_info['is_ready'] = 0
+        db.session.commit()
+
+    return gen_success(message = {'status':'ok'} )
+
+def change_section_state(data):
+    new_values = { 
+                    ('table_' + data['table'])              : int(data['new_state']),
+                 #   ('table_' + data['table'] + '_comment') : data['comment'],
+                 }
+    student_info = User.query.get( int(data['user_id']) ).students_info
+    for field, value in new_values.iteritems():
+        student_info[field] = value
+    db.session.commit()
+    return gen_success(message = {'status':'ok'} )
 
 def send_quiz_to_check(data):
-    return gen_success(message =  {'status':'ok', 'asd':'asd'})
+    return gen_success(message =  {'status':'ok'})
 
 ### SEARCH
 def searchUsers(data):
@@ -703,33 +753,20 @@ def post_query():
         if 'do' in data and data['do'] in POST_METHODS:
             return POST_METHODS[data['do']](data)
         else:
-            return gen_error(u'post method not defined!')
+            return gen_success(message = {'status':'error', 'error':'post method not defined'})
     except Exception as err:
         print >> sys.stderr, err
-        return gen_error(u'error in post method')
+        return gen_success(message = {'status':'error', 'error':'error in post method'})
+
 
 # list of post methods
-POST_METHODS = {
-
+POST_METHODS = dict( [ (table, save_section_information) for table in get_user_tables() ] )
+POST_METHODS.update( {
                 'searchUsers': searchUsers,
                 'send_quiz_to_check': send_quiz_to_check,
                 'save_not_fixed_section': save_not_fixed_section,
-# обработчики таблиц
-                'basic_information':         save_basic_information,
-                'certificates_change_name':  save_basic_information,
-                'communications':            save_basic_information,
-                'passports':                 save_basic_information,
-                'international_passports':   save_basic_information,
-                'registration_certificates': save_basic_information,
-                'middle_education':          save_basic_information,
-                'spec_middle_education':     save_basic_information,
-                'high_education':            save_basic_information,
-                'military_education':        save_basic_information,
-                'languages':                 save_basic_information,
-                'mothers_fathers':           save_basic_information,
-                'married_certificates':      save_basic_information,
-                'brothers_sisters_children': save_basic_information,
-                'personal_data':             save_basic_information,
-                }
+                'change_section_state' : change_section_state,
+
+                })
 
 

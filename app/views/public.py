@@ -8,11 +8,10 @@ from app.models import Registration_certificates, Middle_education, Spec_middle_
 from app.models import High_education, Military_education, Languages, Mothers_fathers 
 from app.models import Brothers_sisters_children, Married_certificates, Personal_data
 from werkzeug.security import check_password_hash
-from easy import *
 import json
 import sys
 from hidden import user_role
-from app.models.easy import get_fields, get_tables, get_class_by_tablename
+from app.models.easy import *
 
 @app.route('/')
 @app.route('/index')
@@ -25,11 +24,10 @@ def ready():
     users = User.query.filter_by(role = 0)
     docs = Document.query.all()
 
-    user_ids = []
-    for user in users:
-        user_ids.append(user.id);
+    user_ids = map(lambda user: user.id, users) 
     
-    students_info = {};
+    # CAN OPTIMIZE HERE: JOIN TABLES INSTEAD OF DOING SERIES OF QUERIES
+    students_info = {}
     for id in user_ids:
         students_info[id] = Student_info.query.filter_by( user_id=id )    
 
@@ -97,21 +95,15 @@ def inprocess():
 def to_page_approve_user(user_id):
     if user_role() < 1:
         abort(404)
-    s = Student_info()
-    fields = get_fields('student_info')
-    fields = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
-        s.placeholder(x[0])) for x in fields]
-    fields = filter(lambda x: x.valid is not None, fields)
 
-    user_info = Student_info.query.get(user_id)
-    if user_info is not None:
-        fill_values(fields, user_info)
+    sections_arr = get_sections_data_by_id(user_id)
+    section_statuses = get_section_statuses(user_id)
+    comment = u""
 
-    relatives = Family_member_info.query.filter_by(student_info_id = user_id)
-    vuses = VUS.query.all()
-    return render_template('user-admin.html', title=u'Одобрение аккаунта', 
-        fields = fields, vuses = vuses, relatives = relatives, user_id = user_id,
-         navprivate=True)
+    status = u'Имеются непроверенные секции | Анкета одобрена | Анкета отклонена'
+
+    return render_template('user-admin.html', title=u'Одобрение аккаунта', sections=sections_arr, table_states=TABLE_STATES,
+         comment=comment, quiz_status=status, section_statuses=section_statuses, user_id=user_id, navprivate=True)
 
 '''
 @app.route('/approve_user/<user_id>')
@@ -176,62 +168,54 @@ class InputValue:
         self.comment = comment
         self.valid = ( self.eng is not None and self.rus is not None )
 
-def fill_values(fields, user_info):
+    def copy(self):
+        return InputValue( 
+                           eng=self.eng, rus=self.rus, inp_type=self.inp_type, 
+                           placeholder=self.placeholder, value=self.value, comment=self.comment
+                         )
+
+def fill_section_values(fields, user_info):
     for field in fields:
-        if( user_info[field.eng] is not None):
+        if user_info[field.eng] is not None:
             field.value = user_info[field.eng]
 
 def get_sections_data_by_id(user_id):
-    fixed_sections = {}
-    not_fixed_sections = {}
-    tables = get_tables()
-    section_number = 0
-    for table in tables:
+    user_tables = get_user_tables()
+    student_info = User.query.get( user_id ).students_info
+
+    sections_arr = []
+    for table in user_tables:
         fields_table = get_fields( table )
-        s = get_class_by_tablename( table )
-        if not s:
-            continue
-        s = s() 
+        s = get_class_by_tablename( table )()
+
         fields_table = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
             s.placeholder(x[0])) for x in fields_table]
         fields_table = filter(lambda x: x.valid, fields_table)
+
         section_info = { 
                          'fields': fields_table, 'is_fixed': s.is_fixed(), 'table_name':table, 
-                         'section_name': s.get_section_name(), 'section_number': section_number 
+                         'section_name': s.get_section_name(), 'section_number': len(sections_arr) 
                        }
         if s.is_fixed():
-            fixed_sections.update({ table : section_info })
+            table_record = student_info[table]
+            if table_record:
+                fill_section_values(section_info['fields'], table_record) 
         else:
-            not_fixed_sections.update({ table : section_info })
-        section_number += 1
+            table_records = student_info[table]
+            if table_records is not None:
+                section_info['filled_fields'] = []
+                for i in range(len(table_records)):
+                    element = [x.copy() for x in section_info['fields']]
+                    fill_section_values(element, table_records[i])
+                    section_info['filled_fields'].append(element)
+            print >> sys.stderr, section_info['filled_fields']
+        sections_arr.append(section_info)
 
-    student_info = User.query.get( user_id ).students_info
-
-    if student_info==None:
-        return False
-
-    for table in fixed_sections:
-        fields_table = get_fields( table )
-        s = get_class_by_tablename( table )
-        if not s:
-            continue
-        user_info = s.query.filter_by( student_info_id=student_info.id ).first()
-        if user_info is not None:
-            fill_values(fixed_sections[table]['fields'], user_info) 
-
-    for table in not_fixed_sections:
-        fields_table = get_fields( table )
-        s = get_class_by_tablename( table )
-        if not s:
-            continue
-        user_infos = s.query.filter_by( student_info_id=student_info.id ).all()
-        if user_infos is not None:
-            not_fixed_sections[table]['filled_fields'] = [not_fixed_sections[table]['fields'] for _ in range(len(user_infos))]
-            for i in range(len(user_infos)):
-                fill_values(not_fixed_sections[table]['filled_fields'][i], user_infos[i])
-
-    sections_arr = [fixed_sections[t] if t in fixed_sections else not_fixed_sections[t] for t in get_tables()]
     return sections_arr
+
+def get_section_statuses(user_id):
+    student_info = User.query.get( user_id ).students_info
+    return dict(map(lambda s: (s[0][len('table_'):], student_info[s[0]]), get_fields('student_info')))
 
 @app.route('/profile')
 @login_required
@@ -244,6 +228,7 @@ def profile():
     curr_vus = ''
 
     sections_arr = get_sections_data_by_id(current_user.id)
+    section_statuses = get_section_statuses(current_user.id)
     if not sections_arr:
         comment = u'ОБРАТИТЕСЬ К АДМИНИСТРАТОРУ'
         return render_template('user.html', title=u'Данные', fixed_sections=fixed_sections, not_fixed_sections=not_fixed_sections, 
@@ -255,11 +240,7 @@ def profile():
         comment = Comments.query.get(current_user.id).comment
     approved = User.query.get(current_user.id).active
     curr_vus = VUS.query.get(User.query.get(current_user.id).vus_id)
-    return render_template('user.html', title=u'Данные', sections=sections_arr, 
-        vuses=vuses, comment=comment, approved=approved, curr_vus=curr_vus, user_id=current_user.id, navprivate=True)
-
-
-
-
-
+    return render_template('user.html', title=u'Данные', sections=sections_arr, table_states=TABLE_STATES,
+        vuses=vuses, comment=comment, approved=approved, section_statuses=section_statuses,
+        curr_vus=curr_vus, user_id=current_user.id, navprivate=True)
 

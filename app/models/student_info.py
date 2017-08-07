@@ -1,27 +1,42 @@
 #-.- coding: utf-8 -.-
 from app import db
-from simple import *
-from easy import *
+from app.models.simple import * 
+from app.models.easy import *
 
-class Student_info(db.Model):
+class Class_with_attrs_access():
+
+    def __setitem__(self, item, value):
+        try:
+            return setattr(self, item, value)
+        except all:
+            return '' 
+
+    def __getitem__(self, item):
+        try:
+            return getattr(self, item)
+        except all:
+            return ''    
+
+class Student_info(db.Model, Class_with_attrs_access):
     __tablename__ = 'student_info'
     id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column( db.Integer, db.ForeignKey( 'user.id' ) )
-    table_basic_information = db.Column( db.SmallInteger, default = NOT_EDIT ) 
-    table_certificates_change_name = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_communications = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_passports = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_international_passports = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_registration_certificates = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_middle_education = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_spec_middle_education = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_high_education = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_military_education = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_languages = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_mothers_fathers = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_brothers_sisters_children = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_married_certificates = db.Column( db.SmallInteger, default = NOT_EDIT )
-    table_personal_data = db.Column( db.SmallInteger, default = NOT_EDIT )
+    user_id                         = db.Column( db.Integer, db.ForeignKey( 'user.id' ) )
+#    is_ready                        = db.Column( db.Boolean, default=0)
+    table_basic_information         = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] ) 
+    table_certificates_change_name  = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_communications            = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_passports                 = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_international_passports   = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_registration_certificates = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_middle_education          = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_spec_middle_education     = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_high_education            = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_military_education        = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_languages                 = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_mothers_fathers           = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_brothers_sisters_children = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_married_certificates      = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_personal_data             = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
 
     basic_information =  db.relationship('Basic_information', 
         back_populates = 'student_info', uselist = False )
@@ -54,35 +69,14 @@ class Student_info(db.Model):
     personal_data =  db.relationship('Personal_data', 
         back_populates = 'student_info' )
 
-    def __getitem__(self,item):
-        item2obj = {
-            'basic_information': self.basic_information,
-            'certificates_change_name': self.certificates_change_name,
-            'communications': self.communications,
-            'passports': self.passports,
-            'international_passports': self.international_passports,
-            'registration_certificates': self.registration_certificates,
-            'middle_education': self.middle_education,
-            'spec_middle_education': self.spec_middle_education,
-            'high_education': self.high_education,
-            'military_education': self.military_education,
-            'languages': self.languages,
-            'mothers_fathers': self.mothers_fathers,
-            'brothers_sisters_children': self.brothers_sisters_children,
-            'married_certificates': self.married_certificates,
-            'personal_data': self.personal_data,
-        }
-        return item2obj[item];
-
-
-class Basic_information(db.Model):
+class Basic_information(db.Model, Class_with_attrs_access):
     __tablename__ = 'basic_information'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id'))
     last_name = db.Column(db.String(20))
     first_name = db.Column(db.String(20))
     middle_name = db.Column(db.String(20))
-    birth_date = db.Column(db.Date)
+    birth_date = db.Column(db.String(10))
     birth_place = db.Column(db.String(64))
     nationality = db.Column(db.String(20))
     family_status = db.Column( db.String( 10 ) )
@@ -139,48 +133,14 @@ class Basic_information(db.Model):
         else:
             return unicode(eng[0].upper() + eng[1:])
 
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-            'nationality': self.nationality,
-            'family_status': self.family_status,
-            'citizenship': self.citizenship,
-            'second_citizenship': self.second_citizenship,
-            'tin': self.tin,
-            'insurance_certificate': self.insurance_certificate,
-        }
-        item2obj[item] = value;
-
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-            'nationality': self.nationality,
-            'family_status': self.family_status,
-            'citizenship': self.citizenship,
-            'second_citizenship': self.second_citizenship,
-            'tin': self.tin,
-            'insurance_certificate': self.insurance_certificate,
-        }
-        return item2obj[item];
-
-class Certificates_change_name(db.Model):
+class Certificates_change_name(db.Model, Class_with_attrs_access):
     __tablename__ = 'certificates_change_name'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id'))
     serial = db.Column( db.String( 5 ) )
     number = db.Column( db.String( 10 ) )
     issuer = db.Column( db.String( 256 ) )
-    issue_date = db.Column( db.Date )
+    issue_date = db.Column(db.String(10)) 
     changing = db.Column( db.String( 128 ) )
 
     student_info =  db.relationship('Student_info', 
@@ -219,29 +179,7 @@ class Certificates_change_name(db.Model):
         else:
             return unicode(eng[0].upper() + eng[1:])
 
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'issue_date' : self.issue_date,
-            'changing' : self.changing,
-        }
-        item2obj[item] = value;
-
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'issue_date' : self.issue_date,
-            'changing' : self.changing,
-        }
-        return item2obj[item];
-
-class Communications( db.Model ):
+class Communications( db.Model, Class_with_attrs_access ):
     __tablename__ = 'communications'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -284,34 +222,14 @@ class Communications( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
 
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'mobile_phone_1' : self.mobile_phone_1,
-            'mobile_phone_2' : self.mobile_phone_2,
-            'home_phone' : self.home_phone,
-            'email' : self.email
-        }
-        item2obj[item] = value;
-
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'mobile_phone_1' : self.mobile_phone_1,
-            'mobile_phone_2' : self.mobile_phone_2,
-            'home_phone' : self.home_phone,
-            'email' : self.email
-        }
-        return item2obj[item];
-
-class Passports( db.Model ):
+class Passports( db.Model, Class_with_attrs_access ):
     __tablename__ = "passports"
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     serial = db.Column( db.String( 4 ) )
     number = db.Column( db.String( 6 ) )
     issuer = db.Column( db.String( 256 ) )
-    issue_date = db.Column( db.Date )
+    issue_date = db.Column(db.String(10)) 
     code = db.Column( db.String( 7 ) )
     registration_index = db.Column( db.String( 6 ) )
     registration_address = db.Column( db.String( 256 ) )
@@ -361,45 +279,15 @@ class Passports( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'issue_date' : self.issue_date,
-            'code' : self.code,
-            'registration_index' : self.registration_index,
-            'registration_address' : self.registration_address,
-            'fact_index' : self.fact_index,
-            'fact_address' : self.fact_address,
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'issue_date' : self.issue_date,
-            'code' : self.code,
-            'registration_index' : self.registration_index,
-            'registration_address' : self.registration_address,
-            'fact_index' : self.fact_index,
-            'fact_address' : self.fact_address,
-        }
-        return item2obj[item];
-
-class International_passports( db.Model ):
+class International_passports( db.Model, Class_with_attrs_access ):
     __tablename__ = 'international_passports'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     serial = db.Column( db.String( 2 ) )
     number = db.Column( db.String( 7 ) )
     issuer = db.Column( db.String( 256 ) )
-    issue_date = db.Column( db.Date )
+    issue_date = db.Column(db.String(10)) 
     validity = db.Column( db.String( 10 ) )
 
     student_info =  db.relationship('Student_info', 
@@ -437,37 +325,15 @@ class International_passports( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'issue_date' : self.issue_date,
-            'validity' : self.validity,
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'issue_date' : self.issue_date,
-            'validity' : self.validity,
-        }
-        return item2obj[item];
-
-class Registration_certificates( db.Model ):
+class Registration_certificates( db.Model, Class_with_attrs_access ):
     __tablename__ = 'registration_certificates'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     serial = db.Column( db.String( 2 ) ) 
     number = db.Column( db.String( 7 ) )
     issuer = db.Column( db.String( 128 ) )
-    date_issue = db.Column( db.Date )
+    date_issue = db.Column(db.String(10))  
     military_department = db.Column( db.String( 128 ) )
     shelf_category = db.Column( db.String( 32 ) )
 
@@ -508,32 +374,8 @@ class Registration_certificates( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'date_issue' : self.date_issue,
-            'military_department' : self.military_department,
-            'shelf_category' : self.shelf_category
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'date_issue' : self.date_issue,
-            'military_department' : self.military_department,
-            'shelf_category' : self.shelf_category
-        }
-        return item2obj[item];
-
-class Middle_education( db.Model ):
+class Middle_education( db.Model, Class_with_attrs_access ):
     __tablename__ = 'middle_education'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -569,24 +411,8 @@ class Middle_education( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'school' : self.school,
-            'school_address' : self.school_address
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'school' : self.school,
-            'school_address' : self.school_address
-        }
-        return item2obj[item];
-
-class Spec_middle_education( db.Model ):
+class Spec_middle_education( db.Model, Class_with_attrs_access ):
     __tablename__ = 'spec_middle_education'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -625,26 +451,8 @@ class Spec_middle_education( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'institution' : self.institution,
-            'institution_address' : self.institution_address,
-            'speciality' : self.speciality
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'institution' : self.institution,
-            'institution_address' : self.institution_address,
-            'speciality' : self.speciality
-        }
-        return item2obj[item];
-
-class High_education(db.Model):
+class High_education(db.Model, Class_with_attrs_access):
     __tablename__ = 'high_education'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -704,40 +512,8 @@ class High_education(db.Model):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'institution' : self.institution,
-            'budgetary' : self.budgetary,
-            'full_faculty_name' : self.full_faculty_name,
-            'short_faculty_name' : self.short_faculty_name,
-            'spec_diploma' : self.spec_diploma,
-            'study_group_2' : self.study_group_2,
-            'study_group_3' : self.study_group_3,
-            'study_group_4' : self.study_group_4,
-            'form_study' : self.form_study,
-            'quality' : self.quality
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'institution' : self.institution,
-            'budgetary' : self.budgetary,
-            'full_faculty_name' : self.full_faculty_name,
-            'short_faculty_name' : self.short_faculty_name,
-            'spec_diploma' : self.spec_diploma,
-            'study_group_2' : self.study_group_2,
-            'study_group_3' : self.study_group_3,
-            'study_group_4' : self.study_group_4,
-            'form_study' : self.form_study,
-            'quality' : self.quality
-        }
-        return item2obj[item];
-
-class Military_education( db.Model ):
+class Military_education( db.Model, Class_with_attrs_access ):
     __tablename__ = 'military_education'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -774,23 +550,7 @@ class Military_education( db.Model ):
         else:
             return unicode(eng[0].upper() + eng[1:])
     
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'platoon_1' : self.platoon_1,
-            'platoon_2' : self.platoon_2,
-        }
-        item2obj[item] = value;
-
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'platoon_1' : self.platoon_1,
-            'platoon_2' : self.platoon_2,
-        }
-        return item2obj[item];
-
-class Languages( db.Model ):
+class Languages( db.Model, Class_with_attrs_access ):
     __tablename__ = 'languages'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -829,26 +589,8 @@ class Languages( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'language' : self.language,
-            'quality' : self.quality,
-            'certificates' : self.certificates
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'language' : self.language,
-            'quality' : self.quality,
-            'certificates' : self.certificates
-        }
-        return item2obj[item];
-
-class Mothers_fathers( db.Model ):
+class Mothers_fathers( db.Model, Class_with_attrs_access ):
     __tablename__ = 'mothers_fathers'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -856,7 +598,7 @@ class Mothers_fathers( db.Model ):
     last_name = db.Column( db.String( 20 ) )
     first_name = db.Column( db.String( 20 ) )
     middle_name = db.Column( db.String( 20 ) )
-    birth_date = db.Column( db.Date )
+    birth_date = db.Column(db.String(10))
     birth_place = db.Column( db.String( 64 ) )
     mobile_phone_1 = db.Column( db.String( 11 ) )
     mobile_phone_2 = db.Column( db.String( 11 ) )
@@ -917,46 +659,8 @@ class Mothers_fathers( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'status' : self.status,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-            'mobile_phone_1' : self.mobile_phone_1,
-            'mobile_phone_2' : self.mobile_phone_2,
-            'home_phone' : self.home_phone,
-            'job_place' : self.job_place,
-            'job_post' : self.job_post,
-            'fact_index' : self.fact_index,
-            'fact_address' : self.fact_address
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'status' : self.status,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-            'mobile_phone_1' : self.mobile_phone_1,
-            'mobile_phone_2' : self.mobile_phone_2,
-            'home_phone' : self.home_phone,
-            'job_place' : self.job_place,
-            'job_post' : self.job_post,
-            'fact_index' : self.fact_index,
-            'fact_address' : self.fact_address
-        }
-        return item2obj[item];
-
-class Brothers_sisters_children( db.Model ):
+class Brothers_sisters_children( db.Model, Class_with_attrs_access ):
     __tablename__ = 'brothers_sisters_children'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -964,7 +668,7 @@ class Brothers_sisters_children( db.Model ):
     last_name = db.Column( db.String( 20 ) )
     first_name = db.Column( db.String( 20 ) )
     middle_name = db.Column( db.String( 20 ) )
-    birth_date = db.Column( db.Date )
+    birth_date = db.Column(db.String(10))
     birth_place = db.Column( db.String( 64 ) )
 
     student_info =  db.relationship('Student_info', 
@@ -1004,43 +708,19 @@ class Brothers_sisters_children( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'status' : self.status,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'status' : self.status,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-        }
-        return item2obj[item];
-
-class Married_certificates( db.Model ):
+class Married_certificates( db.Model, Class_with_attrs_access ):
     __tablename__ = 'married_certificates'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     serial = db.Column( db.String( 20 ) )
     number = db.Column( db.String( 20 ) )
     issuer = db.Column( db.String( 128 ) )
-    date_issue = db.Column( db.Date )
+    date_issue = db.Column(db.String(10))
     last_name = db.Column( db.String( 20 ) )
     first_name = db.Column( db.String( 20 ) )
     middle_name = db.Column( db.String( 20 ) )
-    birth_date = db.Column( db.Date )
+    birth_date = db.Column(db.String(10))
     birth_place = db.Column( db.String( 64 ) )
     mobile_phone_1 = db.Column( db.String( 11 ) )
     mobile_phone_2 = db.Column( db.String( 11 ) )
@@ -1107,52 +787,8 @@ class Married_certificates( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'date_issue' : self.date_issue,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-            'mobile_phone_1' : self.mobile_phone_1,
-            'mobile_phone_2' : self.mobile_phone_2,
-            'home_phone' : self.home_phone,
-            'job_place' : self.job_place,
-            'job_post' : self.job_post,
-            'fact_index' : self.fact_index,
-            'fact_address' : self.fact_address
-        }
-        item2obj[item] = value;
 
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'serial' : self.serial,
-            'number' : self.number,
-            'issuer' : self.issuer,
-            'date_issue' : self.date_issue,
-            'last_name': self.last_name,
-            'first_name': self.first_name,
-            'middle_name': self.middle_name,
-            'birth_date': self.birth_date,
-            'birth_place': self.birth_place,
-            'mobile_phone_1' : self.mobile_phone_1,
-            'mobile_phone_2' : self.mobile_phone_2,
-            'home_phone' : self.home_phone,
-            'job_place' : self.job_place,
-            'job_post' : self.job_post,
-            'fact_index' : self.fact_index,
-            'fact_address' : self.fact_address
-        }
-        return item2obj[item];
-
-class Personal_data( db.Model ):
+class Personal_data( db.Model, Class_with_attrs_access ):
     __tablename__ = 'personal_data'
     id = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
@@ -1221,41 +857,3 @@ class Personal_data( db.Model ):
             return en2ru[eng]
         else:
             return unicode(eng[0].upper() + eng[1:])
-    
-    def __setitem__(self,item,value):
-        item2obj = {
-            'id': self.id,
-            'blood_group_resus' : self.blood_group_resus,
-            'shoes_size' : self.shoes_size,
-            'uniform_size' : self.uniform_size,
-            'head_size' : self.head_size,
-            'growth': self.growth,
-            'protivogaz_size': self.protivogaz_size,
-            'OZK_size': self.OZK_size,
-            'government_prize': self.government_prize,
-            'injuries' : self.injuries,
-            'criminals' : self.criminals,
-            'civil_specialization' : self.civil_specialization,
-            'hobbies' : self.hobbies,
-            'sports' : self.sports,
-        }
-        item2obj[item] = value;
-
-    def __getitem__(self,item):
-        item2obj = {
-            'id': self.id,
-            'blood_group_resus' : self.blood_group_resus,
-            'shoes_size' : self.shoes_size,
-            'uniform_size' : self.uniform_size,
-            'head_size' : self.head_size,
-            'growth': self.growth,
-            'protivogaz_size': self.protivogaz_size,
-            'OZK_size': self.OZK_size,
-            'government_prize': self.government_prize,
-            'injuries' : self.injuries,
-            'criminals' : self.criminals,
-            'civil_specialization' : self.civil_specialization,
-            'hobbies' : self.hobbies,
-            'sports' : self.sports,
-        }
-        return item2obj[item];

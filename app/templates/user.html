@@ -15,45 +15,39 @@
             {% endif %}
         {% endif %}
     </div>
+
+    <div class="alert alert-warning" align="center">
+        <h3> ВНИМАНИЕ </h3>
+        Все строки записываются <strong>полностью и без сокращений</strong>.
+        <br>
+        Варианты ответов, если нет информации: "нет, нет данных, неизвестно, не имею, не менялось и т.д.".
+        <br>
+        Графы, которые можно узнать (индекс, даты рождения, места работы, группу крови и т.д.), <strong>нужно узнать и заполнить</strong>.
+        <br>
+        Если есть родственник, но не знаете, где он, так и пишите: местанахождение не известно, если он умер - ФИО, в графе "дата рождения" - умер тогда-то.
+    </div>
+
 <!--- COMMON -->   
     <input id="user_id" type="hidden" value="{{ user_id }}">
-<!--- -->
-<!--- 
-    <div class="section"> 
-        <h3>Тестовая секция <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-relatives').toggle();return false;">(развернуть/свернуть)</a>
-        <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
-        </h3>
-        <div class="no-display" id="spoiler-section-relatives">
-            <form class="section_form" method="post">
-                <input name="do" type="hidden" value="test_method">
-                <div class="input-group">
-                    <span class="input-group-addon">TEST</span>
-                    <input class="form-control" name="TEST" id="TEST" placeholder="TEST" type="TEST" value="TEST">
-                </div>
-                <br>
-                <div class="input-group">
-                    <span class="input-group-addon">TEST2</span>
-                    <input class="form-control" name="TEST2" id="TEST" placeholder="TEST2" type="TEST" value="TEST2">
-                </div>
-                <br>
-                <div align="center" class="alert alert-danger ag-hor-center no-display save_result_div" role="alert"></div>
-                <br>
-                <button type="submit" class="btn single btn-info ag-hor-center">Сохранить изменения</button>
-            </form>
-        </div>
-        <hr>
-    </div>
--->
 
     {% for section in sections %}
     {% if section.is_fixed %}
-    <div class="fixed_section"> 
+    <div class="section fixed_section"> 
         <h3>{{section.section_name}} <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
-        <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        {% if section_statuses[section.table_name] == table_states['APPROVED'] %}
+            <span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['EDITED'] %}
+            <span class="status_span alert-info" style="float:right">&nbsp на проверке &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['NOT_EDITED']%}
+            <span class="status_span" style="float:right">&nbsp не заполнялось &nbsp</span>
+        {% else %}
+            <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        {% endif %}
         </h3>
         <div class="no-display" id="spoiler-section-{{section.section_number}}">
             <form class="section_form" method="post">
                 <input name="do" type="hidden" value="{{section.table_name}}">
+                <input name="table" type="hidden" value="{{section.table_name}}">
                 {% for field in section.fields %}
                     <div class="input-group">
                         <span class="input-group-addon">{{field.rus}}</span>
@@ -69,13 +63,22 @@
         <hr>
     </div> 
     {% else %}
-    <div class="not_fixed_section">
+    <div class="section not_fixed_section">
         <h3> {{section.section_name}} <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
-        <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        {% if section_statuses[section.table_name] == table_states['APPROVED'] %}
+            <span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['EDITED'] %}
+            <span class="status_span alert-info" style="float:right">&nbsp на проверке &nbsp</span>
+        {% elif section_statuses[section.table_name] == table_states['NOT_EDITED']%}
+            <span class="status_span" style="float:right">&nbsp не заполнялось &nbsp</span>
+        {% else %}
+            <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
+        {% endif %}
         </h3>
         <div class="no-display" id="spoiler-section-{{section.section_number}}">
             <form class="section_form" method="post">
                 <input name="do" type="hidden" value="{{section.table_name}}">
+                <input name="table" type="hidden" value="{{section.table_name}}">
                 <!--- TEMPLATE -->
                 <div class="well well-lg section_element_template_div no-display">
                     <button type='button' class='btn_remove_not_fixed_element' style="float:right"><span class=" glyphicon glyphicon-remove"></span></button>
