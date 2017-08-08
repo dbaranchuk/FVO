@@ -20,6 +20,13 @@ QUIZ_STATES = {
 NOT_BUDGET = 0
 BUDGET     = 1
 
+# States of user
+USER_STATES = {
+    'ROLE_USER' : 0,
+    'ROLE_ADMIN' : 1,
+    'ROLE_SUPER_ADMIN' : 2,
+    'ROLE_READONLY_ADMIN' : 3
+}
 
 def get_user_tables():
     return [
