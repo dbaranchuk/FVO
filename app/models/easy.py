@@ -68,3 +68,26 @@ def get_class_by_tablename( tablename ):
         ):
           return c
     return None
+
+class Students_info_lables_accessor():
+    def __init__():
+        self.simple_fields = {
+            'first_name' : ('basic_information', 'first_name'),
+            #...
+        }
+
+    def __getitem__(self, item):
+        (item, number) = item.split('.')
+        if item in self.simple_fields:
+            path = self.simple_fields[item]
+            res_record = ''
+            # select from table by path
+            return res_record
+        elif hasattr(self, item):
+            return getattr(self, item)(number=number)
+        return None
+
+    def son(number=1):
+        res_record = ''
+        # select, order by and so on ..
+        return res_record
