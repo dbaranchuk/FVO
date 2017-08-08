@@ -49,8 +49,6 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r, %r>' % (self.login, self.password)
 
-
-
 class Document(db.Model):
     __tablename__ = 'document'
     id = db.Column(db.Integer, primary_key = True)
