@@ -12,6 +12,7 @@ import json
 import sys
 from hidden import user_role
 from app.models.easy import *
+from app.views.easy import *
 
 ########## data workers, перенести в отдельный модуль перед финальным тестированием
 class InputValue:

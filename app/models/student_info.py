@@ -126,7 +126,7 @@ class Basic_information(db.Model, Class_with_attrs_access):
             'last_name': u'Иванов',
             'first_name': u'Иван',
             'middle_name': u'Иванович',
-            'birth_date': u'yyyy-mm-dd',
+            'birth_date': u'12.12.2012',
             'birth_place': u'гор. Нижние Пупки',
             'nationality': u'русский',
             'family_status': u'женат/холост',
