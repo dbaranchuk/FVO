@@ -264,7 +264,11 @@ $(document).ready(function() {
                 var userData = res['result']
                 for (i in userData) {
                     var rowHtml = '<tr><td>' + userData[i]['lastName'] + '</td><td>' + userData[i]['year'] + 
-                    "</td><td>" + userData[i]['vus'] + "</td><td><button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + ">Показать</button></td></tr>";
+                    "</td><td>" + userData[i]['vus'] + "</td><td>" + 
+                    //'<a href="' + "{{ url_for('to_page_approve_user', user_id='" + userData[i]['id'] + "') }}" + '">' + 
+                    '<a href="/inprocess/' + userData[i]['id'] + '">' + 
+                    "<button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + 
+                    ">Показать</button></a></td></tr>";
 
                     $('#user-search-result > tbody:last-child').append(rowHtml);
                 }
@@ -276,7 +280,6 @@ $(document).ready(function() {
 
     $(document).on('click', '.btn-show-from-search', function(){
         var id = $(this).data('id')
-        alert(id)
     })
 
 /// READY 
