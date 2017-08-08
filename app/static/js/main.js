@@ -305,8 +305,8 @@ $(document).ready(function() {
 
         var data = {
             'do' : 'generateDocuments',
-            'userIDs' : userIDs,
-            'docIDs' : docIDs
+            'userIDs' : JSON.stringify(userIDs),
+            'docIDs' : JSON.stringify(docIDs)
         }
 
         $(this).html('Генерация...')
@@ -317,7 +317,6 @@ $(document).ready(function() {
             data: data,
             success: function (res) {
                 $(this).html('Сгенерировать и скачать')
-                alert(res['message'])
             },
             dataType: 'json',
             async: false

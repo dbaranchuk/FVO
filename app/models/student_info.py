@@ -45,21 +45,21 @@ class Student_info(db.Model, Class_with_attrs_access):
     certificates_change_name =  db.relationship('Certificates_change_name', 
         back_populates = 'student_info' )
     communications =  db.relationship('Communications', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
     passports =  db.relationship('Passports', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
     international_passports =  db.relationship('International_passports', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
     registration_certificates =  db.relationship('Registration_certificates', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
     middle_education =  db.relationship('Middle_education', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
     spec_middle_education =  db.relationship('Spec_middle_education', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
     high_education =  db.relationship('High_education', 
         back_populates = 'student_info' )
     military_education =  db.relationship('Military_education', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
     languages =  db.relationship('Languages', 
         back_populates = 'student_info' )
     mothers_fathers =  db.relationship('Mothers_fathers', 
@@ -69,7 +69,7 @@ class Student_info(db.Model, Class_with_attrs_access):
     married_certificates =  db.relationship('Married_certificates', 
         back_populates = 'student_info' )
     personal_data =  db.relationship('Personal_data', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info', uselist = False )
 
 class Comments(db.Model, Class_with_attrs_access):
     __tablename__ = 'comments'
