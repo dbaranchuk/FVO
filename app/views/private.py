@@ -5,8 +5,14 @@ from sqlalchemy import text
 from sqlalchemy.sql import select, and_
 from docx import Document as Doc
 
-#from openpyxl import load_workbook
+from openpyxl import load_workbook
+
 from app.models import User, VUS, Document, Student_info, Basic_information, Comments
+from app.models import Certificates_change_name, Communications, Passports, International_passports
+from app.models import Registration_certificates, Middle_education, Spec_middle_education
+from app.models import High_education, Military_education, Languages, Mothers_fathers
+from app.models import Brothers_sisters_children, Married_certificates, Personal_data
+from app.models.easy import *
 
 from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
@@ -17,6 +23,7 @@ from app.models.easy import *
 from app.config import USER_PATH
 import os
 import random, string
+import re
 from keywords import *
 from transliteration import *
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -27,17 +34,49 @@ def create_account(login, password, userData):
 
     new_user = User(login = login, password = hash)
     info = Student_info()
-    basicInfo = Basic_information(last_name = userData['lastName'], first_name = userData['firstName'], middle_name = userData['middleName'])
+
+    tables = [
+        Basic_information(last_name = userData['lastName'], first_name = userData['firstName'], middle_name = userData['middleName']),
+        Certificates_change_name(),
+        Communications(),
+        Passports(),
+        International_passports(),
+        Registration_certificates(),
+        Middle_education(),
+        Spec_middle_education(),
+        High_education(),
+        Military_education(),
+        Languages(),
+        Mothers_fathers(),
+        Married_certificates(),
+        Brothers_sisters_children(),
+        Personal_data()
+    ]
 
     new_user.students_info = info
     new_user.VUS = userData['vus']
-    info.basic_information = basicInfo
 
-    info.table_basic_information = CHANGING
+    #info.basic_information = basicInfo
+
+    #info.table_basic_information = CHANGING
+
+    tableNames = get_user_tables()
+    for idx, table in enumerate(tableNames, start=0):
+
+        #print >> sys.stderr, info[table]
+        try:
+            info[table] = tables[idx]
+        except Exception:
+            info[table] = [tables[idx]]
+        #print >> sys.stderr, 'table_' + table
+        info['table_' + table] = TABLE_STATES['EDITED']
+        #print >> sys.stderr, 2
+        db.session.add(tables[idx])
+        #print >> sys.stderr, 3
 
     db.session.add(new_user)
     db.session.add(info)
-    db.session.add(basicInfo)
+    #db.session.add(basicInfo)
     db.session.commit()
 
 def create_admin_account(data):
@@ -614,6 +653,26 @@ def getSqlRequest(lastName, year, vusStr):
 ### GENERATING DOCUMENTS
 
 def generateDocuments(data):
+    userIDs = json.loads(data['userIDs'])
+    docIDs = json.loads(data['docIDs'])
+    
+    users = User.query.filter(User.id.in_(userIDs)).all()
+    documents = Document.query.filter(Document.id.in_(docIDs)).all()
+
+    for user in users:
+        accessor = Students_info_lables_accessor(user.students_info)
+        for document in documents:
+            docPath = os.path.join(USER_PATH, 'documents', document.filename)
+            doc = Doc(docPath)
+
+            for p in doc.paragraphs:
+                regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
+                iterator = regex.finditer(p.text)
+                for match in iterator:
+                    value = accessor[match.group()]
+                    print >> sys.stderr, value
+            
+
     return gen_success(message = 'ololo')
 
 
