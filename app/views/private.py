@@ -518,14 +518,12 @@ def save_not_fixed_section_information(data):
         for record in records:
             db.session.delete(record)
 
-    print >> sys.stderr, elements
     ### add new records
     for element in elements:
         element_fields = { field : element[field] for field in element if hasattr(tableclass, field) }
         new_record = tableclass()
         for field, value in element_fields.iteritems():
             new_record[field] = value
-        #student_info[table] ???
         new_record.student_info    = student_info
         new_record.student_info_id = student_info.id
         db.session.add(new_record)

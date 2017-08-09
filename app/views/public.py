@@ -56,6 +56,7 @@ def fill_section_values(fields, user_info):
     for field in fields:
         if user_info[field.eng] is not None:
             field.value = user_info[field.eng]
+    return True
 
 def get_sections_data_by_id(user_id):
     user_tables = get_user_tables()
