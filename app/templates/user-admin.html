@@ -41,6 +41,7 @@
                         <input class="form-control" name="{{field.eng}}" readonly="readonly" type="text" value="{{field.value}}">
                     </div><br>
                 {% endfor %}
+                {% if not is_readonly %}
                 <div align="center"> 
                     Комментарий:<br> <textarea class="section_comment" placeholder="Добавьте комментарий по неверно заполненным полям" style="width: 450px; height: 50px;">{{ comments[section.table_name] }}</textarea> 
                 </div>
@@ -50,6 +51,7 @@
                     <button type="button" class="btn btn-danger btn_change_section_state" data="{{ table_states['DECLINED'] }}">Отклонить секцию</button>
                     <button type="button" class="btn btn-success btn_change_section_state approved" data="{{ table_states['APPROVED'] }}">Одобрить секцию</button>
                 </div>
+                {% endif %}
             </form>
         </div>
         <hr>
@@ -86,6 +88,7 @@
                 {% else %}
                 <div align="center" class="well no-elements"> Пользователь не добавил ни одного элемента <br></div>
                 {% endif %}
+                {% if not is_readonly %}
                 <div align="center"> 
                     Комментарий:<br> <textarea class="section_comment" placeholder="Добавьте комментарий по неверно заполненным полям" style="width: 450px; height: 50px;">{{ comments[section.table_name] }}</textarea> 
                 </div>
@@ -95,16 +98,19 @@
                     <button type="button" class="btn btn-danger btn_change_section_state" data="{{ table_states['DECLINED'] }}">Отклонить секцию</button>
                     <button type="button" class="btn btn-success btn_change_section_state approved" data="{{ table_states['APPROVED'] }}">Одобрить секцию</button>
                 </div>
+                {% endif %}
             </form>
         </div>
         <hr>
     </div>
     {% endif %}
     {% endfor %}
+    {% if not is_readonly %}
     <div align="center">
         <div class="alert ag-hor-center no-display" id="div_all_sections_approve" role="alert"></div>
         <button type="button" class="btn btn-success" id="btn_approve_all_sections"> Одобрить все секции </button>
     </div>
+    {% endif %}
 </div>
 
 {% endblock %}

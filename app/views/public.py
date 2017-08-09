@@ -204,7 +204,7 @@ def to_page_approve_user(user_id):
 
     return render_template('user-admin.html', title=u'Одобрение аккаунта', sections=sections_arr, table_states=TABLE_STATES,
         quiz_status=status, section_statuses=section_statuses, user_id=user_id, navprivate=True, quiz_states=QUIZ_STATES, 
-        comments=comments)
+        comments=comments, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
 
 
 @app.route('/documents')
