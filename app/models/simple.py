@@ -29,6 +29,9 @@ class User(db.Model):
     def get_id(self):
         return unicode(self.id)
 
+    def is_active(self):
+        return True 
+
     def is_authenticated(self):
         return True
 
