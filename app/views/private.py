@@ -18,7 +18,8 @@ from werkzeug.security import generate_password_hash
 from flask import request, send_from_directory
 import datetime
 import json
-from easy import *
+from app.views.easy import *
+from app.models.easy import *
 from app.config import USER_PATH
 import os
 import random, string
@@ -79,6 +80,17 @@ def create_account(login, password, userData):
     #db.session.add(basicInfo)
     db.session.commit()
 
+def create_admin_account(data):
+    hash = generate_password_hash(data['password'])
+
+    new_user = User(login = data['login'], 
+                    password = hash,
+                    vus_id = int( data['vus_id'] ),
+                    role = USER_STATES[ data['role'] ]
+                    )
+
+    db.session.add(new_user)
+    db.session.commit()
 
 @app.route('/comment_user', methods=['POST'])
 def comment_user():
@@ -99,10 +111,10 @@ def comment_user():
 
 @app.route('/make_account', methods=['POST'])
 def make_account():
-    data = json.loads(request.data)
+    data = request.form
     if 'login' not in data or 'password' not in data:
         return gen_error('Wrong data sent to server (must be [login, password]).')
-    create_account(data['login'], data['password'])
+    create_admin_account(data)
     return gen_success()
 
 

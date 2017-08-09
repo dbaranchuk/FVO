@@ -19,11 +19,13 @@
         {% for doc in docs %}
         <tr>
             <td>{{doc.name}}</td><td>{{doc.VUS.to_string()}}</td>
+            {% if not is_readonly %}
             <td><button class="btn btn-default" id="delete-btn" onclick="delDoc({{doc.id}});">Удалить</button></td>
+            {% endif %}
             <td><a href="/static/user_data/documents/{{doc.filename}}" download><button type="button" class="btn btn-default">Скачать</button></a></td>
         </tr>
         {% endfor %}
-
+        {% if not is_readonly %}
         <tr>
             <td>
                 <div class="input-group">
@@ -53,6 +55,7 @@
                 <button class="btn btn-success btn-file" id="status-btn" onclick="addDocument();">Добавить</button>
             </td>
         </tr>
+        {% endif %}
         </tbody>
 
     </table>

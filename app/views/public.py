@@ -112,7 +112,10 @@ def ready():
     if user_role() < 1:
         return redirect(url_for('profile'))
 
-    users = User.query.filter_by(role = 0, approved = True)
+    if user_role()==USER_STATES['ROLE_ADMIN']:
+        users = User.query.filter_by(role = 0, approved = True, vus_id=current_user.vus_id)
+    else:
+        users = User.query.filter_by(role = 0, approved = True)
     documents = Document.query.all()
 
     userInfo = []
@@ -133,7 +136,7 @@ def ready():
         })
 
     return render_template('ready.html', title=u'Готовые', tab_active=1, users=userInfo, 
-        docs=docs)
+        docs=docs, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -165,9 +168,13 @@ def logout():
 @app.route('/inprocess')
 @login_required
 def inprocess():
-    if user_role() < 1:
+    role = user_role()
+    if role < 1:
         abort(404)
-    users = User.query.filter_by(role = 0, approved = False)
+    if( role == USER_STATES[ 'ROLE_ADMIN' ]):
+        users = User.query.filter_by(role = 0, approved = False, vus_id=current_user.vus_id)
+    else:
+        users = User.query.filter_by(role = 0, approved = False)
 
     vuses = { vus.id : vus for vus in VUS.query.all() }
 
@@ -182,7 +189,7 @@ def inprocess():
 #        relatives[id] = Family_member_info.query.filter_by(student_info_id=id)  
 
     return render_template('inprocess.html', title=u'В процессе', tab_active=2, users = users, 
-        vuses = vuses)
+        vuses = vuses, is_readonly=role==USER_STATES['ROLE_READONLY_ADMIN'])
 
 @app.route('/inprocess/<user_id>')
 @login_required
@@ -205,10 +212,15 @@ def to_page_approve_user(user_id):
 def documents():
     if user_role() < 1:
         abort(404)
-    vuses = VUS.query.all()
-    docs = Document.query.all()
+    if user_role()!=USER_STATES['ROLE_ADMIN']:
+        vuses = VUS.query.all()
+        docs = Document.query.all()
+    else:
+        vuses = VUS.query.get(current_user.vus_id)
+        vuses = [vuses]
+        docs = Document.query.filter_by(vus_id=current_user.vus_id)
     return render_template('documents.html', title=u'Документы', tab_active=3, vuses=vuses, 
-        docs=docs)
+        docs=docs, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
 
 
 @app.route('/account_creator')
@@ -216,9 +228,15 @@ def documents():
 def account_creator():
     if user_role() < 1:
         abort(404)
-    vuses = VUS.query.all()
+    if current_user.role==USER_STATES['ROLE_ADMIN']:
+        vuses = VUS.query.get(current_user.vus_id)
+        vuses = [vuses]
+    else:
+        vuses = VUS.query.all()
 
-    return render_template('account_creator.html', title=u'Создание аккаунтов', tab_active=4, vuses=vuses)
+    return render_template('account_creator.html', title=u'Создание аккаунтов', tab_active=4, 
+        vuses=vuses, is_super_admin=current_user.role==USER_STATES['ROLE_SUPER_ADMIN'],
+        is_readonly=current_user.role==USER_STATES['ROLE_READONLY_ADMIN'])
 
 @app.route('/search')
 @login_required

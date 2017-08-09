@@ -323,6 +323,47 @@ $(document).ready(function() {
         });
     });
     
+/// Create admin account
+    $('input[type=radio][name=type_admin]').change(function() {
+        if (this.value == 'admin_vus') {
+            $('#vus_for_admin').prop('disabled', false);
+        }
+        else  {
+            $('#vus_for_admin').prop('disabled', true);
+        }
+    });
+
+    $('#create-but-1').click(function() {
+        if( $("#login").val()=='' || $("#password").val()=='' ){
+            alert('Не заполены "Логин" и/или "Пароль"')
+            return false
+        }
+        var post_data = { 
+                         'login'    : $("#login").val(),
+                         'password' : $("#password").val(),
+                        }
+
+        if( $('#admin_readonly').is(':checked') ){
+            post_data['role'] = 'ROLE_READONLY_ADMIN';
+            post_data['vus_id'] = '-1';
+        }
+        else{
+            post_data['role'] = 'ROLE_ADMIN';
+            post_data['vus_id'] = $("#vus_for_admin").val();
+        }
+
+        $.ajax({
+            type: 'post',
+            url: '/make_account',
+            data: post_data,
+            success: function () {
+                alert("Аккаунт успешно создан");
+            },
+            dataType: 'json',
+            async: true,
+        });
+        return false
+    });
 });
 
 /////////////////////////////////////////////////
@@ -757,7 +798,7 @@ function delDoc(docId){
 function addUser(){
     var params = {
         login: document.getElementById('login').value,
-        password: document.getElementById('password').value
+        password: document.getElementById('password').value,
     };
     var b = document.getElementById('create-but-1');
 
