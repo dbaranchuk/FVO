@@ -469,6 +469,7 @@ function pressEnter( e ){
     return true;
 } 
 
+/*
 function submitStudentInfo(fields){
     var params = {};
     for(var i in fields){
@@ -522,7 +523,9 @@ function submitStudentInfo(fields){
 
     xmlhttp.send(formData);
 }
+*/
 
+/*
 function submitApprove(user_id){
     var params = {};
     params['id'] = user_id;
@@ -664,6 +667,7 @@ function createAccounts(){
 
     xmlhttp.send(formData);
 }
+*/
 
 function addDocument(){
     var xmlhttp = getXHR();
@@ -820,14 +824,7 @@ function addUser(){
     );
 }
 
-
-function postData(){
-    //TODO: DO THIS!
-}
-
-
 ///////////////////////////
-
 
 function sleep (time) {
     return new Promise(function(resolve){setTimeout(resolve, time)});

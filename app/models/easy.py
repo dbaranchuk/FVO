@@ -78,6 +78,20 @@ def get_class_by_tablename( tablename ):
           return c
     return None
 
+class Class_with_attrs_access():
+
+    def __setitem__(self, item, value):
+        try:
+            return setattr(self, item, value)
+        except all:
+            return '' 
+
+    def __getitem__(self, item):
+        try:
+            return getattr(self, item)
+        except all:
+            return '' 
+
 class Students_info_lables_accessor():
     def __init__(self, student_info):
         

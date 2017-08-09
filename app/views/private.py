@@ -33,52 +33,34 @@ def create_account(login, password, userData):
     hash = generate_password_hash(password)
 
     new_user = User(login = login, password = hash)
-    info = Student_info()
+    student_info = Student_info()
 
-    tables = [
-        Basic_information(last_name = userData['lastName'], first_name = userData['firstName'], middle_name = userData['middleName']),
-        Certificates_change_name(),
-        Communications(),
-        Passports(),
-        International_passports(),
-        Registration_certificates(),
-        Middle_education(),
-        Spec_middle_education(),
-        High_education(),
-        Military_education(),
-        Languages(),
-        Mothers_fathers(),
-        Married_certificates(),
-        Brothers_sisters_children(),
-        Personal_data(),
-        Comments()
-    ]
+    new_user.students_info = student_info
 
-    new_user.students_info = info
-    new_user.VUS = userData['vus']
+    # add basic information
+    basic_information = Basic_information(last_name=userData['lastName'], first_name=userData['firstName'], 
+                                          middle_name=userData['middleName'])
+    students_info['basic_information'] = basic_information
+    db.section.add(basic_information)
 
-    #info.basic_information = basicInfo
+    # add comments 
+    comments = Comments()
+    students_info['comments'] = comments
+    db.section.add(comments)
 
-    #info.table_basic_information = CHANGING
-
-    tableNames = get_user_tables().append('comments')
-    for idx, table in enumerate(tableNames, start=0):
-
-        #print >> sys.stderr, info[table]
-        try:
-            info[table] = tables[idx]
-        except Exception:
-            info[table] = [tables[idx]]
-        #print >> sys.stderr, 'table_' + table
-        info['table_' + table] = TABLE_STATES['EDITED']
-        #print >> sys.stderr, 2
-        db.session.add(tables[idx])
-        #print >> sys.stderr, 3
-
+    # common interface tables
+    for table in get_user_tables():
+        if table != 'basic_information':
+            section = get_class_by_tablename(table)
+            if section.is_fixed:
+                student_info[table] = tables[idx]
+                student_info['table_'+table] = TABLE_STATES['NOT_EDITED']
+                db.session.add(section)
+    
     db.session.add(new_user)
     db.session.add(info)
-    #db.session.add(basicInfo)
     db.session.commit()
+    return True
 
 def create_admin_account(data):
     hash = generate_password_hash(data['password'])
@@ -91,6 +73,7 @@ def create_admin_account(data):
 
     db.session.add(new_user)
     db.session.commit()
+    return True
 
 @app.route('/comment_user', methods=['POST'])
 def comment_user():
@@ -519,14 +502,12 @@ def save_not_fixed_section_information(data):
         for record in records:
             db.session.delete(record)
 
-    print >> sys.stderr, elements
     ### add new records
     for element in elements:
         element_fields = { field : element[field] for field in element if hasattr(tableclass, field) }
         new_record = tableclass()
         for field, value in element_fields.iteritems():
             new_record[field] = value
-        #student_info[table] ???
         new_record.student_info    = student_info
         new_record.student_info_id = student_info.id
         db.session.add(new_record)
@@ -576,6 +557,9 @@ def change_section_state(data):
     user = User.query.get( int(data['user_id']) )
     student_info = user.students_info
     
+    print >> sys.stderr, student_info
+    print >> sys.stderr, data
+
     student_info['table_' + data['table']] = new_state
     if new_state == TABLE_STATES['DECLINED']:
         user.approved = False

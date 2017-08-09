@@ -16,17 +16,18 @@ from app.views.easy import *
 
 ########## data workers, перенести в отдельный модуль перед финальным тестированием
 class InputValue:
-    def __init__(self, eng, rus, inp_type, placeholder, value=''):
+    def __init__(self, eng, rus, inp_type, placeholder, is_readonly=False, value=''):
         self.eng = eng
         self.rus = rus
         self.inp_type = inp_type
         self.placeholder = placeholder
         self.value = value
+        self.is_readonly = is_readonly
         self.valid = ( self.eng is not None and self.rus is not None )
 
     def copy(self):
         return InputValue( eng=self.eng, rus=self.rus, inp_type=self.inp_type, 
-                           placeholder=self.placeholder, value=self.value )
+                           placeholder=self.placeholder, is_readonly=self.is_readonly, value=self.value )
 
 def get_quiz_state(user_id):
     student_info = User.query.get(user_id).students_info
@@ -56,6 +57,7 @@ def fill_section_values(fields, user_info):
     for field in fields:
         if user_info[field.eng] is not None:
             field.value = user_info[field.eng]
+    return True
 
 def get_sections_data_by_id(user_id):
     user_tables = get_user_tables()
@@ -65,16 +67,22 @@ def get_sections_data_by_id(user_id):
     for table in user_tables:
         fields_table = get_fields( table )
         s = get_class_by_tablename( table )()
-
-        fields_table = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
-            s.placeholder(x[0])) for x in fields_table]
+ 
+        fields_table = [InputValue(
+                            x[0], 
+                            s.get_russian_name(x[0]), 
+                            x[1], 
+                            s.placeholder(x[0]),
+                            is_readonly=s.is_readonly(x[0])
+                        ) for x in fields_table]
         fields_table = filter(lambda x: x.valid, fields_table)
 
+        print >> sys.stderr, get_class_by_tablename( table )
         section_info = { 
-                         'fields': fields_table, 'is_fixed': s.is_fixed(), 'table_name':table, 
+                         'fields': fields_table, 'is_fixed': s.is_fixed, 'table_name':table, 
                          'section_name': s.get_section_name(), 'section_number': len(sections_arr) 
                        }
-        if s.is_fixed():
+        if s.is_fixed:
             table_record = student_info[table]
             if table_record:
                 fill_section_values(section_info['fields'], table_record) 
@@ -98,7 +106,6 @@ def get_section_comments(user_id):
     student_info = User.query.get( user_id ).students_info
     d = {}
     for table in get_user_tables():
-        print >> sys.stderr, student_info['comments']
         val = student_info['comments'][table + '_comment']
         d[table] = val if val is not None else ''
     return d
@@ -204,7 +211,7 @@ def to_page_approve_user(user_id):
 
     return render_template('user-admin.html', title=u'Одобрение аккаунта', sections=sections_arr, table_states=TABLE_STATES,
         quiz_status=status, section_statuses=section_statuses, user_id=user_id, navprivate=True, quiz_states=QUIZ_STATES, 
-        comments=comments)
+        comments=comments, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
 
 
 @app.route('/documents')

@@ -1,21 +1,20 @@
 #-.- coding: utf-8 -.-
 from app import db
 from app.models.simple import * 
-from app.models.easy import *
+from app.models.easy import *   
 
-class Class_with_attrs_access():
+class User_info_table_interface(Class_with_attrs_access):
+    def placeholder(self, eng):
+        return self.placeholders[eng] if eng in self.placeholders else ''
 
-    def __setitem__(self, item, value):
-        try:
-            return setattr(self, item, value)
-        except all:
-            return '' 
+    def get_russian_name(self, eng):
+        return self.en2ru[eng] if eng in self.en2ru else unicode(eng[0].upper() + eng[1:])
 
-    def __getitem__(self, item):
-        try:
-            return getattr(self, item)
-        except all:
-            return ''    
+    def get_section_name(self):
+        return self.section_name
+
+    def is_readonly(self, field):
+        return field in self.readonly_fields
 
 
 class Student_info(db.Model, Class_with_attrs_access):
@@ -38,91 +37,92 @@ class Student_info(db.Model, Class_with_attrs_access):
     table_married_certificates      = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
     table_personal_data             = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
 
+    user = db.relationship('User', 
+        back_populates = 'students_info', uselist = False)
     comments = db.relationship('Comments', 
-        back_populates = 'student_info', uselist = False )
-    basic_information =  db.relationship('Basic_information', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
+    basic_information = db.relationship('Basic_information', 
+        back_populates = 'student_info', uselist = False)
     certificates_change_name =  db.relationship('Certificates_change_name', 
-        back_populates = 'student_info' )
-    communications =  db.relationship('Communications', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info')
+    communications =  db.relationship('Communications',
+        back_populates = 'student_info', uselist = False)
     passports =  db.relationship('Passports', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
     international_passports =  db.relationship('International_passports', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
     registration_certificates =  db.relationship('Registration_certificates', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
     middle_education =  db.relationship('Middle_education', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
     spec_middle_education =  db.relationship('Spec_middle_education', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
     high_education =  db.relationship('High_education', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info')
     military_education =  db.relationship('Military_education', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
     languages =  db.relationship('Languages', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info')
     mothers_fathers =  db.relationship('Mothers_fathers', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info')
     brothers_sisters_children =  db.relationship('Brothers_sisters_children', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info')
     married_certificates =  db.relationship('Married_certificates', 
-        back_populates = 'student_info' )
+        back_populates = 'student_info')
     personal_data =  db.relationship('Personal_data', 
-        back_populates = 'student_info', uselist = False )
+        back_populates = 'student_info', uselist = False)
 
 class Comments(db.Model, Class_with_attrs_access):
     __tablename__ = 'comments'
-    id = db.Column(db.Integer, primary_key = True)
+
+    id              = db.Column(db.Integer, primary_key = True)
     student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id'))
 
     # поля с комментариями админа к секции
-    basic_information_comment         = db.Column( db.String( 512 ), default='' ) 
-    certificates_change_name_comment  = db.Column( db.String( 512 ), default='' )
-    communications_comment            = db.Column( db.String( 512 ), default='' )
-    passports_comment                 = db.Column( db.String( 512 ), default='' )
-    international_passports_comment   = db.Column( db.String( 512 ), default='' )
-    registration_certificates_comment = db.Column( db.String( 512 ), default='' )
-    middle_education_comment          = db.Column( db.String( 512 ), default='' )
-    spec_middle_education_comment     = db.Column( db.String( 512 ), default='' )
-    high_education_comment            = db.Column( db.String( 512 ), default='' )
-    military_education_comment        = db.Column( db.String( 512 ), default='' )
-    languages_comment                 = db.Column( db.String( 512 ), default='' )
-    mothers_fathers_comment           = db.Column( db.String( 512 ), default='' )
-    brothers_sisters_children_comment = db.Column( db.String( 512 ), default='' )
-    married_certificates_comment      = db.Column( db.String( 512 ), default='' )
-    personal_data_comment             = db.Column( db.String( 512 ), default='' )
+    basic_information_comment         = db.Column( db.String(300), default='' ) 
+    certificates_change_name_comment  = db.Column( db.String(300), default='' )
+    communications_comment            = db.Column( db.String(300), default='' )
+    passports_comment                 = db.Column( db.String(300), default='' )
+    international_passports_comment   = db.Column( db.String(300), default='' )
+    registration_certificates_comment = db.Column( db.String(300), default='' )
+    middle_education_comment          = db.Column( db.String(300), default='' )
+    spec_middle_education_comment     = db.Column( db.String(300), default='' )
+    high_education_comment            = db.Column( db.String(300), default='' )
+    military_education_comment        = db.Column( db.String(300), default='' )
+    languages_comment                 = db.Column( db.String(300), default='' )
+    mothers_fathers_comment           = db.Column( db.String(300), default='' )
+    brothers_sisters_children_comment = db.Column( db.String(300), default='' )
+    married_certificates_comment      = db.Column( db.String(300), default='' )
+    personal_data_comment             = db.Column( db.String(300), default='' )
 
     student_info = db.relationship( 'Student_info', back_populates = 'comments' )
 
 
-class Basic_information(db.Model, Class_with_attrs_access):
+class Basic_information(db.Model, User_info_table_interface):
     __tablename__ = 'basic_information'
-    id = db.Column( db.Integer, primary_key = True )
+
+    id              = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id'))
-    last_name = db.Column(db.String(20))
-    first_name = db.Column(db.String(20))
-    middle_name = db.Column(db.String(20))
-    birth_date = db.Column(db.String(10))
-    birth_place = db.Column(db.String(64))
-    nationality = db.Column(db.String(20))
-    family_status = db.Column( db.String( 10 ) )
-    citizenship = db.Column( db.String( 50 ) )
-    second_citizenship = db.Column( db.String( 50 ) )
-    tin = db.Column( db.String( 12 ) )
-    insurance_certificate = db.Column( db.String( 14 ) ) 
+    
+    last_name             = db.Column( db.String(20), default='')
+    first_name            = db.Column( db.String(20), default='')
+    middle_name           = db.Column( db.String(20), default='')
+    birth_date            = db.Column( db.String(10), default='')
+    birth_place           = db.Column( db.String(64), default='')
+    nationality           = db.Column( db.String(20), default='')
+    family_status         = db.Column( db.String(10), default='')
+    citizenship           = db.Column( db.String(50), default='')
+    second_citizenship    = db.Column( db.String(50), default='')
+    tin                   = db.Column( db.String(12), default='')
+    insurance_certificate = db.Column( db.String(14), default='') 
 
     student_info =  db.relationship('Student_info', 
-        back_populates = 'basic_information' )
+        back_populates = 'basic_information')
 
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Основная информация'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Основная информация'
+        self.is_fixed     = True
+        self.placeholders = {
             'last_name': u'Иванов',
             'first_name': u'Иван',
             'middle_name': u'Иванович',
@@ -135,12 +135,7 @@ class Basic_information(db.Model, Class_with_attrs_access):
             'tin': u'123456789012',
             'insurance_certificate': u'123-456-789 01',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'last_name': u'Фамилия',
@@ -155,44 +150,35 @@ class Basic_information(db.Model, Class_with_attrs_access):
             'tin': u'ИНН',
             'insurance_certificate': u'Страховое свидетельство',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Certificates_change_name(db.Model, Class_with_attrs_access):
+
+class Certificates_change_name(db.Model, User_info_table_interface):
     __tablename__ = 'certificates_change_name'
-    id = db.Column( db.Integer, primary_key = True )
+    
+    id              = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id'))
-    serial = db.Column( db.String( 5 ) )
-    number = db.Column( db.String( 10 ) )
-    issuer = db.Column( db.String( 256 ) )
-    issue_date = db.Column(db.String(10)) 
-    changing = db.Column( db.String( 128 ) )
+    
+    serial     = db.Column( db.String(5),   default='' )
+    number     = db.Column( db.String(10),  default='' )
+    issuer     = db.Column( db.String(256), default='' )
+    issue_date = db.Column( db.String(10),  default='' ) 
+    changing   = db.Column( db.String(128), default='' )
 
-    student_info =  db.relationship('Student_info', 
+    student_info = db.relationship('Student_info', 
         back_populates = 'certificates_change_name')
 
-    def is_fixed(self):
-        return False
-
-    def get_section_name(self):
-        return u'Свидетельство о перемене имени'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Свидетельство о перемене имени'
+        self.is_fixed     = False
+        self.placeholders = {
             'serial' : u'12345',
             'number' : u'1234567890',
             'issuer' : u'гор. Новосибирск, ЗАГС 61',
             'issue_date' : u'01.01.2000',
             'changing' : u'Поменял имя ПЕТР на имя ВАСИЛИЙ'
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'serial' : u'Серия',
@@ -201,42 +187,32 @@ class Certificates_change_name(db.Model, Class_with_attrs_access):
             'issue_date' : u'Когда выдан',
             'changing' : u'Что изменилось',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Communications( db.Model, Class_with_attrs_access ):
+class Communications(db.Model, User_info_table_interface):
     __tablename__ = 'communications'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    mobile_phone_1 = db.Column( db.String( 11 ) )
-    mobile_phone_2 = db.Column( db.String( 11 ) )
-    home_phone = db.Column( db.String( 11 ) )
-    email = db.Column( db.String( 64 ) )
+
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id') )
+
+    mobile_phone_1 = db.Column( db.String(11), default='' )
+    mobile_phone_2 = db.Column( db.String(11), default='' )
+    home_phone     = db.Column( db.String(11), default='' )
+    email          = db.Column( db.String(64), default='' )
 
     student_info =  db.relationship('Student_info', 
         back_populates = 'communications' )
-
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Номера телефонов, электронная почта'
-
-    def placeholder(self, eng):
-        placeholders = {
+    
+    def __init__(self):
+        self.section_name = u'Номера телефонов, электронная почта'
+        self.is_fixed     = True
+        self.placeholders = {
             'mobile_phone_1' : u'89012345678',
             'mobile_phone_2' : u'89012340567',
             'home_phone' : u'84953045678',
             'email' : u'vasya.pupkin@gmail.com'
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'mobile_phone_1' : u'Мобильный 1',
@@ -244,36 +220,31 @@ class Communications( db.Model, Class_with_attrs_access ):
             'home_phone' : u'Домашний',
             'email' : u'E-mail'
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Passports( db.Model, Class_with_attrs_access ):
+class Passports(db.Model, User_info_table_interface):
     __tablename__ = "passports"
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    serial = db.Column( db.String( 4 ) )
-    number = db.Column( db.String( 6 ) )
-    issuer = db.Column( db.String( 256 ) )
-    issue_date = db.Column(db.String(10)) 
-    code = db.Column( db.String( 7 ) )
-    registration_index = db.Column( db.String( 6 ) )
-    registration_address = db.Column( db.String( 256 ) )
-    fact_index = db.Column( db.String( 6 ) )
-    fact_address = db.Column( db.String( 256 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id') )
+    
+    serial               = db.Column( db.String(4),   default='' )
+    number               = db.Column( db.String(6),   default='' )
+    issuer               = db.Column( db.String(256), default='' )
+    issue_date           = db.Column( db.String(10),  default='' ) 
+    code                 = db.Column( db.String(7),   default='' )
+    registration_index   = db.Column( db.String(6),   default='' )
+    registration_address = db.Column( db.String(256), default='' )
+    fact_index           = db.Column( db.String(6),   default='' )
+    fact_address         = db.Column( db.String(256), default='' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'passports' )
     
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Паспорт'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Паспорт'
+        self.is_fixed     = True
+        self.placeholders = {
             'serial' : u'1234',
             'number' : u'123456',
             'issuer' : u'Отделом УФМС по гор. Москве по району Раменки',
@@ -284,12 +255,7 @@ class Passports( db.Model, Class_with_attrs_access ):
             'fact_index' : u'123456',
             'fact_address' : u'гор. Москва, Ленинские горы, д.1, корп. Б, комн. 123',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'serial' : u'Серия',
@@ -302,44 +268,34 @@ class Passports( db.Model, Class_with_attrs_access ):
             'fact_index' : u'Индекс фактического проживания',
             'fact_address' : u'Адрес фактического проживания',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class International_passports( db.Model, Class_with_attrs_access ):
+class International_passports(db.Model, User_info_table_interface):
     __tablename__ = 'international_passports'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    serial = db.Column( db.String( 2 ) )
-    number = db.Column( db.String( 7 ) )
-    issuer = db.Column( db.String( 256 ) )
-    issue_date = db.Column(db.String(10)) 
-    validity = db.Column( db.String( 10 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id') )
+    
+    serial     = db.Column( db.String(2),   default='' )
+    number     = db.Column( db.String(7),   default='' )
+    issuer     = db.Column( db.String(256), default='' )
+    issue_date = db.Column( db.String(10),  default='' ) 
+    validity   = db.Column( db.String(10),  default='' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'international_passports' )
     
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Загранпаспорт'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Загранпаспорт'
+        self.is_fixed     = True
+        self.placeholders = {
             'serial' : u'12',
             'number' : u'1234567',
             'issuer' : u'Отделом УФМС по гор. Москве по району Раменки',
             'issue_date' : u'01.01.2015',
             'validity' : u'10 лет',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'serial' : u'Серия',
@@ -348,33 +304,28 @@ class International_passports( db.Model, Class_with_attrs_access ):
             'issue_date' : u'Когда выдан',
             'validity' : u'Срок действия',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Registration_certificates( db.Model, Class_with_attrs_access ):
+class Registration_certificates(db.Model, User_info_table_interface):
     __tablename__ = 'registration_certificates'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    serial = db.Column( db.String( 2 ) ) 
-    number = db.Column( db.String( 7 ) )
-    issuer = db.Column( db.String( 128 ) )
-    date_issue = db.Column(db.String(10))  
-    military_department = db.Column( db.String( 128 ) )
-    shelf_category = db.Column( db.String( 32 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id') )
+
+    serial              = db.Column( db.String(2),   default = '' ) 
+    number              = db.Column( db.String(7),   default = '' )
+    issuer              = db.Column( db.String(128), default = '' )
+    date_issue          = db.Column( db.String(10),  default = '' )  
+    military_department = db.Column( db.String(128), default = '' )
+    shelf_category      = db.Column( db.String(32),  default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'registration_certificates' )
-    
-    def is_fixed(self):
-        return True
 
-    def get_section_name(self):
-        return u'Приписное свидетельство'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Приписное свидетельство'
+        self.is_fixed     = True
+        self.placeholders = {
             'serial' : u'АВ',
             'number' : u'1234567',
             'issuer' : u'Раменским комиссариатом',
@@ -382,12 +333,7 @@ class Registration_certificates( db.Model, Class_with_attrs_access ):
             'military_department' : u'Раменский военный комиссариат',
             'shelf_category' : u'В+ годен с ограничениями'
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'serial' : u'Серия',
@@ -397,42 +343,32 @@ class Registration_certificates( db.Model, Class_with_attrs_access ):
             'military_department' : u'Военный комиссариат по месту воинского учета',
             'shelf_category' : u'Категория годности'
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Middle_education( db.Model, Class_with_attrs_access ):
+class Middle_education(db.Model, User_info_table_interface):
     __tablename__ = 'middle_education'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    school = db.Column( db.String( 128 ) )
-    school_address = db.Column( db.String( 128 ) )
-    entrance_year = db.Column( db.String( 4 ) )
-    graduation_year = db.Column( db.String( 4 ) )
+
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id') )
     
-    student_info =  db.relationship('Student_info', 
+    school          = db.Column( db.String(128), default = '' )
+    school_address  = db.Column( db.String(128), default = '' )
+    entrance_year   = db.Column( db.String(4),   default = '' )
+    graduation_year = db.Column( db.String(4),   default = '' )
+    
+    student_info = db.relationship('Student_info', 
         back_populates = 'middle_education' )
 
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Образование среднее'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Образование среднее'
+        self.is_fixed     = True
+        self.placeholders = {
             'school' : u'МБОУ СОШ "Лицей № 5"',
             'school_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56',
             'entrance_year' : u'2005',
             'graduation_year' : u'2013',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'school' : u'Школа по аттестату',
@@ -440,44 +376,34 @@ class Middle_education( db.Model, Class_with_attrs_access ):
             'entrance_year' : u'Год поступления',
             'graduation_year' : u'Год окончания',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Spec_middle_education( db.Model, Class_with_attrs_access ):
+class Spec_middle_education(db.Model, User_info_table_interface):
     __tablename__ = 'spec_middle_education'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    institution = db.Column( db.String( 128 ) )
-    institution_address = db.Column( db.String( 128 ) )
-    speciality = db.Column( db.String( 128 ) )
-    entrance_year = db.Column( db.String( 4 ) )
-    graduation_year = db.Column( db.String( 4 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey('student_info.id') )
+    
+    institution         = db.Column( db.String(128), default = '' )
+    institution_address = db.Column( db.String(128), default = '' )
+    speciality          = db.Column( db.String(128), default = '' )
+    entrance_year       = db.Column( db.String(4), default = '' )
+    graduation_year     = db.Column( db.String(4), default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'spec_middle_education' )
     
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Образование среднеспециальное'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Образование среднеспециальное'
+        self.is_fixed     = True
+        self.placeholders = {
             'institution' : u'ПТУ № 43',
             'institution_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56',
             'speciality' : u'Сварщик',
             'entrance_year' : u'2005',
             'graduation_year' : u'2013',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'institution' : u'Учебное заведение',
@@ -486,39 +412,34 @@ class Spec_middle_education( db.Model, Class_with_attrs_access ):
             'entrance_year' : u'Год поступления',
             'graduation_year' : u'Год окончания',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class High_education(db.Model, Class_with_attrs_access):
+class High_education(db.Model, User_info_table_interface):
     __tablename__ = 'high_education'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    institution = db.Column( db.String( 128 ) )
-    budgetary = db.Column( db.Boolean, default=NOT_BUDGET )
-    full_faculty_name = db.Column( db.String( 128 ) )
-    short_faculty_name = db.Column( db.String( 16 ) )
-    spec_diploma = db.Column( db.String( 128 ) )
-    study_group_2 = db.Column( db.String( 10 ) )
-    study_group_3 = db.Column( db.String( 10 ) )
-    study_group_4 = db.Column( db.String( 10 ) )
-    form_study = db.Column( db.String( 20 ) )
-    quality = db.Column( db.String( 20 ) )
-    entrance_year = db.Column( db.String( 4 ) )
-    graduation_year = db.Column( db.String( 4 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
+    
+    institution        = db.Column( db.String(128), default = '' )
+    budgetary          = db.Column( db.Boolean,     default=NOT_BUDGET )
+    full_faculty_name  = db.Column( db.String(128), default = '' )
+    short_faculty_name = db.Column( db.String(16),  default = '' )
+    spec_diploma       = db.Column( db.String(128), default = '' )
+    study_group_2      = db.Column( db.String(10),  default = '' )
+    study_group_3      = db.Column( db.String(10),  default = '' )
+    study_group_4      = db.Column( db.String(10),  default = '' )
+    form_study         = db.Column( db.String(20),  default = '' )
+    quality            = db.Column( db.String(20),  default = '' )
+    entrance_year      = db.Column( db.String(4),   default = '' )
+    graduation_year    = db.Column( db.String(4),   default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'high_education' )
     
-    def is_fixed(self):
-        return False
-
-    def get_section_name(self):
-        return u'Образование высшее'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Образование высшее'
+        self.is_fixed     = False
+        self.placeholders = {
             'institution' : u'МГУ имени М. В. Ломоносова',
             'budgetary' : u'бюджет',
             'full_faculty_name' : u'Механико-математический факультет',
@@ -532,12 +453,7 @@ class High_education(db.Model, Class_with_attrs_access):
             'entrance_year' : u'2005',
             'graduation_year' : u'2013',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'institution' : u'ВУЗ',
@@ -553,119 +469,94 @@ class High_education(db.Model, Class_with_attrs_access):
             'entrance_year' : u'Год поступления',
             'graduation_year' : u'Год окончания',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = { 'quality', }
 
-class Military_education( db.Model, Class_with_attrs_access ):
+class Military_education(db.Model, User_info_table_interface):
     __tablename__ = 'military_education'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    platoon_1 = db.Column( db.String( 10 ) )
-    platoon_2 = db.Column( db.String( 10 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
+    
+    platoon_1 = db.Column( db.String(10), default = '' )
+    platoon_2 = db.Column( db.String(10), default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'military_education' )
     
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Военное образование в МГУ'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Военное образование в МГУ'
+        self.is_fixed     = True
+        self.placeholders = {
             'platoon_1' : u'117',
             'platoon_2' : u'127',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'platoon_1' : u'Взвод 1 года обучения',
             'platoon_2' : u'Взвод 2 года обучения',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
     
-class Languages( db.Model, Class_with_attrs_access ):
+class Languages(db.Model, User_info_table_interface):
     __tablename__ = 'languages'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    language = db.Column( db.String( 32 ) )
-    quality = db.Column( db.String( 32 ) )
-    certificates = db.Column( db.String( 256 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
+    
+    language     = db.Column( db.String(32),  default = '' )
+    quality      = db.Column( db.String(32),  default = '' )
+    certificates = db.Column( db.String(256), default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'languages' )
 
-    def is_fixed(self):
-        return False
- 
-    def get_section_name(self):
-        return u'Иностранные языки'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Иностранные языки'
+        self.is_fixed     = False
+        self.placeholders = {
             'language' : u'Английский',
             'quality' : u'Продвинутый',
             'certificates' : u'TOEFL, 101 балл; IELTS, 8 баллов'
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'language' : u'Язык',
             'quality' : u'Степень владения',
             'certificates' : u'Сертификаты'
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Mothers_fathers( db.Model, Class_with_attrs_access ):
+class Mothers_fathers(db.Model, User_info_table_interface):
     __tablename__ = 'mothers_fathers'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    status = db.Column( db.String( 4 ) ) # мать, отец
-    last_name = db.Column( db.String( 20 ) )
-    first_name = db.Column( db.String( 20 ) )
-    middle_name = db.Column( db.String( 20 ) )
-    birth_date = db.Column(db.String(10))
-    birth_place = db.Column( db.String( 64 ) )
-    mobile_phone_1 = db.Column( db.String( 11 ) )
-    mobile_phone_2 = db.Column( db.String( 11 ) )
-    home_phone = db.Column( db.String( 11 ) )
-    job_place = db.Column( db.String( 128 ) )
-    job_post = db.Column( db.String( 64 ) )
-    fact_index = db.Column( db.String( 9 ) )
-    fact_address = db.Column( db.String( 256 ) )
-    foreign_citizenship = db.Column( db.String( 256 ) )
-    conviction = db.Column( db.String( 256 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
+    
+    status              = db.Column( db.String(4),   default = '' ) # мать, отец
+    last_name           = db.Column( db.String(20),  default = '' )
+    first_name          = db.Column( db.String(20),  default = '' )
+    middle_name         = db.Column( db.String(20),  default = '' )
+    birth_date          = db.Column( db.String(10),  default = '' )
+    birth_place         = db.Column( db.String(64),  default = '' )
+    mobile_phone_1      = db.Column( db.String(11),  default = '' )
+    mobile_phone_2      = db.Column( db.String(11),  default = '' )
+    home_phone          = db.Column( db.String(11),  default = '' )
+    job_place           = db.Column( db.String(128), default = '' )
+    job_post            = db.Column( db.String(64),  default = '' )
+    fact_index          = db.Column( db.String(9),   default = '' )
+    fact_address        = db.Column( db.String(256), default = '' )
+    foreign_citizenship = db.Column( db.String(256), default = '' )
+    conviction          = db.Column( db.String(256), default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'mothers_fathers' )
     
-    def is_fixed(self):
-        return False
-
-    def get_section_name(self):
-        return u'Родители'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Родители'
+        self.is_fixed     = False
+        self.placeholders = {
             'status' : u'мать',
             'last_name': u'Иванов',
             'first_name': u'Иван',
@@ -682,12 +573,7 @@ class Mothers_fathers( db.Model, Class_with_attrs_access ):
             'foreign_citizenship' : u'Гражданство Белорусии',
             'conviction' : u'Не судим / судим в nnnn году, оправдан',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'status' : u'Статус',
@@ -706,35 +592,30 @@ class Mothers_fathers( db.Model, Class_with_attrs_access ):
             'foreign_citizenship' : u'Иностранное гражданство или подданство',
             'conviction' : u'Судимость',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = {'status', }
 
-class Brothers_sisters_children( db.Model, Class_with_attrs_access ):
+class Brothers_sisters_children(db.Model, User_info_table_interface):
     __tablename__ = 'brothers_sisters_children'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    status = db.Column( db.String( 6 ) ) # брат, сестра, сын, дочь
-    last_name = db.Column( db.String( 20 ) )
-    first_name = db.Column( db.String( 20 ) )
-    middle_name = db.Column( db.String( 20 ) )
-    birth_date = db.Column(db.String(10))
-    birth_place = db.Column( db.String( 64 ) )
-    foreign_citizenship = db.Column( db.String( 256 ) )
-    conviction = db.Column( db.String( 256 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
+    
+    status              = db.Column( db.String(6),   default = '' ) # брат, сестра, сын, дочь
+    last_name           = db.Column( db.String(20),  default = '' )
+    first_name          = db.Column( db.String(20),  default = '' )
+    middle_name         = db.Column( db.String(20),  default = '' )
+    birth_date          = db.Column( db.String(10),  default = '' )
+    birth_place         = db.Column( db.String(64),  default = '' )
+    foreign_citizenship = db.Column( db.String(256), default = '' )
+    conviction          = db.Column( db.String(256), default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'brothers_sisters_children' )
 
-    def is_fixed(self):
-        return False
-    
-    def get_section_name(self):
-        return u'Родственники'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Родственники'
+        self.is_fixed     = False
+        self.placeholders = {
             'status' : u'брат',
             'last_name': u'Иванов',
             'first_name': u'Иван',
@@ -744,12 +625,7 @@ class Brothers_sisters_children( db.Model, Class_with_attrs_access ):
             'foreign_citizenship' : u'Гражданство Белорусии',
             'conviction' : u'Не судим / судим в nnnn году, оправдан',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'status' : u'Статус',
@@ -761,43 +637,38 @@ class Brothers_sisters_children( db.Model, Class_with_attrs_access ):
             'foreign_citizenship' : u'Иностранное гражданство или подданство',
             'conviction' : u'Судимость',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = {'status', }
 
-class Married_certificates( db.Model, Class_with_attrs_access ):
+class Married_certificates(db.Model, User_info_table_interface):
     __tablename__ = 'married_certificates'
-    id = db.Column( db.Integer, primary_key = True )
+
+    id              = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    serial = db.Column( db.String( 20 ) )
-    number = db.Column( db.String( 20 ) )
-    issuer = db.Column( db.String( 128 ) )
-    date_issue = db.Column(db.String(10))
-    last_name = db.Column( db.String( 20 ) )
-    first_name = db.Column( db.String( 20 ) )
-    middle_name = db.Column( db.String( 20 ) )
-    birth_date = db.Column(db.String(10))
-    birth_place = db.Column( db.String( 64 ) )
-    mobile_phone_1 = db.Column( db.String( 11 ) )
-    mobile_phone_2 = db.Column( db.String( 11 ) )
-    home_phone = db.Column( db.String( 11 ) )
-    job_place = db.Column( db.String( 128 ) )
-    job_post = db.Column( db.String( 64 ) )
-    fact_index = db.Column( db.String( 9 ) )
-    fact_address = db.Column( db.String( 256 ) )
-
-    def is_fixed(self):
-        return False
-
-    def get_section_name(self):
-        return u'Супруги'
-
-    student_info =  db.relationship('Student_info', 
-        back_populates = 'married_certificates' )
     
-    def placeholder(self, eng):
-        placeholders = {
+    serial         = db.Column( db.String(20),  default = '' )
+    number         = db.Column( db.String(20),  default = '' )
+    issuer         = db.Column( db.String(128), default = '' )
+    date_issue     = db.Column( db.String(10),  default = '' )
+    last_name      = db.Column( db.String(20),  default = '' )
+    first_name     = db.Column( db.String(20),  default = '' )
+    middle_name    = db.Column( db.String(20),  default = '' )
+    birth_date     = db.Column( db.String(10),  default = '' )
+    birth_place    = db.Column( db.String(64),  default = '' )
+    mobile_phone_1 = db.Column( db.String(11),  default = '' )
+    mobile_phone_2 = db.Column( db.String(11),  default = '' )
+    home_phone     = db.Column( db.String(11),  default = '' )
+    job_place      = db.Column( db.String(128), default = '' )
+    job_post       = db.Column( db.String(64),  default = '' )
+    fact_index     = db.Column( db.String(9),   default = '' )
+    fact_address   = db.Column( db.String(256), default = '' )
+
+    student_info = db.relationship('Student_info', 
+        back_populates = 'married_certificates' )
+
+    def __init__(self):
+        self.section_name = u'Супруги'
+        self.is_fixed     = False
+        self.placeholders = {
             'serial' : u'EA12',
             'number' : u'1234567890',
             'issuer' : u'гор. Уфа, ЗАГС № 5',
@@ -815,12 +686,7 @@ class Married_certificates( db.Model, Class_with_attrs_access ):
             'fact_index' : u'123456',
             'fact_address' : u'гор. Нижневартовск, ул. Пушкина, д. 56'
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'serial' : u'Серия',
@@ -840,42 +706,37 @@ class Married_certificates( db.Model, Class_with_attrs_access ):
             'fact_index' : u'Индекс фактического проживания',
             'fact_address' : u'Адрес фактического проживания'
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
 
-class Personal_data( db.Model, Class_with_attrs_access ):
+class Personal_data(db.Model, User_info_table_interface):
     __tablename__ = 'personal_data'
-    id = db.Column( db.Integer, primary_key = True )
-    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
-    blood_group_resus = db.Column( db.String( 5 ) )
-    shoes_size = db.Column( db.SmallInteger )
-    uniform_size = db.Column( db.SmallInteger )
-    head_size = db.Column( db.SmallInteger )
-    growth = db.Column( db.Integer )
-    protivogaz_size = db.Column( db.SmallInteger )
-    OZK_size = db.Column( db.SmallInteger )
-    government_prize = db.Column( db.String( 256 ) )
-    injuries = db.Column( db.String( 256 ) )
-    criminals = db.Column( db.String( 256 ) )
-    civil_specialization = db.Column( db.String( 256 ) )
-    hobbies = db.Column( db.String( 256 ) )
-    sports = db.Column( db.String( 256 ) )
-    scientific_results = db.Column( db.String( 256 ) )
-    work_experience = db.Column( db.String( 256 ) )
 
-    student_info =  db.relationship('Student_info', 
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
+    
+    blood_group_resus    = db.Column( db.String(10),  default = '' )
+    shoes_size           = db.Column( db.String(10),  default = '' )
+    uniform_size         = db.Column( db.String(10),  default = '' )
+    head_size            = db.Column( db.String(10),  default = '' )
+    growth               = db.Column( db.String(10),  default = '' )
+    protivogaz_size      = db.Column( db.String(10),  default = '' )
+    OZK_size             = db.Column( db.String(10),  default = '' )
+    government_prize     = db.Column( db.String(256), default = '' )
+    injuries             = db.Column( db.String(256), default = '' )
+    criminals            = db.Column( db.String(256), default = '' )
+    civil_specialization = db.Column( db.String(256), default = '' )
+    hobbies              = db.Column( db.String(256), default = '' )
+    sports               = db.Column( db.String(256), default = '' )
+    scientific_results   = db.Column( db.String(256), default = '' )
+    work_experience      = db.Column( db.String(256), default = '' )
+
+    student_info = db.relationship('Student_info', 
         back_populates = 'personal_data' )
     
-    def is_fixed(self):
-        return True
-
-    def get_section_name(self):
-        return u'Личные данные'
-
-    def placeholder(self, eng):
-        placeholders = {
+    def __init__(self):
+        self.section_name = u'Личные данные'
+        self.is_fixed     = True
+        self.placeholders = {
             'blood_group_resus' : u'2+',
             'shoes_size' : u'46',
             'uniform_size' : u'48',
@@ -892,12 +753,7 @@ class Personal_data( db.Model, Class_with_attrs_access ):
             'scientific_results' : u'Статья "Интерполяция экспоненты кривыми первого порядка" в Вестнике Томского университета',
             'work_experience' : u'ООО Компания, младший аналитик nnnn-nnnn г.',
         }
-        if eng not in placeholders:
-            return ''
-        return placeholders[eng]
-    
-    def get_russian_name(self, eng):
-        en2ru = {
+        self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'blood_group_resus' : u'Группа крови, резус фактор',
@@ -916,7 +772,5 @@ class Personal_data( db.Model, Class_with_attrs_access ):
             'scientific_results': u'Научные труды и изобретения',
             'work_experience': u'Трудовая деятельность (опыт работы)',
         }
-        if eng in en2ru:
-            return en2ru[eng]
-        else:
-            return unicode(eng[0].upper() + eng[1:])
+        self.readonly_fields = set()
+
