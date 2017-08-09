@@ -18,7 +18,7 @@
         <tbody>
         {% for doc in docs %}
         <tr>
-            <td>{{doc.name}}</td><td>{{doc.VUS.to_string()}}</td>
+            <td>{{doc.name}}</td><td>{{vuses_name_by_id[doc.vus_id]}}</td>
             {% if not is_readonly %}
             <td><button class="btn btn-default" id="delete-btn" onclick="delDoc({{doc.id}});">Удалить</button></td>
             {% endif %}

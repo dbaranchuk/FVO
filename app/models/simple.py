@@ -29,6 +29,9 @@ class User(db.Model):
     def get_id(self):
         return unicode(self.id)
 
+    def is_active(self):
+        return True 
+
     def is_authenticated(self):
         return True
 
@@ -40,5 +43,8 @@ class Document(db.Model):
     id       = db.Column(db.Integer, primary_key=True)
     name     = db.Column(db.String(120), index=True, unique=True)
     filename = db.Column(db.String(120))
+    vus_id   = db.Column(db.Integer, db.ForeignKey('VUS.id'))
+
+    #vus = db.relationship('VUS', back_populates='document', uselist=False)
 
 

@@ -210,10 +210,6 @@ $(document).ready(function() {
         if (is_not_fixed) {
             post_data['elements'] = JSON.stringify(data_sections);
         }
-        /*
-        Object.keys(post_data).forEach(function(key) {
-            alert(key+"=>"+post_data[key])
-        });*/
 
         $.ajax({
             type: 'post',
@@ -262,15 +258,19 @@ $(document).ready(function() {
             data: data,
             success: function (res) {
                 var userData = res['result']
-                for (i in userData) {
-                    var rowHtml = '<tr><td>' + userData[i]['lastName'] + '</td><td>' + userData[i]['year'] + 
-                    "</td><td>" + userData[i]['vus'] + "</td><td>" + 
-                    //'<a href="' + "{{ url_for('to_page_approve_user', user_id='" + userData[i]['id'] + "') }}" + '">' + 
-                    '<a href="/inprocess/' + userData[i]['id'] + '">' + 
-                    "<button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + 
-                    ">Показать</button></a></td></tr>";
-
-                    $('#user-search-result > tbody:last-child').append(rowHtml);
+                if (userData.length) {
+                    $('#div_empty_result').text('')
+                    for (i in userData) {
+                        var rowHtml = '<tr><td>' + userData[i]['lastName'] + '</td><td>' + userData[i]['year'] + 
+                        "</td><td>" + userData[i]['vus'] + "</td><td>" + 
+                        //'<a href="' + "{{ url_for('to_page_approve_user', user_id='" + userData[i]['id'] + "') }}" + '">' + 
+                        '<a href="/inprocess/' + userData[i]['id'] + '">' + 
+                        "<button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + 
+                        ">Показать</button></a></td></tr>";
+                        $('#user-search-result > tbody:last-child').append(rowHtml);
+                    }
+                } else {
+                    $('#div_empty_result').text('Результат поиска пуст')
                 }
             },
             dataType: 'json',
@@ -807,6 +807,7 @@ function delDoc(docId){
     xmlhttp.send(JSON.stringify(params));
 }
 
+/*
 function addUser(){
     var params = {
         login: document.getElementById('login').value,
@@ -822,7 +823,7 @@ function addUser(){
             b.innerText = 'Создать аккаунт';
         }
     );
-}
+}*/
 
 ///////////////////////////
 

@@ -219,15 +219,17 @@ def to_page_approve_user(user_id):
 def documents():
     if user_role() < 1:
         abort(404)
-    if user_role()!=USER_STATES['ROLE_ADMIN']:
+    if user_role() != USER_STATES['ROLE_ADMIN']:
         vuses = VUS.query.all()
         docs = Document.query.all()
     else:
         vuses = VUS.query.get(current_user.vus_id)
         vuses = [vuses]
         docs = Document.query.filter_by(vus_id=current_user.vus_id)
+    vuses_name_by_id = { vus.id : vus.to_string() for vus in vuses }
     return render_template('documents.html', title=u'Документы', tab_active=3, vuses=vuses, 
-        docs=docs, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
+        vuses_name_by_id=vuses_name_by_id, docs=docs, 
+        is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
 
 
 @app.route('/account_creator')

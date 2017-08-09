@@ -19,7 +19,11 @@
                     <input type="checkbox" id="checkallUsers">
                 </th>
 
-                <th>Фамилия</th><th>Имя</th><th>Отчество</th><th>Год поступления на ФВО</th>
+                <th width="30%">Фамилия</th>
+                <th width="17%">Имя</th>
+                <th width="17%">Отчество</th>
+                <th width="23%">Год поступления на ФВО</th>
+                <th>Анкета</th>
 
             </tr>
             </thead>
@@ -32,6 +36,7 @@
                     <td>{{user['firstName']}}</td>
                     <td>{{user['middleName']}}</td>
                     <td>{{user['year']}}</td>
+                    <td> <a href="/inprocess/{{ user['id'] }}"> <button type="button" class="btn btn-default">Посмотреть</button></a></td>
                 </tr>
 
             {% endfor %}
