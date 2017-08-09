@@ -141,7 +141,7 @@ class Students_info_lables_accessor():
             'international_number' : ('international_passports', 'number'),
             'international_issuer' : ('international_passports', 'issuer'),
             'international_issue_date' : ('international_passports', 'issue_date'),
-            'international_validity' : ('international_passports', 'international_validity'),
+            'international_validity' : ('international_passports', 'validity'),
             
             'registration_serial' : ('registration_certificates', 'serial'),
             'registration_number' : ('registration_certificates', 'number'),
@@ -165,7 +165,7 @@ class Students_info_lables_accessor():
             'budgetary' : ('high_education', 'budgetary'),
             'full_faculty_name' : ('high_education', 'full_faculty_name'),
             'short_faculty_name' : ('high_education', 'short_faculty_name'),
-            'spec_diloma' : ('high_education', 'spec_diloma'),
+            'spec_diloma' : ('high_education', 'spec_diploma'),
             'study_group_2' : ('high_education', 'study_group_2'),
             'study_group_3' : ('high_education', 'study_group_3'),
             'study_group_4' : ('high_education', 'study_group_4'),
@@ -178,8 +178,8 @@ class Students_info_lables_accessor():
             'vzvod_2' : ('military_education', 'platoon_2'),
 
             'language_name' : ('languages', 'language'),
-            'language_quality' : ('high_education', 'quality'),
-            'language_certificates' : ('high_education', 'language_certificates'),
+            'language_quality' : ('languages', 'quality'),
+            'language_certificates' : ('languages', 'certificates'),
 
             'resus' : ('personal_data', 'blood_group_resus'),
             'shoes_size' : ('personal_data', 'shoes_size'),
@@ -207,7 +207,10 @@ class Students_info_lables_accessor():
 
             path = self.simple_fields[item[0]]
             if len(item) > 1:
-                res_record = self.student_info[path[0]][item[1]][path[1]]
+                try:
+                    res_record = self.student_info[path[0]][int(item[1])-1][path[1]]
+                except Exception:
+                    return ''
             else:
                 res_record = self.student_info[path[0]][path[1]]
 
@@ -216,8 +219,11 @@ class Students_info_lables_accessor():
             (keyword, prop) = item[0].split('@')
 
             if hasattr(self, keyword):
-                if number:
-                    return getattr(self, keyword)[number][prop]
+                if len(item)>1:
+                    try:
+                        return getattr(self, keyword)[int(item[1]-1)][prop]
+                    except Exception:
+                        return ''
                 else:
                     return getattr(self, keyword)[prop]
             else:
