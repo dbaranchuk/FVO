@@ -83,11 +83,20 @@ class Students_info_lables_accessor():
         
         self.student_info = student_info
 
-        self.brothers = [brother for brother in student_info.brothers_sisters_children if brother.status == u'Брат']
-        self.sisters = [sister for sister in student_info.brothers_sisters_children if sister.status == u'Сестра']
-        self.children = [child for child in student_info.brothers_sisters_children if child.status == u'Сын' or child.status == u'Дочь']
+        self.brother = [brother for brother in student_info.brothers_sisters_children if brother.status == u'Брат']
+        self.sister = [sister for sister in student_info.brothers_sisters_children if sister.status == u'Сестра']
+        self.child = [child for child in student_info.brothers_sisters_children if child.status == u'Сын' or child.status == u'Дочь']
         self.father = [father for father in student_info.mothers_fathers if father.status == u'Отец'][0]
         self.mother = [mother for mother in student_info.mothers_fathers if mother.status == u'Мать'][0]
+        '''
+        for br in self.brother:
+            print >> sys.stderr, br.last_name
+        for s in self.sister:
+            print >> sys.stderr, s.last_name
+        for c in self.child:
+            print >> sys.stderr, c.last_name
+        '''
+        print >> sys.stderr, student_info.spec_middle_education.institution
 
         self.simple_fields = {
             'last_name' : ('basic_information', 'last_name'),
@@ -167,6 +176,23 @@ class Students_info_lables_accessor():
             'language_quality' : ('languages', 'quality'),
             'language_certificates' : ('languages', 'certificates'),
 
+            'married_serial' : ('married_certificates', 'serial'),
+            'married_number' : ('married_certificates', 'number'),
+            'married_issuer' : ('married_certificates', 'issuer'),
+            'married_date_issue' : ('married_certificates', 'date_issue'),
+            'married_last_name' : ('married_certificates', 'last_name'),
+            'married_first_name' : ('married_certificates', 'first_name'),
+            'married_middle_name' : ('married_certificates', 'middle_name'),
+            'married_birth_date' : ('married_certificates', 'birth_date'),
+            'married_birth_place' : ('married_certificates', 'birth_place'),
+            'married_mobile_phone_1' : ('married_certificates', 'mobile_phone_1'),
+            'married_mobile_phone_2' : ('married_certificates', 'mobile_phone_2'),
+            'married_home_phone' : ('married_certificates', 'home_phone'),
+            'married_job_place' : ('married_certificates', 'married_job_place'),
+            'married_job_post' : ('married_certificates', 'married_job_post'),
+            'married_fact_index' : ('married_certificates', 'fact_index'),
+            'married_fact_address' : ('married_certificates', 'fact_address'),
+
             'resus' : ('personal_data', 'blood_group_resus'),
             'shoes_size' : ('personal_data', 'shoes_size'),
             'uniform_size' : ('personal_data', 'uniform_size'),
@@ -188,8 +214,8 @@ class Students_info_lables_accessor():
         item = item[1:-1].split('.')
         print >> sys.stderr, item
 
+        res_record = ''
         if item[0] in self.simple_fields:
-            res_record = ''
 
             path = self.simple_fields[item[0]]
             if len(item) > 1:
@@ -198,20 +224,25 @@ class Students_info_lables_accessor():
                 except Exception:
                     return ''
             else:
+                print >> sys.stderr, self.student_info[path[0]], self.student_info[path[0]][path[1]]
                 res_record = self.student_info[path[0]][path[1]]
 
-            return res_record
         else:
-            (keyword, prop) = item[0].split('@')
-
+            
+            try:
+                (keyword, prop) = item[0].split('@')
+            except Exception:
+                return None
+            #print >> sys.stderr, keyword, prop
             if hasattr(self, keyword):
                 if len(item)>1:
                     try:
-                        return getattr(self, keyword)[int(item[1]-1)][prop]
+                        res_record = getattr(self, keyword)[int(item[1])-1][prop]
                     except Exception:
                         return ''
                 else:
-                    return getattr(self, keyword)[prop]
+                    res_record = getattr(self, keyword)[prop]
             else:
                 return None
 
+        return res_record if res_record != None else ''

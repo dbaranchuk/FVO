@@ -660,21 +660,43 @@ def generateDocuments(data):
     users = User.query.filter(User.id.in_(userIDs)).all()
     documents = Document.query.filter(Document.id.in_(docIDs)).all()
 
+    if not users:
+        return gen_success(success = False, errorMessage = 'Выберите хотя бы одного пользователя')
+    if not documents:
+        return gen_success(success = False, errorMessage = 'Выберите хотя бы один документ')
+
     for user in users:
         accessor = Students_info_lables_accessor(user.students_info)
         for document in documents:
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
             doc = Doc(docPath)
-
             for p in doc.paragraphs:
                 regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
                 iterator = regex.finditer(p.text)
                 for match in iterator:
-                    value = accessor[match.group()]
-                    print >> sys.stderr, value
+                    keyword = match.group()
+                    value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
+                    text = p.text.replace(keyword, value)
+                    style = p.style
+                    p.text = text
+                    p.style = style
             
+            doc_name = os.path.join(USER_PATH, 'documents', 'temp', document.filename[:-5] + str(user.id) + '.docx')
+            doc.save(doc_name)
+    
+    zippath = os.path.join(USER_PATH, 'Documents.zip')
+    zipf = ZipFile(zippath, 'w', ZIP_DEFLATED)
 
-    return gen_success(message = 'ololo')
+    basedir = os.path.join(USER_PATH, 'documents', 'temp')
+    for root, dirs, files in os.walk(basedir):
+        for fn in files:
+            absfn = os.path.join(root, fn)
+            zfn = absfn[len(basedir)+len(os.sep):]
+            zipf.write(absfn, zfn)
+            os.remove(absfn)
+    zipf.close()
+
+    return gen_success(url = '/static/user_data/Documents.zip', success = True)
 
 
 

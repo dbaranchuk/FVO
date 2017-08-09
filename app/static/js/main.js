@@ -310,13 +310,21 @@ $(document).ready(function() {
         }
 
         $(this).html('Генерация...')
+        $('#downloadBtn').prop('disabled', true)
 
         $.ajax({
             type: 'post',
             url: 'post_query',
             data: data,
             success: function (res) {
-                $(this).html('Сгенерировать и скачать')
+                $('#generateBtn').html('Сгенерировать')
+                if (res['success'] == true) {
+                    $('#downloadHref').prop('href', res['url'])
+                    $('#downloadHref').prop('download', 'Documents')
+                    $('#downloadBtn').prop('disabled', false)
+                } else {
+                    alert(res['errorMessage'])
+                }
             },
             dataType: 'json',
             async: false
