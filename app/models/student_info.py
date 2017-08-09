@@ -8,10 +8,7 @@ class User_info_table_interface(Class_with_attrs_access):
         return self.placeholders[eng] if eng in self.placeholders else ''
 
     def get_russian_name(self, eng):
-        return self.en2ru[eng] if end in self.en2ru else unicode(eng[0].upper() + eng[1:])
-
-    def is_fixed(self):
-        return self.is_fixed
+        return self.en2ru[eng] if eng in self.en2ru else unicode(eng[0].upper() + eng[1:])
 
     def get_section_name(self):
         return self.section_name
@@ -37,38 +34,40 @@ class Student_info(db.Model, Class_with_attrs_access):
     table_married_certificates      = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
     table_personal_data             = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
 
+    user = db.relationship('User', 
+        back_populates = 'students_info', uselist = False)
     comments = db.relationship('Comments', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     basic_information = db.relationship('Basic_information', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     certificates_change_name =  db.relationship('Certificates_change_name', 
-        back_populates = 'student_info', lazy = 'dynamic')
+        back_populates = 'student_info')
     communications =  db.relationship('Communications',
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     passports =  db.relationship('Passports', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     international_passports =  db.relationship('International_passports', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     registration_certificates =  db.relationship('Registration_certificates', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     middle_education =  db.relationship('Middle_education', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     spec_middle_education =  db.relationship('Spec_middle_education', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     high_education =  db.relationship('High_education', 
-        back_populates = 'student_info', lazy = 'dynamic')
+        back_populates = 'student_info')
     military_education =  db.relationship('Military_education', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
     languages =  db.relationship('Languages', 
-        back_populates = 'student_info', lazy = 'dynamic')
+        back_populates = 'student_info')
     mothers_fathers =  db.relationship('Mothers_fathers', 
-        back_populates = 'student_info', lazy = 'dynamic')
+        back_populates = 'student_info')
     brothers_sisters_children =  db.relationship('Brothers_sisters_children', 
-        back_populates = 'student_info', lazy = 'dynamic')
+        back_populates = 'student_info')
     married_certificates =  db.relationship('Married_certificates', 
-        back_populates = 'student_info', lazy = 'dynamic')
+        back_populates = 'student_info')
     personal_data =  db.relationship('Personal_data', 
-        back_populates = 'student_info', uselist = False, lazy = 'dynamic')
+        back_populates = 'student_info', uselist = False)
 
 class Comments(db.Model, Class_with_attrs_access):
     __tablename__ = 'comments'

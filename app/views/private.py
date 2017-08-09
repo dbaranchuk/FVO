@@ -57,27 +57,17 @@ def create_account(login, password, userData):
     new_user.students_info = info
     new_user.VUS = userData['vus']
 
-    #info.basic_information = basicInfo
-
-    #info.table_basic_information = CHANGING
-
     tableNames = get_user_tables().append('comments')
     for idx, table in enumerate(tableNames, start=0):
-
-        #print >> sys.stderr, info[table]
-        try:
+        if tables[idx].is_fixed:
             info[table] = tables[idx]
-        except Exception:
+        else:
             info[table] = [tables[idx]]
-        #print >> sys.stderr, 'table_' + table
         info['table_' + table] = TABLE_STATES['EDITED']
-        #print >> sys.stderr, 2
         db.session.add(tables[idx])
-        #print >> sys.stderr, 3
 
     db.session.add(new_user)
     db.session.add(info)
-    #db.session.add(basicInfo)
     db.session.commit()
 
 def create_admin_account(data):

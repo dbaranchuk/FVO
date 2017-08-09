@@ -71,11 +71,12 @@ def get_sections_data_by_id(user_id):
             s.placeholder(x[0])) for x in fields_table]
         fields_table = filter(lambda x: x.valid, fields_table)
 
+        print >> sys.stderr, get_class_by_tablename( table )
         section_info = { 
-                         'fields': fields_table, 'is_fixed': s.is_fixed(), 'table_name':table, 
+                         'fields': fields_table, 'is_fixed': s.is_fixed, 'table_name':table, 
                          'section_name': s.get_section_name(), 'section_number': len(sections_arr) 
                        }
-        if s.is_fixed():
+        if s.is_fixed:
             table_record = student_info[table]
             if table_record:
                 fill_section_values(section_info['fields'], table_record) 

@@ -11,8 +11,6 @@ class VUS(db.Model):
     name1  = db.Column(db.String(120))
     name2  = db.Column(db.String(120))
 
-    users     = db.relationship('User', back_populates='VUS', lazy='dynamic')
-
     def to_string(self):
         return '%03d %03d' % (self.number, self.code)
 
@@ -23,13 +21,17 @@ class User(db.Model):
     login    = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(120), unique=False)
     role     = db.Column(db.SmallInteger, default=USER_STATES['ROLE_USER'])
-    vus_id   = db.Column(db.Integer, db.ForeignKey('VUS.id'))
+    vus_id   = db.Column(db.Integer, db.ForeignKey('vus.id'))
     approved = db.Column(db.Boolean, default=False)
 
     students_info = db.relationship('Student_info', back_populates='user', uselist=False)
+    #vus  = db.relationship('VUS', back_populates='users')
 
     def get_id(self):
         return unicode(self.id)
+
+    def is_authenticated(self):
+        return True
 
     def __repr__(self):
         return '<User %r, %r>' % (self.login, self.password)
