@@ -105,7 +105,7 @@
                     {% for field in filled_field %}
                     <div class="input-group">
                         <span class="input-group-addon"> {{field.rus}} </span>
-                        <input class="form-control" name="{{field.eng}}" {%if is_approved%} readonly="readonly" {%endif%}  placeholder="{{field.placeholder}}" type="text" value="{{field.value}}">
+                        <input class="form-control" name="{{field.eng}}" {%if is_approved or field.is_readonly%} readonly="readonly" {%endif%}  placeholder="{{field.placeholder}}" type="text" value="{{field.value}}">
                     </div>
                     {% endfor %}
                     <input name="new_element_end" type="hidden" value="new_element_end">

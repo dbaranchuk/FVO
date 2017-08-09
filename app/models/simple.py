@@ -21,11 +21,10 @@ class User(db.Model):
     login    = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(120), unique=False)
     role     = db.Column(db.SmallInteger, default=USER_STATES['ROLE_USER'])
-    vus_id   = db.Column(db.Integer, db.ForeignKey('vus.id'))
+    vus_id   = db.Column(db.Integer, db.ForeignKey('VUS.id'))
     approved = db.Column(db.Boolean, default=False)
 
     students_info = db.relationship('Student_info', back_populates='user', uselist=False)
-    #vus  = db.relationship('VUS', back_populates='users')
 
     def get_id(self):
         return unicode(self.id)

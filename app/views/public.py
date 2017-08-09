@@ -16,17 +16,18 @@ from app.views.easy import *
 
 ########## data workers, перенести в отдельный модуль перед финальным тестированием
 class InputValue:
-    def __init__(self, eng, rus, inp_type, placeholder, value=''):
+    def __init__(self, eng, rus, inp_type, placeholder, is_readonly=False, value=''):
         self.eng = eng
         self.rus = rus
         self.inp_type = inp_type
         self.placeholder = placeholder
         self.value = value
+        self.is_readonly = is_readonly
         self.valid = ( self.eng is not None and self.rus is not None )
 
     def copy(self):
         return InputValue( eng=self.eng, rus=self.rus, inp_type=self.inp_type, 
-                           placeholder=self.placeholder, value=self.value )
+                           placeholder=self.placeholder, is_readonly=self.is_readonly, value=self.value )
 
 def get_quiz_state(user_id):
     student_info = User.query.get(user_id).students_info
@@ -66,9 +67,14 @@ def get_sections_data_by_id(user_id):
     for table in user_tables:
         fields_table = get_fields( table )
         s = get_class_by_tablename( table )()
-
-        fields_table = [InputValue(x[0], s.get_russian_name(x[0]), x[1], 
-            s.placeholder(x[0])) for x in fields_table]
+ 
+        fields_table = [InputValue(
+                            x[0], 
+                            s.get_russian_name(x[0]), 
+                            x[1], 
+                            s.placeholder(x[0]),
+                            is_readonly=s.is_readonly(x[0])
+                        ) for x in fields_table]
         fields_table = filter(lambda x: x.valid, fields_table)
 
         print >> sys.stderr, get_class_by_tablename( table )
@@ -100,7 +106,6 @@ def get_section_comments(user_id):
     student_info = User.query.get( user_id ).students_info
     d = {}
     for table in get_user_tables():
-        print >> sys.stderr, student_info['comments']
         val = student_info['comments'][table + '_comment']
         d[table] = val if val is not None else ''
     return d

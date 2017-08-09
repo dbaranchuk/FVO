@@ -13,6 +13,9 @@ class User_info_table_interface(Class_with_attrs_access):
     def get_section_name(self):
         return self.section_name
 
+    def is_readonly(self, field):
+        return field in self.readonly_fields
+
 
 class Student_info(db.Model, Class_with_attrs_access):
     __tablename__ = 'student_info'
@@ -147,6 +150,7 @@ class Basic_information(db.Model, User_info_table_interface):
             'tin': u'ИНН',
             'insurance_certificate': u'Страховое свидетельство',
         }
+        self.readonly_fields = set()
 
 
 class Certificates_change_name(db.Model, User_info_table_interface):
@@ -183,6 +187,7 @@ class Certificates_change_name(db.Model, User_info_table_interface):
             'issue_date' : u'Когда выдан',
             'changing' : u'Что изменилось',
         }
+        self.readonly_fields = set()
 
 class Communications(db.Model, User_info_table_interface):
     __tablename__ = 'communications'
@@ -215,6 +220,7 @@ class Communications(db.Model, User_info_table_interface):
             'home_phone' : u'Домашний',
             'email' : u'E-mail'
         }
+        self.readonly_fields = set()
 
 class Passports(db.Model, User_info_table_interface):
     __tablename__ = "passports"
@@ -262,6 +268,7 @@ class Passports(db.Model, User_info_table_interface):
             'fact_index' : u'Индекс фактического проживания',
             'fact_address' : u'Адрес фактического проживания',
         }
+        self.readonly_fields = set()
 
 class International_passports(db.Model, User_info_table_interface):
     __tablename__ = 'international_passports'
@@ -297,6 +304,7 @@ class International_passports(db.Model, User_info_table_interface):
             'issue_date' : u'Когда выдан',
             'validity' : u'Срок действия',
         }
+        self.readonly_fields = set()
 
 class Registration_certificates(db.Model, User_info_table_interface):
     __tablename__ = 'registration_certificates'
@@ -335,6 +343,7 @@ class Registration_certificates(db.Model, User_info_table_interface):
             'military_department' : u'Военный комиссариат по месту воинского учета',
             'shelf_category' : u'Категория годности'
         }
+        self.readonly_fields = set()
 
 class Middle_education(db.Model, User_info_table_interface):
     __tablename__ = 'middle_education'
@@ -367,6 +376,7 @@ class Middle_education(db.Model, User_info_table_interface):
             'entrance_year' : u'Год поступления',
             'graduation_year' : u'Год окончания',
         }
+        self.readonly_fields = set()
 
 class Spec_middle_education(db.Model, User_info_table_interface):
     __tablename__ = 'spec_middle_education'
@@ -402,6 +412,7 @@ class Spec_middle_education(db.Model, User_info_table_interface):
             'entrance_year' : u'Год поступления',
             'graduation_year' : u'Год окончания',
         }
+        self.readonly_fields = set()
 
 class High_education(db.Model, User_info_table_interface):
     __tablename__ = 'high_education'
@@ -458,6 +469,7 @@ class High_education(db.Model, User_info_table_interface):
             'entrance_year' : u'Год поступления',
             'graduation_year' : u'Год окончания',
         }
+        self.readonly_fields = { 'quality', }
 
 class Military_education(db.Model, User_info_table_interface):
     __tablename__ = 'military_education'
@@ -484,6 +496,7 @@ class Military_education(db.Model, User_info_table_interface):
             'platoon_1' : u'Взвод 1 года обучения',
             'platoon_2' : u'Взвод 2 года обучения',
         }
+        self.readonly_fields = set()
     
 class Languages(db.Model, User_info_table_interface):
     __tablename__ = 'languages'
@@ -513,6 +526,7 @@ class Languages(db.Model, User_info_table_interface):
             'quality' : u'Степень владения',
             'certificates' : u'Сертификаты'
         }
+        self.readonly_fields = set()
 
 class Mothers_fathers(db.Model, User_info_table_interface):
     __tablename__ = 'mothers_fathers'
@@ -578,6 +592,7 @@ class Mothers_fathers(db.Model, User_info_table_interface):
             'foreign_citizenship' : u'Иностранное гражданство или подданство',
             'conviction' : u'Судимость',
         }
+        self.readonly_fields = {'status', }
 
 class Brothers_sisters_children(db.Model, User_info_table_interface):
     __tablename__ = 'brothers_sisters_children'
@@ -622,6 +637,7 @@ class Brothers_sisters_children(db.Model, User_info_table_interface):
             'foreign_citizenship' : u'Иностранное гражданство или подданство',
             'conviction' : u'Судимость',
         }
+        self.readonly_fields = {'status', }
 
 class Married_certificates(db.Model, User_info_table_interface):
     __tablename__ = 'married_certificates'
@@ -690,6 +706,7 @@ class Married_certificates(db.Model, User_info_table_interface):
             'fact_index' : u'Индекс фактического проживания',
             'fact_address' : u'Адрес фактического проживания'
         }
+        self.readonly_fields = set()
 
 class Personal_data(db.Model, User_info_table_interface):
     __tablename__ = 'personal_data'
@@ -755,4 +772,5 @@ class Personal_data(db.Model, User_info_table_interface):
             'scientific_results': u'Научные труды и изобретения',
             'work_experience': u'Трудовая деятельность (опыт работы)',
         }
+        self.readonly_fields = set()
 
