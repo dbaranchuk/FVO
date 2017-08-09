@@ -49,7 +49,8 @@ def create_account(login, password, userData):
         Mothers_fathers(),
         Married_certificates(),
         Brothers_sisters_children(),
-        Personal_data()
+        Personal_data(),
+        Comments()
     ]
 
     new_user.students_info = info
@@ -59,7 +60,7 @@ def create_account(login, password, userData):
 
     #info.table_basic_information = CHANGING
 
-    tableNames = get_user_tables()
+    tableNames = get_user_tables().append('comments')
     for idx, table in enumerate(tableNames, start=0):
 
         #print >> sys.stderr, info[table]

@@ -98,6 +98,7 @@ def get_section_comments(user_id):
     student_info = User.query.get( user_id ).students_info
     d = {}
     for table in get_user_tables():
+        print >> sys.stderr, student_info['comments']
         val = student_info['comments'][table + '_comment']
         d[table] = val if val is not None else ''
     return d
