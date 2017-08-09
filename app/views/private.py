@@ -40,25 +40,25 @@ def create_account(login, password, userData):
     # add basic information
     basic_information = Basic_information(last_name=userData['lastName'], first_name=userData['firstName'], 
                                           middle_name=userData['middleName'])
-    students_info['basic_information'] = basic_information
-    db.section.add(basic_information)
+    student_info['basic_information'] = basic_information
+    db.session.add(basic_information)
 
     # add comments 
     comments = Comments()
-    students_info['comments'] = comments
-    db.section.add(comments)
+    student_info['comments'] = comments
+    db.session.add(comments)
 
     # common interface tables
     for table in get_user_tables():
         if table != 'basic_information':
-            section = get_class_by_tablename(table)
+            section = get_class_by_tablename(table)()
             if section.is_fixed:
-                student_info[table] = tables[idx]
+                student_info[table] = section
                 student_info['table_'+table] = TABLE_STATES['NOT_EDITED']
                 db.session.add(section)
     
     db.session.add(new_user)
-    db.session.add(info)
+    db.session.add(student_info)
     db.session.commit()
     return True
 
@@ -148,7 +148,6 @@ def create_accounts():
         
         login += completionYear
         password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
-        #print >> sys.stderr, login, password
 
         for name in userNames:
             if login == name.login:
@@ -165,7 +164,6 @@ def create_accounts():
 
         active.cell(row = idx, column = 4, value = login)
         active.cell(row = idx, column = 5, value = password)
-        #print >> sys.stderr, password
 
     path = os.path.join(USER_PATH, 'logins.xlsx')
     wb.save(path)
@@ -312,9 +310,6 @@ def change_section_state(data):
     new_state = int(data['new_state'])
     user = User.query.get( int(data['user_id']) )
     student_info = user.students_info
-    
-    print >> sys.stderr, student_info
-    print >> sys.stderr, data
 
     student_info['table_' + data['table']] = new_state
     if new_state == TABLE_STATES['DECLINED']:
@@ -346,7 +341,6 @@ def searchUsers(data):
         }
         searchResult.append(matchedUser)
 
-    print >> sys.stderr, searchResult
     return gen_success(result = searchResult)
 
 def getSqlRequest(lastName, year, vusStr):
@@ -387,7 +381,6 @@ def getSqlRequest(lastName, year, vusStr):
 
 
     whereBlock = 'where ' + ' and '.join(conds) + ';'
-    print >> sys.stderr, whereBlock
 
     return text(sqlRequest + whereBlock)
 

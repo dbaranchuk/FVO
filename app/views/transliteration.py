@@ -33,5 +33,7 @@ vocabulary = {
 	u'т' : 't',
 	u'ь' : '',
 	u'б' : 'b',
-	u'ю' : 'yu'
+	u'ю' : 'yu',
+	u' ' : ' ',
 }
+vocabulary.update({ unicode(i):unicode(i) for i in range(10)})

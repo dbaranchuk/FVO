@@ -624,7 +624,7 @@ function addFamilyMember(){
         '</div><br>';
     members.appendChild(member);
 }
-
+*/
 function createAccounts(){
     var xmlhttp = getXHR();
     var file = document.getElementById('select-file').files[0];
@@ -667,7 +667,7 @@ function createAccounts(){
 
     xmlhttp.send(formData);
 }
-*/
+
 
 function addDocument(){
     var xmlhttp = getXHR();
