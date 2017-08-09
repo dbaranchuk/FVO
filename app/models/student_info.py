@@ -425,7 +425,7 @@ class High_education(db.Model, User_info_table_interface):
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     
     institution        = db.Column( db.String(128), default = '' )
-    budgetary          = db.Column( db.Boolean,     default=NOT_BUDGET )
+    budgetary          = db.Column( db.String(100),      default = '' )
     full_faculty_name  = db.Column( db.String(128), default = '' )
     short_faculty_name = db.Column( db.String(16),  default = '' )
     spec_diploma       = db.Column( db.String(128), default = '' )
