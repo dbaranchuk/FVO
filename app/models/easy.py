@@ -110,7 +110,7 @@ class Students_info_lables_accessor():
         for c in self.child:
             print >> sys.stderr, c.last_name
         '''
-        print >> sys.stderr, student_info.spec_middle_education.institution
+        #print >> sys.stderr, student_info.spec_middle_education.institution
 
         self.simple_fields = {
             'last_name' : ('basic_information', 'last_name'),
@@ -226,20 +226,22 @@ class Students_info_lables_accessor():
 
     def __getitem__(self, item):
         item = item[1:-1].split('.')
-        print >> sys.stderr, item
 
         res_record = ''
         if item[0] in self.simple_fields:
 
-            path = self.simple_fields[item[0]]
-            if len(item) > 1:
-                try:
+            try:
+                path = self.simple_fields[item[0]]
+                if len(item) > 1:
                     res_record = self.student_info[path[0]][int(item[1])-1][path[1]]
-                except Exception:
-                    return ''
-            else:
-                print >> sys.stderr, self.student_info[path[0]], self.student_info[path[0]][path[1]]
-                res_record = self.student_info[path[0]][path[1]]
+                else:
+                    res_record = self.student_info[path[0]][path[1]]
+            #possible exception causes: 
+            #   index out of range, i.e. index specified in template is greater then number of table entities
+            #       specified by user
+            #   NoneType, i.e. certain table has not been created yet
+            except Exception:
+                return ''
 
         else:
             
@@ -247,16 +249,16 @@ class Students_info_lables_accessor():
                 (keyword, prop) = item[0].split('@')
             except Exception:
                 return None
-            #print >> sys.stderr, keyword, prop
-            if hasattr(self, keyword):
-                if len(item)>1:
-                    try:
+
+            try:
+                if hasattr(self, keyword):
+                    if len(item)>1:
                         res_record = getattr(self, keyword)[int(item[1])-1][prop]
-                    except Exception:
-                        return ''
+                    else:
+                        res_record = getattr(self, keyword)[prop]
                 else:
-                    res_record = getattr(self, keyword)[prop]
-            else:
-                return None
+                    return None
+            except Exception:
+                return ''
 
         return res_record if res_record != None else ''
