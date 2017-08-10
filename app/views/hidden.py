@@ -1,6 +1,6 @@
 from app import lm
 from app.models import User
-from flask.ext.login import current_user
+from flask_login import current_user
 
 @lm.user_loader
 def load_user(user_id):
