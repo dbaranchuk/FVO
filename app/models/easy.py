@@ -102,15 +102,6 @@ class Students_info_lables_accessor():
         self.child = [child for child in student_info.brothers_sisters_children if child.status == u'Сын' or child.status == u'Дочь']
         self.father = [father for father in student_info.mothers_fathers if father.status == u'Отец'][0]
         self.mother = [mother for mother in student_info.mothers_fathers if mother.status == u'Мать'][0]
-        '''
-        for br in self.brother:
-            print >> sys.stderr, br.last_name
-        for s in self.sister:
-            print >> sys.stderr, s.last_name
-        for c in self.child:
-            print >> sys.stderr, c.last_name
-        '''
-        #print >> sys.stderr, student_info.spec_middle_education.institution
 
         self.simple_fields = {
             'last_name' : ('basic_information', 'last_name'),

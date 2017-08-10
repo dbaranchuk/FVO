@@ -146,8 +146,7 @@ def create_accounts():
     vus = VUS.query.filter_by(number=vus[0], code=vus[1]).first()
     if vus is None:
         return gen_error('Such vus not yet exists in this system')
-    import openpyxl
-    print openpyxl.__version__
+
     wb = load_workbook(file)
     active = wb.active
     userNames = User.query.with_entities(User.login)
@@ -485,7 +484,6 @@ def post_query():
         else:
             return gen_success(message = {'status':'error', 'error':'post method not defined'})
     except Exception as err:
-        print >> sys.stderr, err
         return gen_success(message = {'status':'error', 'error':'error in post method'})
 
 

@@ -72,6 +72,7 @@
                             <th>ВУС</th>
                             <th>Год поступления</th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
 
@@ -105,6 +106,13 @@
                         <td>
                             <button class="btn btn-success btn-file" id="status-btn" onclick="createAccounts();">Добавить</button>
                         </td>
+
+                        <td>
+                            <a href="/static/user_data/logins.xlsx" download="Logins">
+                                <button class="btn btn-success" id="downloadLoginsBtn" disabled>Скачать</button>
+                            </a>
+                        </td>
+                        
                     </tr>
                     </tbody>
 

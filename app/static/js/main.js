@@ -514,6 +514,9 @@ function createAccounts(){
     var vus = document.getElementById('vus').value;
     var completionYear = document.getElementById('completionYear').value;
     var btn = document.getElementById('status-btn');
+    var downloadBtn = document.getElementById('downloadLoginsBtn');
+
+    downloadLoginsBtn.disabled = true
 
     var formData = new FormData();
     formData.append('file', file);
@@ -540,7 +543,8 @@ function createAccounts(){
 
                 placeholder.appendChild(alert);
             } else {
-                download(ans.url, 'logins.xlsx')
+                downloadLoginsBtn.disabled = false
+                //download(ans.url, 'logins.xlsx')
                 //location.reload();
             }
         }
