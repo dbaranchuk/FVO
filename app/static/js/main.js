@@ -364,8 +364,47 @@ $(document).ready(function() {
             type: 'post',
             url: '/make_account',
             data: post_data,
-            success: function () {
-                alert("Аккаунт успешно создан");
+            success: function (res) {
+                var msg = res['message'];
+                if(msg['status'] == 'ok'){
+                    alert('Аккаунт успешно создан')
+                }
+                else{
+                    alert(msg['error'])
+                }
+            },
+            dataType: 'json',
+            async: true,
+        });
+        return false
+    });
+
+/// add vus
+    $('#add_vus_btn').click(function() {
+        if( $("#number").val()=='' || $("#code").val()=='' 
+            || $("#name1").val()=='' || $("#name2").val()=='' ){
+            alert('Заполните все поля')
+            return false
+        }
+        var post_data = { 
+                         'number'   : $("#number").val(),
+                         'code'     : $("#code").val(),
+                         'name1'    : $("#name1").val(),
+                         'name2'    : $("#name2").val(),
+                        }
+
+        $.ajax({
+            type: 'post',
+            url: '/post_add_vus',
+            data: post_data,
+            success: function (res) {
+                var msg = res['message'];
+                if(msg['status'] == 'ok'){
+                    alert('ВУС успешно добавлена')
+                }
+                else{
+                    alert(msg['error'])
+                }
             },
             dataType: 'json',
             async: true,
@@ -480,12 +519,10 @@ function createAccounts(){
     formData.append('file', file);
     formData.append('vus', vus);
     formData.append('completionYear', completionYear);
-
     xmlhttp.open("POST", "/create_accounts", true);
     xmlhttp.onerror = function (e) {
         btn.innerText('server error');
     };
-
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var ans = JSON.parse(xmlhttp.responseText);
@@ -623,7 +660,8 @@ function prepareFileUploader(idName){
     input.onchange = function () {
         this.classList.add('file-selected');
         filename = this.value;
-        label.getElementsByTagName('div')[0].innerText = 'OK';
+        console.log(label)
+        label.getElementsByTagName('div')[0].innerHTML = 'OK';
     };
 }
 
