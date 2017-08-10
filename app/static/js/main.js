@@ -261,12 +261,55 @@ $(document).ready(function() {
                 if (userData.length) {
                     $('#div_empty_result').text('')
                     for (i in userData) {
-                        var rowHtml = '<tr><td>' + userData[i]['lastName'] + '</td><td>' + userData[i]['year'] + 
-                        "</td><td>" + userData[i]['vus'] + "</td><td>" + 
-                        //'<a href="' + "{{ url_for('to_page_approve_user', user_id='" + userData[i]['id'] + "') }}" + '">' + 
-                        '<a href="/inprocess/' + userData[i]['id'] + '">' + 
+                        var rowHtml = '<tr>' + 
+                        '<td>' + userData[i]['lastName'] + '</td>' +
+                        '<td>' + userData[i]['year'] + '</td>' +
+                        '<td>' + userData[i]['vus'] + '</td>' +
+                        '<td>' + '<a href="/inprocess/'+userData[i]['id']+'">' + 
                         "<button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + 
-                        ">Показать</button></a></td></tr>";
+                        '>Показать</button></a></td>' + 
+                        '</tr>';
+                        $('#user-search-result > tbody:last-child').append(rowHtml);
+                    }
+                } else {
+                    $('#div_empty_result').text('Результат поиска пуст')
+                }
+            },
+            dataType: 'json',
+            async: false,
+        });
+    });
+
+    $('#search-btn-ready').click(function() {
+        var data = {
+            'do': 'searchUsers',
+            'lastName': $('#searchLastname').val(),
+            'year': $('#searchYear').val(),
+            'vus': $('#searchVus').val()
+        }
+
+        $('#user-search-result > tbody').empty();
+
+
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: data,
+            success: function (res) {
+                var userData = res['result']
+                if (userData.length) {
+                    $('#div_empty_result').text('')
+                    for (i in userData) {
+                        var rowHtml = '<tr>' +
+                        '<td>' + "<input type='checkbox' class='cb-user' value='" + userData[i]['id'] + "'>" + '</td>' +
+                        '<td>' + userData[i]['year'] + '</td>' +
+                        '<td>' + userData[i]['vus'] + '</td>' +
+                        '<td>' + userData[i]['lastName'] + '</td>' +
+                        '<td>' + userData[i]['firstName'] + '</td>' +
+                        '<td>' + userData[i]['middleName'] + '</td>' +
+                        '<td>' + '<a href="/inprocess/' + userData[i]['id'] + '"> <button type="button" class="btn btn-default">Посмотреть</button></a><' + '/td>' +
+                        '</tr>';
+                        
                         $('#user-search-result > tbody:last-child').append(rowHtml);
                     }
                 } else {

@@ -363,11 +363,15 @@ def searchUsers(data):
     for row in requestResult:
         matchedUser = {
             'id' : row[0],
+            'firstName' : row[6],
+            'middleName' : row[7],
             'lastName' : row[3],
             'year' : row[2][-4:],
             'vus' : '%03d %03d' % (row[4], row[5])
         }
         searchResult.append(matchedUser)
+    
+    searchResult = sorted(searchResult, key=( lambda u: (u['year'], u['vus'], u['lastName']) ))
 
     return gen_success(result = searchResult)
 
@@ -375,17 +379,23 @@ def getSqlRequest(lastName, year, vusStr):
 
     sqlRequest = "select u_id, u_role, u_login, bi_last_name,\
         VUS.number as 'vus_num',\
-        VUS.code as 'vus_code'\
+        VUS.code as 'vus_code',\
+        bi_first_name,\
+        bi_middle_name \
         from (\
         select user.id as 'u_id',\
         user.role as 'u_role',\
         user.login as 'u_login',\
         user.vus_id as 'u_vus_id',\
-        bi_last_name\
+        bi_last_name,\
+        bi_first_name,\
+        bi_middle_name \
         from (\
         select\
         student_info.user_id as 'si_user_id',\
-        basic_information.last_name as 'bi_last_name'\
+        basic_information.last_name as 'bi_last_name',\
+        basic_information.first_name as 'bi_first_name',\
+        basic_information.middle_name as 'bi_middle_name' \
         from student_info left join basic_information\
         on student_info.id = basic_information.student_info_id) as X\
         left join user\

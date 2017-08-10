@@ -153,7 +153,7 @@ def ready():
         })
 
     return render_template('ready.html', title=u'Готовые', tab_active=1, users=userInfo, 
-        docs=docs, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
+        docs=docs, vuses=vuses, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -264,9 +264,8 @@ def search():
         abort(404)
 
     vuses = VUS.query.all()
-    users = User.query.filter_by(role=0)
 
-    return render_template('search.html', title=u'Поиск', tab_active=5, vuses=vuses, users=users)
+    return render_template('search.html', title=u'Поиск', tab_active=5, vuses=vuses)
 
 @app.route('/profile')
 @login_required
