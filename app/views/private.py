@@ -1,6 +1,6 @@
 #-.- coding: utf-8 -.-
 from app import app, db
-from flask.ext.login import current_user
+from flask_login import current_user
 from sqlalchemy import text
 from sqlalchemy.sql import select, and_
 from docx import Document as Doc

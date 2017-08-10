@@ -1,9 +1,8 @@
 #-.- coding: utf-8 -.-
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for, abort
-from flask.ext.login import login_required, login_user, current_user, logout_user
+from flask_login import login_required, login_user, current_user, logout_user
 from sqlalchemy import desc
-
 from app.models import User, VUS, Document, Comments, Student_info, Basic_information 
 from app.models import Certificates_change_name, Communications, Passports,International_passports
 from app.models import Registration_certificates, Middle_education, Spec_middle_education 
