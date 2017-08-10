@@ -33,6 +33,8 @@ def create_account(login, password, userData):
     hash = generate_password_hash(password)
 
     new_user = User(login = login, password = hash)
+    new_user.VUS = userData['vus']
+    
     student_info = Student_info()
 
     new_user.students_info = student_info
