@@ -414,9 +414,11 @@ def generateDocuments(data):
         for document in documents:
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
             doc = Doc(docPath)
+
+            regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
+            iterator = regex.finditer(p.text)
+
             for p in doc.paragraphs:
-                regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
-                iterator = regex.finditer(p.text)
                 for match in iterator:
                     keyword = match.group()
                     value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
@@ -424,6 +426,18 @@ def generateDocuments(data):
                     style = p.style
                     p.text = text
                     p.style = style
+
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for p in cell.paragraphs:
+                            for match in iterator:
+                                keyword = match.group()
+                                value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
+                                text = p.text.replace(keyword, value)
+                                style = p.style
+                                p.text = text
+                                p.style = style
             
             doc_name = os.path.join(USER_PATH, 'documents', 'temp', document.filename[:-5] + str(user.id) + '.docx')
             doc.save(doc_name)
