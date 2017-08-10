@@ -231,11 +231,12 @@ def delete_document():
 
 ### POSTs
 
-def check_errors_in_input_data(data):
+def check_errors_in_input_data(table, data):
+    tableclass = get_class_by_tablename(table)()
     errors = []
     for field, value in data.iteritems():
         if len(field) and not len(value):
-            errors.append( u'Заполните поле "' + tableclass.get_russian_name( field ) )
+            errors.append( u'Заполните поле "' + tableclass.get_russian_name( field ) + '"' )
     return errors
 
 def save_not_fixed_section_information(data):
@@ -243,10 +244,10 @@ def save_not_fixed_section_information(data):
     # проверяем пустые поля
     errors = []
     for element in elements:
-        errors += check_errors_in_input_data(element)
+        errors += check_errors_in_input_data(data['table'], element)
 
     if len(errors):
-        return gen_success(message = {'status':'error', 'errors' : "<br>".join(errors) })
+        return gen_success(message = {'status':'error', 'errors':"<br>".join(errors)})
 
     student_info = User.query.get( current_user.id ).students_info
     records = student_info[data['table']]
@@ -280,7 +281,7 @@ def save_section_information(data):
     if 'elements' in data:
         return save_not_fixed_section_information(data)
 
-    errors = check_errors_in_input_data(data)
+    errors = check_errors_in_input_data(data['table'], data)
     if len(errors):
         return gen_success(message = {'status':'error', 'errors' : "<br>".join(errors) })
     
