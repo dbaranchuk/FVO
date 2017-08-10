@@ -32,8 +32,8 @@ import sys
 def create_account(login, password, userData):
     hash = generate_password_hash(password)
 
-    new_user = User(login = login, password = hash)
-    new_user.VUS = userData['vus']
+    new_user = User(login = login, password = hash, entrance_year = int(userData['year']))
+    new_user.vus_id = userData['vus'].id
     
     student_info = Student_info()
 
@@ -99,9 +99,26 @@ def make_account():
     data = request.form
     if 'login' not in data or 'password' not in data:
         return gen_error('Wrong data sent to server (must be [login, password]).')
+    user = User.query.filter_by(login=data['login']).first()
+    if user:
+        return gen_success(message={'status':'error', 'error' : u'Пользователь с таким логином уже существует'})
     create_admin_account(data)
-    return gen_success()
+    return gen_success(message={'status':'ok'})
 
+@app.route('/post_add_vus', methods=['POST'])
+def post_add_vus():
+    data = request.form
+    vus = VUS.query.filter_by(number=data['number'], code=data['code']).first()
+    if vus:
+        return gen_success(message={'status':'error', 'error' : u'Специальность была добавлена ранее'})
+    vus = VUS()
+    vus.number=data['number']
+    vus.code=data['code']
+    vus.name1=data['name1']
+    vus.name2=data['name2']
+    db.session.add(vus)
+    db.session.commit()
+    return gen_success(message={'status':'ok'})
 
 @app.route('/create_accounts', methods=['POST'])
 def create_accounts():
@@ -160,6 +177,7 @@ def create_accounts():
             'lastName': row[0].value,
             'firstName': row[1].value,
             'middleName': row[2].value,
+            'year': completionYear,
             'vus': vus
         }
 
@@ -414,9 +432,11 @@ def generateDocuments(data):
         for document in documents:
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
             doc = Doc(docPath)
+
+            regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
+            iterator = regex.finditer(p.text)
+
             for p in doc.paragraphs:
-                regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
-                iterator = regex.finditer(p.text)
                 for match in iterator:
                     keyword = match.group()
                     value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
@@ -424,6 +444,18 @@ def generateDocuments(data):
                     style = p.style
                     p.text = text
                     p.style = style
+
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        for p in cell.paragraphs:
+                            for match in iterator:
+                                keyword = match.group()
+                                value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
+                                text = p.text.replace(keyword, value)
+                                style = p.style
+                                p.text = text
+                                p.style = style
             
             doc_name = os.path.join(USER_PATH, 'documents', 'temp', document.filename[:-5] + str(user.id) + '.docx')
             doc.save(doc_name)
