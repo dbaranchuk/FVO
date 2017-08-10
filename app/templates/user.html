@@ -9,7 +9,7 @@
     {% elif quiz_status == quiz_states['NOT_CHECKED'] %}
         <div class="alert alert-warning" >&nbsp Имеются непроверенные секции &nbsp</div>
     {% elif quiz_status == quiz_states['NOT_FILLED']%}
-        <div class="alert" >&nbsp Имеются незаполненные поля &nbsp</div>
+        <div class="alert alert-info" >&nbsp Имеются незаполненные поля &nbsp</div>
     {% else %}
         <div class="alert alert-danger" >&nbsp Анкета отклонена &nbsp</div>
     {% endif %}
@@ -39,7 +39,7 @@
         {% elif section_statuses[section.table_name] == table_states['EDITED'] %}
             <span class="status_span alert-info" style="float:right">&nbsp на проверке &nbsp</span>
         {% elif section_statuses[section.table_name] == table_states['NOT_EDITED']%}
-            <span class="status_span" style="float:right">&nbsp не заполнялось &nbsp</span>
+            <span class="status_span" style="float:right;border: 1px solid grey;">&nbsp не заполнялось &nbsp</span>
         {% else %}
             <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
         {% endif %}
@@ -75,7 +75,7 @@
         {% elif section_statuses[section.table_name] == table_states['EDITED'] %}
             <span class="status_span alert-info" style="float:right">&nbsp на проверке &nbsp</span>
         {% elif section_statuses[section.table_name] == table_states['NOT_EDITED']%}
-            <span class="status_span" style="float:right">&nbsp не заполнялось &nbsp</span>
+            <span class="status_span" style="float:right;border: 1px solid grey;">&nbsp не заполнялось &nbsp</span>
         {% else %}
             <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
         {% endif %}

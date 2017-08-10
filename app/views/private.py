@@ -129,7 +129,8 @@ def create_accounts():
     vus = VUS.query.filter_by(number=vus[0], code=vus[1]).first()
     if vus is None:
         return gen_error('Such vus not yet exists in this system')
-
+    import openpyxl
+    print openpyxl.__version__
     wb = load_workbook(file)
     active = wb.active
     userNames = User.query.with_entities(User.login)
@@ -220,8 +221,6 @@ def delete_document():
 
     if document is None:
         return gen_error('No document with such id')
-
-    #print >> sys.stderr, document.name, filePath
 
     os.remove(filePath)
 
@@ -319,6 +318,15 @@ def change_section_state(data):
         student_info['comments'][data['table'] + '_comment'] = data['comment']
     else:
         student_info['comments'][data['table'] + '_comment'] = ''
+
+    is_all_approved = True
+    for table in get_user_tables():
+        if student_info['table_' + table] != TABLE_STATES['APPROVED']:
+            is_all_approved = False
+            break
+
+    if is_all_approved:
+        user.approved = True
 
     db.session.commit()
     return gen_success(message = {'status':'ok'} )
