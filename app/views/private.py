@@ -32,8 +32,8 @@ import sys
 def create_account(login, password, userData):
     hash = generate_password_hash(password)
 
-    new_user = User(login = login, password = hash)
-    new_user.VUS = userData['vus']
+    new_user = User(login = login, password = hash, entrance_year = int(userData['year']))
+    new_user.vus_id = userData['vus'].id
     
     student_info = Student_info()
 
@@ -160,6 +160,7 @@ def create_accounts():
             'lastName': row[0].value,
             'firstName': row[1].value,
             'middleName': row[2].value,
+            'year': completionYear,
             'vus': vus
         }
 

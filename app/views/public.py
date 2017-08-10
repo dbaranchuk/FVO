@@ -2,17 +2,20 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for, abort
 from flask.ext.login import login_required, login_user, current_user, logout_user
+from sqlalchemy import desc
+
 from app.models import User, VUS, Document, Comments, Student_info, Basic_information 
 from app.models import Certificates_change_name, Communications, Passports,International_passports
 from app.models import Registration_certificates, Middle_education, Spec_middle_education 
 from app.models import High_education, Military_education, Languages, Mothers_fathers 
 from app.models import Brothers_sisters_children, Married_certificates, Personal_data
+from app.models.easy import *
+from app.views.easy import *
+
 from werkzeug.security import check_password_hash
 import json
 import sys
 from hidden import user_role
-from app.models.easy import *
-from app.views.easy import *
 
 ########## data workers, перенести в отдельный модуль перед финальным тестированием
 class InputValue:
@@ -119,19 +122,28 @@ def ready():
         return redirect(url_for('profile'))
 
     if user_role()==USER_STATES['ROLE_ADMIN']:
-        users = User.query.filter_by(role = 0, approved = True, vus_id=current_user.vus_id)
+        users = db.session.query(User).filter_by(role = 0, approved = True, vus_id=current_user.vus_id).order_by(desc(User.entrance_year)).order_by(User.vus_id)
     else:
-        users = User.query.filter_by(role = 0, approved = True)
+        users = db.session.query(User).filter_by(role = 0, approved = True).order_by(desc(User.entrance_year)).order_by(User.vus_id)
     documents = Document.query.all()
+
+    vuses = VUS.query.all()
 
     userInfo = []
     for user in users:
+        vusString = ''
+        for vus in vuses:
+            if vus.id == user.vus_id:
+                vusString = vus.to_string()
+                break
+
         userInfo.append({
             'id' : user.id,
             'lastName' : user.students_info.basic_information.last_name,
             'firstName' : user.students_info.basic_information.first_name,
             'middleName' : user.students_info.basic_information.middle_name,
-            'year' : user.login[-4:]
+            'year' : user.login[-4:],
+            'vus' : vusString
         })
 
     docs = []

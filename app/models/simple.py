@@ -23,6 +23,7 @@ class User(db.Model):
     role     = db.Column(db.SmallInteger, default=USER_STATES['ROLE_USER'])
     vus_id   = db.Column(db.Integer, db.ForeignKey('VUS.id'))
     approved = db.Column(db.Boolean, default=False)
+    entrance_year = db.Column(db.Integer)
 
     students_info = db.relationship('Student_info', back_populates='user', uselist=False)
 
