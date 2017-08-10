@@ -99,9 +99,26 @@ def make_account():
     data = request.form
     if 'login' not in data or 'password' not in data:
         return gen_error('Wrong data sent to server (must be [login, password]).')
+    user = User.query.filter_by(login=data['login']).first()
+    if user:
+        return gen_success(message={'status':'error', 'error' : u'Пользователь с таким логином уже существует'})
     create_admin_account(data)
-    return gen_success()
+    return gen_success(message={'status':'ok'})
 
+@app.route('/post_add_vus', methods=['POST'])
+def post_add_vus():
+    data = request.form
+    vus = VUS.query.filter_by(number=data['number'], code=data['code']).first()
+    if vus:
+        return gen_success(message={'status':'error', 'error' : u'Специальность была добавлена ранее'})
+    vus = VUS()
+    vus.number=data['number']
+    vus.code=data['code']
+    vus.name1=data['name1']
+    vus.name2=data['name2']
+    db.session.add(vus)
+    db.session.commit()
+    return gen_success(message={'status':'ok'})
 
 @app.route('/create_accounts', methods=['POST'])
 def create_accounts():

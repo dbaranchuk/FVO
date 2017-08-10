@@ -284,3 +284,19 @@ def profile():
          section_statuses=section_statuses, is_approved=is_approved, quiz_status=quiz_status, quiz_states=QUIZ_STATES,
          user_id=current_user.id, comments=comments, navprivate=True)
 
+@app.route('/add_vus')
+@login_required
+def add_vus():
+    if user_role() < 1:
+        abort(404)
+
+    s = VUS();
+    fields = get_fields( 'VUS' )
+    fields = [ InputValue( x[0], 
+                s.get_russian_name(x[0]), 
+                x[1], 
+                s.placeholder(x[0])
+                ) for x in fields]
+    fields = filter(lambda x: x.valid, fields)
+    return render_template('add_vus.html',fields=fields, 
+        is_super_admin=user_role()==USER_STATES['ROLE_SUPER_ADMIN'])
