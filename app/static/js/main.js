@@ -323,7 +323,7 @@ $(document).ready(function() {
                     $('#downloadHref').prop('download', 'Documents')
                     $('#downloadBtn').prop('disabled', false)
                 } else {
-                    alert(res['errorMessage'])
+                    alert(res['message'])
                 }
             },
             dataType: 'json',

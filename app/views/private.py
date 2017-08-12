@@ -422,20 +422,20 @@ def generateDocuments(data):
     documents = Document.query.filter(Document.id.in_(docIDs)).all()
 
     if not users:
-        return gen_success(success = False, errorMessage = 'Выберите хотя бы одного пользователя')
+        return gen_success(success = False, message = 'Выберите хотя бы одного пользователя')
     if not documents:
-        return gen_success(success = False, errorMessage = 'Выберите хотя бы один документ')
-
+        return gen_success(success = False, message = 'Выберите хотя бы один документ')
+    
     for user in users:
         accessor = Students_info_lables_accessor(user.students_info)
         for document in documents:
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
             doc = Doc(docPath)
-
+            
             regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
-            iterator = regex.finditer(p.text)
-
+            
             for p in doc.paragraphs:
+                iterator = regex.finditer(p.text)
                 for match in iterator:
                     keyword = match.group()
                     value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
@@ -443,11 +443,12 @@ def generateDocuments(data):
                     style = p.style
                     p.text = text
                     p.style = style
-
+            
             for table in doc.tables:
                 for row in table.rows:
                     for cell in row.cells:
                         for p in cell.paragraphs:
+                            iterator = regex.finditer(p.text)
                             for match in iterator:
                                 keyword = match.group()
                                 value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
@@ -455,13 +456,13 @@ def generateDocuments(data):
                                 style = p.style
                                 p.text = text
                                 p.style = style
-            
+                    
             doc_name = os.path.join(USER_PATH, 'documents', 'temp', document.filename[:-5] + str(user.id) + '.docx')
             doc.save(doc_name)
     
     zippath = os.path.join(USER_PATH, 'Documents.zip')
     zipf = ZipFile(zippath, 'w', ZIP_DEFLATED)
-
+    
     basedir = os.path.join(USER_PATH, 'documents', 'temp')
     for root, dirs, files in os.walk(basedir):
         for fn in files:
