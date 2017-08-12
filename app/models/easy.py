@@ -100,8 +100,13 @@ class Students_info_lables_accessor():
         self.brother = [brother for brother in student_info.brothers_sisters_children if brother.status == u'Брат']
         self.sister = [sister for sister in student_info.brothers_sisters_children if sister.status == u'Сестра']
         self.child = [child for child in student_info.brothers_sisters_children if child.status == u'Сын' or child.status == u'Дочь']
-        self.father = [father for father in student_info.mothers_fathers if father.status == u'Отец'][0]
-        self.mother = [mother for mother in student_info.mothers_fathers if mother.status == u'Мать'][0]
+        
+        mothers = [mother for mother in student_info.mothers_fathers if mother.status == u'Мать']
+        fathers = [father for father in student_info.mothers_fathers if father.status == u'Отец']
+
+
+        self.father = fathers[0] if len(fathers) > 0 else None
+        self.mother = mothers[0] if len(mothers) > 0 else None
 
         self.simple_fields = {
             'last_name' : ('basic_information', 'last_name'),
