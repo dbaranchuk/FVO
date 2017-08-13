@@ -352,7 +352,10 @@ def change_section_state(data):
 def send_quiz_to_check(data):
     return gen_success(message =  {'status':'ok'})
 
+
+
 ### SEARCH
+
 def searchUsers(data):
 
     sqlRequest = getSqlRequest(data['lastName'], data['year'], data['vus'])
@@ -422,7 +425,57 @@ def getSqlRequest(lastName, year, vusStr):
 
     return text(sqlRequest + whereBlock)
 
+
+
 ### GENERATING DOCUMENTS
+
+def parseDocument(doc, accessor):
+
+    regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
+    
+    parseParagraphs(doc.paragraphs, accessor, regex)
+
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                parseParagraphs(cell.paragraphs, accessor, regex)
+
+def parseParagraphs(paragraphs, accessor, regex):
+    
+    for p in paragraphs:
+        inline = p.runs
+        keyString = ''
+        started = False
+        finished = False
+        for i in range(len(inline)):
+            #print p.text, p.style.font.name, p.style.font.italic
+            if len(inline[i].text) > 0 and inline[i].text[0] == '{':
+                started = True
+            if len(inline[i].text) > 0 and inline[i].text[-1] == '}':
+                #print inline[i].text.rstrip()
+                finished = True
+            if started:
+                keyString += inline[i].text
+                inline[i].text = ''
+            
+            if started:
+                print keyString, started, finished
+
+            if started and finished:
+                inline[i].text = keyString
+                iteritems = regex.finditer(keyString)
+                for item in iteritems:
+                    key = item.group()
+                    value = unicode(accessor[key])
+                    value = value if value != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
+                    #print key, value, inline[i].text
+                    text = inline[i].text.replace(key, value)
+                    inline[i].text = text
+                    print inline[i].text
+                started = False
+                finished = False
+                keyString = ''
+                print 'done'
 
 def generateDocuments(data):
     userIDs = json.loads(data['userIDs'])
@@ -448,31 +501,7 @@ def generateDocuments(data):
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
             doc = Doc(docPath)
             
-            regex = re.compile('\{[a-zA-Z0-9_.@]+\}')
-            
-            for p in doc.paragraphs:
-                iterator = regex.finditer(p.text)
-                for match in iterator:
-                    keyword = match.group()
-                    value = unicode(accessor[keyword])
-                    value = value if value != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
-                    text = p.text.replace(keyword, value)
-                    style = p.style
-                    p.text = text
-                    p.style = style
-            
-            for table in doc.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        for p in cell.paragraphs:
-                            iterator = regex.finditer(p.text)
-                            for match in iterator:
-                                keyword = match.group()
-                                value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
-                                text = p.text.replace(keyword, value)
-                                style = p.style
-                                p.text = text
-                                p.style = style
+            parseDocument(doc, accessor)
                 
             separators = [pos for pos, char in enumerate(document.filename) if char == '_']
             doc_name = document.filename[:-5] if len(separators) == 0 else document.filename[:separators[-1]]    
@@ -503,7 +532,7 @@ def post_query():
         else:
             return gen_success(message = {'status':'error', 'error':'post method not defined'})
     except Exception as err:
-        return gen_success(message = {'status':'error', 'error':'error in post method'})
+        return gen_success(message = {'status':'error', 'error':'error in post method ' + str(err)})
 
 
 # list of post methods

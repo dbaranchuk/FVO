@@ -280,6 +280,8 @@ class Students_info_lables_accessor():
         return self.children[number][prop]
 
     def vus(self, prop):
+        if prop == 'number' or prop == 'code':
+            return '%03d' % self.vus_[prop]
         return self.vus_[prop]
 
     def year(self, prop):
