@@ -497,6 +497,9 @@ def parseParagraphs(paragraphs, accessor, regex):
 def generateDocuments(data):
     userIDs = json.loads(data['userIDs'])
     docIDs = json.loads(data['docIDs'])
+    print data
+    generationDate = data['generation_date']
+    print generationDate
     
     users = User.query.filter(User.id.in_(userIDs)).all()
     documents = Document.query.filter(Document.id.in_(docIDs)).all()
@@ -513,7 +516,7 @@ def generateDocuments(data):
     
     for user in users:
         vus = [vus for vus in vuses if vus.id == user.vus_id][0]
-        accessor = Students_info_lables_accessor(user.students_info, vus)
+        accessor = Students_info_lables_accessor(user.students_info, vus, generationDate)
         for document in documents:
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
             doc = Doc(docPath)

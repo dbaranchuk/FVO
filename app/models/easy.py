@@ -98,10 +98,11 @@ class Class_with_attrs_access():
             return '' 
 
 class Students_info_lables_accessor():
-    def __init__(self, student_info, vus):
+    def __init__(self, student_info, vus, generationDate):
         
         self.student_info = student_info
         self.vus_ = vus
+        self.generationDate = generationDate
 
         self.brothers = [brother for brother in student_info.brothers_sisters_children if brother.status == u'Брат']
         self.sisters = [sister for sister in student_info.brothers_sisters_children if sister.status == u'Сестра']
@@ -224,6 +225,11 @@ class Students_info_lables_accessor():
             'sports' : ('personal_data', 'sports'),
             'scientific_results' : ('personal_data', 'scientific_results'),
             'work_experience' : ('personal_data', 'work_experience'),
+
+            'personal_number' : ('spec_data', 'personal_number'),
+            'voin_chast' : ('spec_data', 'military_department'),
+            'prisyaga_date' : ('spec_data', 'oath_date')
+
         }
 
     def __getitem__(self, item):
@@ -231,7 +237,10 @@ class Students_info_lables_accessor():
 
         res_record = ''
         key = item[0]
-        if key in self.simple_fields:
+        if key == 'generation_date' :
+            return self.generationDate
+            
+        elif key in self.simple_fields:
 
             try:
                 path = self.simple_fields[key]
@@ -294,3 +303,26 @@ class Students_info_lables_accessor():
 
     def year_last2(self,prop):
         return self['{' + prop + '}'][-2:]
+
+    def chislo(self, prop):
+        return self['{' + prop + '}'][:2]
+
+    def month(self, prop):
+        monthNames = [
+            u'января',
+            u'февраля',
+            u'марта',
+            u'апреля',
+            u'мая',
+            u'июня',
+            u'июля',
+            u'августа',
+            u'сентября',
+            u'октября',
+            u'ноября',
+            u'декабря'
+        ]
+        monthNumber = self['{' + prop + '}'][3:5]
+        monthIndex = int(monthNumber) - 1
+
+        return monthNames[monthIndex]

@@ -379,6 +379,7 @@ $(document).ready(function() {
                     $('#downloadHref').prop('download', 'Documents')
                     $('#downloadBtn').prop('disabled', false)
                 } else {
+                    console.log(res)
                     alert(res['message'])
                 }
             },
