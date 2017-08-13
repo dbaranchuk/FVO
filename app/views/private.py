@@ -431,6 +431,10 @@ def generateDocuments(data):
     users = User.query.filter(User.id.in_(userIDs)).all()
     documents = Document.query.filter(Document.id.in_(docIDs)).all()
 
+    basedir = os.path.join(USER_PATH, 'documents', 'temp')
+    if not os.path.exists(basedir):
+        os.makedirs(basedir)
+
     if not users:
         return gen_success(success = False, message = 'Выберите хотя бы одного пользователя')
     if not documents:
@@ -473,7 +477,6 @@ def generateDocuments(data):
     zippath = os.path.join(USER_PATH, 'Documents.zip')
     zipf = ZipFile(zippath, 'w', ZIP_DEFLATED)
     
-    basedir = os.path.join(USER_PATH, 'documents', 'temp')
     for root, dirs, files in os.walk(basedir):
         for fn in files:
             absfn = os.path.join(root, fn)
