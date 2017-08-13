@@ -44,7 +44,7 @@ $(document).ready(function() {
                          'new_state' : new_state,
                          'comment'   : $section.find(".section_comment").val(),
                          'table'     : $section.find("input[name='table']").val(),
-                         'do'        : $section.find("input[name='do']").val(),
+                         'do'        : 'change_section_state',
                         };
 
         $.ajax({
@@ -210,7 +210,6 @@ $(document).ready(function() {
         if (is_not_fixed) {
             post_data['elements'] = JSON.stringify(data_sections);
         }
-
         $.ajax({
             type: 'post',
             url: '/post_query',

@@ -61,12 +61,11 @@ def fill_section_values(fields, user_info):
             field.value = user_info[field.eng]
     return True
 
-def get_sections_data_by_id(user_id):
-    user_tables = get_user_tables()
+def get_sections_data_by_id(user_id, tables):
     student_info = User.query.get( user_id ).students_info
 
     sections_arr = []
-    for table in user_tables:
+    for table in tables:
         fields_table = get_fields( table )
         s = get_class_by_tablename( table )()
  
@@ -98,6 +97,7 @@ def get_sections_data_by_id(user_id):
         sections_arr.append(section_info)
 
     return sections_arr
+
 
 def get_section_statuses(user_id):
     student_info = User.query.get( user_id ).students_info
@@ -195,16 +195,6 @@ def inprocess():
 
     vuses = { vus.id : vus for vus in VUS.query.all() }
 
-#    user_ids = map(lambda user: user.id, users)
-    
-#    students_info = {}
-#    for id in user_ids:
-#        students_info[id] = Student_info.query.get(id)  
-
-#    relatives = {};
-#    for id in students_info:
-#        relatives[id] = Family_member_info.query.filter_by(student_info_id=id)  
-
     return render_template('inprocess.html', title=u'В процессе', tab_active=2, users = users, 
         vuses = vuses, is_readonly=role==USER_STATES['ROLE_READONLY_ADMIN'])
 
@@ -214,14 +204,16 @@ def to_page_approve_user(user_id):
     if user_role() < 1:
         abort(404)
 
-    sections_arr = get_sections_data_by_id(user_id)
+    sections_arr = get_sections_data_by_id(user_id, get_admin_tables() + get_user_tables())
+    admin_sections = set(get_admin_tables())
+
     section_statuses = get_section_statuses(user_id)
     comments = get_section_comments(user_id)
     status = get_quiz_state(user_id)
 
     return render_template('user-admin.html', title=u'Одобрение аккаунта', sections=sections_arr, table_states=TABLE_STATES,
         quiz_status=status, section_statuses=section_statuses, user_id=user_id, navprivate=True, quiz_states=QUIZ_STATES, 
-        comments=comments, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
+        comments=comments, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'], admin_sections=admin_sections)
 
 
 @app.route('/documents')
@@ -273,7 +265,7 @@ def profile():
     if user_role() > 0:
         return redirect('ready')
 
-    sections_arr     = get_sections_data_by_id(current_user.id)
+    sections_arr     = get_sections_data_by_id(current_user.id, get_user_tables())
     section_statuses = get_section_statuses(current_user.id)
     is_approved      = User.query.get(current_user.id).approved
     quiz_status      = get_quiz_state(current_user.id)

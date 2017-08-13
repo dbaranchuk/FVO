@@ -51,7 +51,7 @@ def create_account(login, password, userData):
     db.session.add(comments)
 
     # common interface tables
-    for table in get_user_tables():
+    for table in (get_user_tables() + get_admin_tables()):
         if table != 'basic_information':
             section = get_class_by_tablename(table)()
             if section.is_fixed:
@@ -251,12 +251,14 @@ def delete_document():
 def check_errors_in_input_data(table, data):
     tableclass = get_class_by_tablename(table)()
     errors = []
-    for field, value in data.iteritems():
-        if len(field) and not len(value):
-            errors.append( u'Заполните поле "' + tableclass.get_russian_name( field ) + '"' )
+    #for field, value in data.iteritems():
+    #    if len(field) and not len(value):
+    #        errors.append( u'Заполните поле "' + tableclass.get_russian_name( field ) + '"' )
     return errors
 
 def save_not_fixed_section_information(data):
+    user_id = data['user_id']
+
     elements = json.loads(data['elements'])
     # проверяем пустые поля
     errors = []
@@ -266,7 +268,7 @@ def save_not_fixed_section_information(data):
     if len(errors):
         return gen_success(message = {'status':'error', 'errors':"<br>".join(errors)})
 
-    student_info = User.query.get( current_user.id ).students_info
+    student_info = User.query.get( user_id ).students_info
     records = student_info[data['table']]
     tableclass = get_class_by_tablename(data['table'])
     
@@ -298,11 +300,12 @@ def save_section_information(data):
     if 'elements' in data:
         return save_not_fixed_section_information(data)
 
+    user_id = data['user_id']
     errors = check_errors_in_input_data(data['table'], data)
     if len(errors):
         return gen_success(message = {'status':'error', 'errors' : "<br>".join(errors) })
     
-    student_info = User.query.get( current_user.id ).students_info
+    student_info = User.query.get( user_id ).students_info
     table = student_info[data['table']]
     # обновляем таблицу
     if table:
@@ -333,7 +336,7 @@ def change_section_state(data):
     student_info['table_' + data['table']] = new_state
     if new_state == TABLE_STATES['DECLINED']:
         user.approved = False
-        student_info['comments'][data['table'] + '_comment'] = data['comment']
+        student_info['comments'][data['table'] + '_comment'] = data['comment'] if 'comment' in data else ''
     else:
         student_info['comments'][data['table'] + '_comment'] = ''
 
@@ -536,7 +539,7 @@ def post_query():
 
 
 # list of post methods
-POST_METHODS = dict( [ (table, save_section_information) for table in get_user_tables() ] )
+POST_METHODS = dict( [ (table, save_section_information) for table in (get_user_tables() + get_admin_tables()) ] )
 POST_METHODS.update( {
                 'searchUsers': searchUsers,
                 'generateDocuments': generateDocuments,

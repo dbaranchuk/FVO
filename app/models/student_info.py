@@ -36,6 +36,7 @@ class Student_info(db.Model, Class_with_attrs_access):
     table_brothers_sisters_children = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
     table_married_certificates      = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
     table_personal_data             = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
+    table_spec_data                 = db.Column( db.SmallInteger, default=TABLE_STATES['NOT_EDITED'] )
 
     user = db.relationship('User', 
         back_populates = 'students_info', uselist = False)
@@ -70,6 +71,8 @@ class Student_info(db.Model, Class_with_attrs_access):
     married_certificates =  db.relationship('Married_certificates', 
         back_populates = 'student_info')
     personal_data =  db.relationship('Personal_data', 
+        back_populates = 'student_info', uselist = False)
+    spec_data =  db.relationship('Spec_data', 
         back_populates = 'student_info', uselist = False)
 
 class Comments(db.Model, Class_with_attrs_access):
@@ -778,3 +781,32 @@ class Personal_data(db.Model, User_info_table_interface):
         }
         self.readonly_fields = set()
 
+class Spec_data(db.Model, User_info_table_interface):
+    __tablename__ = 'spec_data'
+
+    id              = db.Column( db.Integer, primary_key = True )
+    student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
+    
+    personal_number     = db.Column( db.String(16),  default = '' )
+    military_department = db.Column( db.String(128), default = '' )
+    oath_date           = db.Column( db.String(10),  default = '' ) # dd.mm.yyyy 
+
+    student_info = db.relationship('Student_info', 
+        back_populates = 'spec_data' )
+    
+    def __init__(self):
+        self.section_name = u'Служебные данные'
+        self.is_fixed     = True
+        self.placeholders = {
+            'personal_number' : u'А-123456',
+            'military_department': u'20-й полк РХБЗ',
+            'oath_date': u'22.07.2017', 
+        }
+        self.en2ru = {
+            'id': None, 
+            'student_info_id' : None,
+            'personal_number' : u'Личный номер',
+            'military_department': u'Воинская часть',
+            'oath_date': u'Дата принятия присяги',
+        }
+        self.readonly_fields = set()
