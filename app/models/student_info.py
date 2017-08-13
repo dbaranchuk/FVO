@@ -799,7 +799,7 @@ class Spec_data(db.Model, User_info_table_interface):
         self.is_fixed     = True
         self.placeholders = {
             'personal_number' : u'А-123456',
-            'military_department': u'20-й полк РХБЗ',
+            'military_department': u'12102',
             'oath_date': u'22.07.2017', 
         }
         self.en2ru = {

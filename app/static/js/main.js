@@ -21,7 +21,9 @@ $(document).ready(function() {
                     $save_result_div.addClass('alert-success')
                 }
                 $.each( ['.status_span'], function( index, value ) {
-                    $( value ).replaceWith('<span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>')
+                    if (! $(value).parent('.admin_section')) {
+                        $( value ).replaceWith('<span class="status_span alert-success" style="float:right">&nbsp одобрено &nbsp</span>')
+                    }
                 })
                 $save_result_div.text('все секции одобрены')
             },
@@ -245,11 +247,14 @@ $(document).ready(function() {
             'do': 'searchUsers',
             'lastName': $('#searchLastname').val(),
             'year': $('#searchYear').val(),
-            'vus': $('#searchVus').val()
+            'vus': $('#searchVus').val(),
+            'is_approved': 0,
         }
+        if ($('#searchIsApproved') && $('#searchIsApproved').prop('checked')) {
+            data['is_approved'] = 1
+        } 
 
-        $('#user-search-result > tbody').empty();
-
+        $('#user-search-result > tbody').empty()
 
         $.ajax({
             type: 'post',
@@ -264,6 +269,7 @@ $(document).ready(function() {
                         '<td>' + userData[i]['lastName'] + '</td>' +
                         '<td>' + userData[i]['year'] + '</td>' +
                         '<td>' + userData[i]['vus'] + '</td>' +
+                        '<td>' + userData[i]['is_approved'] + '</td>' +
                         '<td>' + '<a href="/inprocess/'+userData[i]['id']+'">' + 
                         "<button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + 
                         '>Показать</button></a></td>' + 
@@ -284,7 +290,8 @@ $(document).ready(function() {
             'do': 'searchUsers',
             'lastName': $('#searchLastname').val(),
             'year': $('#searchYear').val(),
-            'vus': $('#searchVus').val()
+            'vus': $('#searchVus').val(),
+            'is_approved': 1,
         }
 
         $('#user-search-result > tbody').empty();
@@ -335,6 +342,12 @@ $(document).ready(function() {
     })
 
     $('#generateBtn').click(function() {
+        var input_date = prompt('Введите дату генерации документов (дд.мм.гггг):')
+        if (! /^\d\d\.\d\d\.\d{4}$/.test(input_date)) {
+            alert('Неверный формат даты, требуется дд.мм.гггг')
+            return false;
+        }
+
         var checkedCbUsers = $('.cb-user:checkbox:checked')
         var checkedCbDocs = $('.cb-doc:checkbox:checked')
 
@@ -348,7 +361,8 @@ $(document).ready(function() {
         var data = {
             'do' : 'generateDocuments',
             'userIDs' : JSON.stringify(userIDs),
-            'docIDs' : JSON.stringify(docIDs)
+            'docIDs' : JSON.stringify(docIDs),
+            'generation_date' : input_date,
         }
 
         $(this).html('Генерация...')
@@ -706,7 +720,6 @@ function prepareFileUploader(idName){
     input.onchange = function () {
         this.classList.add('file-selected');
         filename = this.value;
-        console.log(label)
         label.getElementsByTagName('div')[0].innerHTML = 'OK';
     };
 }

@@ -21,6 +21,7 @@
     {% if section.is_fixed %}
     <div class="section fixed_section"> 
         {% if section.table_name in admin_sections %}
+        <div class="admin_section">
             <h3>{{section.section_name}} <span style="border: 1px solid red;color:red;font-size: 18px;">заполняется администратором</span><br>
             <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
             {% if section_statuses[section.table_name] == table_states['APPROVED'] %}
@@ -31,6 +32,7 @@
                 <span class="status_span alert-danger" style="float:right">&nbsp отклонено &nbsp</span>
             {% endif %}
             </h3>
+        </div>
         {% else %}
             <h3>{{section.section_name}} <a class="spoiler-trigger" href="#" onclick="$('#spoiler-section-{{section.section_number}}').toggle();return false;">(развернуть/свернуть)</a>
             {% if section_statuses[section.table_name] == table_states['APPROVED'] %}
@@ -190,7 +192,7 @@
     {% if not is_readonly %}
     <div align="center">
         <div class="alert ag-hor-center no-display" id="div_all_sections_approve" role="alert"></div>
-        <button type="button" class="btn btn-success" id="btn_approve_all_sections"> Одобрить все секции </button>
+        <button type="button" class="btn btn-success" id="btn_approve_all_sections"> Одобрить все секции пользователя </button>
     </div>
     {% endif %}
 </div>

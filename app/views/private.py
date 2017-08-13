@@ -323,7 +323,16 @@ def approve_all_sections(data):
     student_info = user.students_info
     for table in get_user_tables():
         student_info['table_' + table] = TABLE_STATES['APPROVED']
-    user.approved = True
+    is_all_approved = True
+
+    for table in (get_user_tables() + get_admin_tables()):
+        if student_info['table_' + table] != TABLE_STATES['APPROVED']:
+            is_all_approved = False
+            break
+
+    if is_all_approved:
+        user.approved = True
+
     db.session.commit()
     return gen_success(message = {'status':'ok'} )
 
@@ -341,7 +350,7 @@ def change_section_state(data):
         student_info['comments'][data['table'] + '_comment'] = ''
 
     is_all_approved = True
-    for table in get_user_tables():
+    for table in (get_user_tables() + get_admin_tables()):
         if student_info['table_' + table] != TABLE_STATES['APPROVED']:
             is_all_approved = False
             break
@@ -359,9 +368,8 @@ def send_quiz_to_check(data):
 
 ### SEARCH
 
-def searchUsers(data):
-
-    sqlRequest = getSqlRequest(data['lastName'], data['year'], data['vus'])
+def searchUsers(data): 
+    sqlRequest = getSqlRequest(data['lastName'], data['year'], data['vus'], int(data['is_approved']))
 
     requestResult = db.engine.execute(sqlRequest)
 
@@ -373,7 +381,8 @@ def searchUsers(data):
             'middleName' : row[7],
             'lastName' : row[3],
             'year' : row[2][-4:],
-            'vus' : '%03d %03d' % (row[4], row[5])
+            'vus' : '%03d %03d' % (row[4], row[5]),
+            'is_approved' : u'да' if row[8] else u'нет',
         }
         searchResult.append(matchedUser)
     
@@ -381,18 +390,20 @@ def searchUsers(data):
 
     return gen_success(result = searchResult)
 
-def getSqlRequest(lastName, year, vusStr):
-
+def getSqlRequest(lastName, year, vusStr, is_approved=False):
+    
     sqlRequest = "select u_id, u_role, u_login, bi_last_name,\
         VUS.number as 'vus_num',\
         VUS.code as 'vus_code',\
         bi_first_name,\
-        bi_middle_name \
+        bi_middle_name,\
+        u_is_approved \
         from (\
         select user.id as 'u_id',\
         user.role as 'u_role',\
         user.login as 'u_login',\
         user.vus_id as 'u_vus_id',\
+        user.approved as 'u_is_approved',\
         bi_last_name,\
         bi_first_name,\
         bi_middle_name \
@@ -410,7 +421,10 @@ def getSqlRequest(lastName, year, vusStr):
         on Y.u_vus_id = VUS.id "
 
     conds = ["u_role = '0'"]
-
+    
+    if is_approved > 0:
+        conds.append('u_is_approved != 0')
+    
     if lastName != '':
         conds.append("bi_last_name = '" + unicode(lastName) + "'")
 

@@ -53,6 +53,13 @@ def get_quiz_state(user_id):
         state = QUIZ_STATES['DECLINED']
     elif has_unfilled:
         state = QUIZ_STATES['NOT_FILLED']
+
+    if state == QUIZ_STATES['APPROVED']:
+        for table in get_admin_tables():
+            state = student_info['table_'+table]
+            if state != TABLE_STATES['APPROVED']:
+                state = QUIZ_STATES['NOT_CHECKED']
+    
     return state
 
 def fill_section_values(fields, user_info):

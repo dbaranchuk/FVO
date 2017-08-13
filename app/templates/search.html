@@ -5,12 +5,13 @@
 <div class="ag-hor-center">
 
     <table class="table table-hover table-striped">
-
+        <div align="center"><h3>Условия поиска</h3></div>
         <thead>
             <tr>
                 <th>Фамилия</th>
                 <th>Год поступления</th>
                 <th>ВУС</th>
+                <th>Анкета одобрена</th>
                 <th></th>
             </tr>
         </thead>
@@ -41,6 +42,11 @@
             </td>
 
             <td>
+                <div align='center'>
+                    <input type="checkbox" name="is_approved" value="0" id="searchIsApproved">
+                </div>
+            </td>
+            <td>
                 <button class="btn btn-success btn-file" id="search-btn">Найти</button>
             </td>
         </tr>
@@ -48,13 +54,13 @@
     </table>
 
     <table class="table table-hover table-striped" id="user-search-result">
-
+        <div align="center"><h3>Результаты поиска</h3></div>
         <thead>
-            <tr>
-                <th>Результаты поиска</th>
-                <th></th>
-                <th></th>
-                <th></th>
+            <tr> 
+                <th>Год поступления</th>
+                <th>Фамилия</th>
+                <th>ВУС</th>
+                <th>Анкета одобрена</th>
             </tr>
         </thead>
 
