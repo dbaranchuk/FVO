@@ -239,7 +239,7 @@ class Students_info_lables_accessor():
         key = item[0]
         if key == 'generation_date' :
             return self.generationDate
-            
+
         elif key in self.simple_fields:
 
             try:
@@ -308,21 +308,7 @@ class Students_info_lables_accessor():
         return self['{' + prop + '}'][:2]
 
     def month(self, prop):
-        monthNames = [
-            u'января',
-            u'февраля',
-            u'марта',
-            u'апреля',
-            u'мая',
-            u'июня',
-            u'июля',
-            u'августа',
-            u'сентября',
-            u'октября',
-            u'ноября',
-            u'декабря'
-        ]
         monthNumber = self['{' + prop + '}'][3:5]
         monthIndex = int(monthNumber) - 1
 
-        return monthNames[monthIndex]
+        return str(monthIndex)
