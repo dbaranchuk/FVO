@@ -49,6 +49,11 @@ def get_user_tables():
             'personal_data',
     ]
 
+def get_admin_tables():
+    return [
+            'spec_data',
+    ]
+
 def get_form_type(table_type):
     table2form = {
         'INTEGER': 'number',
