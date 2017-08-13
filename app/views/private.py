@@ -216,9 +216,9 @@ def add_document():
     filename = file.filename
     if filename in docs:
         i = 1
-        while filename + str(i) in docs:
+        while filename[:-5] + '_' + str(i) + filename[-5:] in docs:
             i += 1
-        filename += str(i)
+        filename = filename[:-5] + '_' + str(i) + filename[-5:]
 
     file.save(os.path.join(USER_PATH, 'documents', filename))
     d = Document(name=request.form['name'], vus_id=vus.id, filename=filename)
@@ -470,8 +470,10 @@ def generateDocuments(data):
                                 style = p.style
                                 p.text = text
                                 p.style = style
-                    
-            doc_name = os.path.join(USER_PATH, 'documents', 'temp', document.filename[:-5] + str(user.id) + '.docx')
+                
+            separators = [pos for pos, char in enumerate(document.filename) if char == '_']
+            doc_name = document.filename[:-5] if len(separators) == 0 else document.filename[:separators[-1]]    
+            doc_name = os.path.join(USER_PATH, 'documents', 'temp', doc_name + '_' + user.login + '.docx')
             doc.save(doc_name)
     
     zippath = os.path.join(USER_PATH, 'Documents.zip')
