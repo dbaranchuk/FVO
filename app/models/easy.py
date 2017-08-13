@@ -93,20 +93,21 @@ class Class_with_attrs_access():
             return '' 
 
 class Students_info_lables_accessor():
-    def __init__(self, student_info):
+    def __init__(self, student_info, vus):
         
         self.student_info = student_info
+        self.vus_ = vus
 
-        self.brother = [brother for brother in student_info.brothers_sisters_children if brother.status == u'Брат']
-        self.sister = [sister for sister in student_info.brothers_sisters_children if sister.status == u'Сестра']
-        self.child = [child for child in student_info.brothers_sisters_children if child.status == u'Сын' or child.status == u'Дочь']
+        self.brothers = [brother for brother in student_info.brothers_sisters_children if brother.status == u'Брат']
+        self.sisters = [sister for sister in student_info.brothers_sisters_children if sister.status == u'Сестра']
+        self.children = [child for child in student_info.brothers_sisters_children if child.status == u'Сын' or child.status == u'Дочь']
         
         mothers = [mother for mother in student_info.mothers_fathers if mother.status == u'Мать']
         fathers = [father for father in student_info.mothers_fathers if father.status == u'Отец']
 
 
-        self.father = fathers[0] if len(fathers) > 0 else None
-        self.mother = mothers[0] if len(mothers) > 0 else None
+        self.father_ = fathers[0] if len(fathers) > 0 else None
+        self.mother_ = mothers[0] if len(mothers) > 0 else None
 
         self.simple_fields = {
             'last_name' : ('basic_information', 'last_name'),
@@ -224,14 +225,17 @@ class Students_info_lables_accessor():
         item = item[1:-1].split('.')
 
         res_record = ''
-        if item[0] in self.simple_fields:
+        key = item[0]
+        if key in self.simple_fields:
 
             try:
-                path = self.simple_fields[item[0]]
+                path = self.simple_fields[key]
                 if len(item) > 1:
-                    res_record = self.student_info[path[0]][int(item[1])-1][path[1]]
+                    idx = int(item[1]) - 1
+                    res_record = self.student_info[path[0]][idx][path[1]]
                 else:
                     res_record = self.student_info[path[0]][path[1]]
+            
             #possible exception causes: 
             #   index out of range, i.e. index specified in template is greater then number of table entities
             #       specified by user
@@ -242,19 +246,44 @@ class Students_info_lables_accessor():
         else:
             
             try:
-                (keyword, prop) = item[0].split('@')
+                (modifier, prop) = key.split('@')
             except Exception:
                 return None
-
             try:
-                if hasattr(self, keyword):
+                if hasattr(self, modifier):
                     if len(item)>1:
-                        res_record = getattr(self, keyword)[int(item[1])-1][prop]
+                        idx = int(item[1]) - 1
+                        res_record = getattr(self, modifier)(idx, prop)
                     else:
-                        res_record = getattr(self, keyword)[prop]
+                        res_record = getattr(self, modifier)(prop)
                 else:
                     return None
-            except Exception:
+            except Exception as err:
+                print err
                 return ''
 
         return res_record if res_record != None else ''
+
+    def mother(self, prop):
+        return self.mother_[prop]
+
+    def father(self, prop):
+        return self.father_[prop]
+
+    def brother(self, number, prop):
+        return self.brothers[number][prop]
+
+    def sister(self, number, prop):
+        return self.sisters[number][prop]
+
+    def child(self, number, prop):
+        return self.children[number][prop]
+
+    def vus(self, prop):
+        return self.vus_[prop]
+
+    def year(self, prop):
+        return self['{' + prop + '}'][-4:]
+
+    def year_last2(self,prop):
+        return self['{' + prop + '}'][-2:]

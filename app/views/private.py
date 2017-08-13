@@ -430,6 +430,7 @@ def generateDocuments(data):
     
     users = User.query.filter(User.id.in_(userIDs)).all()
     documents = Document.query.filter(Document.id.in_(docIDs)).all()
+    vuses = VUS.query.all()
 
     basedir = os.path.join(USER_PATH, 'documents', 'temp')
     if not os.path.exists(basedir):
@@ -441,7 +442,8 @@ def generateDocuments(data):
         return gen_success(success = False, message = 'Выберите хотя бы один документ')
     
     for user in users:
-        accessor = Students_info_lables_accessor(user.students_info)
+        vus = [vus for vus in vuses if vus.id == user.vus_id][0]
+        accessor = Students_info_lables_accessor(user.students_info, vus)
         for document in documents:
             docPath = os.path.join(USER_PATH, 'documents', document.filename)
             doc = Doc(docPath)
@@ -452,7 +454,8 @@ def generateDocuments(data):
                 iterator = regex.finditer(p.text)
                 for match in iterator:
                     keyword = match.group()
-                    value = unicode(accessor[keyword]) if unicode(accessor[keyword]) != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
+                    value = unicode(accessor[keyword])
+                    value = value if value != None else u'НЕПРАВИЛЬНЫЙ КЛЮЧ!'
                     text = p.text.replace(keyword, value)
                     style = p.style
                     p.text = text
