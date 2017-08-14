@@ -468,6 +468,39 @@ $(document).ready(function() {
         });
         return false
     });
+
+/// Consent to processing personal data
+    $('#consent_proc').click(function(){
+        if($('#consent_proc').is(':checked')){
+            $('#btn_continue').prop('disabled', false)
+        }
+        else{
+            $('#btn_continue').prop('disabled', true)
+        }
+    });
+
+    $('#btn_continue').click(function(){
+        if($('#consent_proc').is(':checked')){
+            $.ajax({
+                type: 'post',
+                url: '/consent_proc',
+                success: function (res) {
+                    var msg = res['message'];
+                    if(msg['status'] == 'ok'){
+                        alert('Соглашение оформлено')
+                        location.reload()
+                    }
+                    else{
+                        alert(msg['error'])
+                    }
+                },
+                async: true,
+            });
+        }
+        else{
+            alert('Вы не дали согласие')
+        }
+    });
 });
 
 /////////////////////////////////////////////////

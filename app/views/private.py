@@ -190,6 +190,12 @@ def create_accounts():
 
     return gen_success(url = '/static/user_data/logins.xlsx')
 
+#consent to procesing
+@app.route('/consent_proc', methods=['POST'])
+def consent_proc():
+    current_user.processing_consent = True
+    db.session.commit()
+    return gen_success(message={'status':'ok'})
 
 @app.route('/add_document', methods=['POST'])
 def add_document():
