@@ -271,15 +271,22 @@ def search():
 def profile():
     if user_role() > 0:
         return redirect('ready')
-
+        
+    processing_consent = current_user.processing_consent
     sections_arr     = get_sections_data_by_id(current_user.id, get_user_tables())
     section_statuses = get_section_statuses(current_user.id)
-    is_approved      = User.query.get(current_user.id).approved
+    is_approved      = current_user.approved
     quiz_status      = get_quiz_state(current_user.id)
     comments         = get_section_comments(current_user.id)
-    return render_template('user.html', title=u'Данные', sections=sections_arr, table_states=TABLE_STATES,
-         section_statuses=section_statuses, is_approved=is_approved, quiz_status=quiz_status, quiz_states=QUIZ_STATES,
-         user_id=current_user.id, comments=comments, navprivate=True)
+    if processing_consent:
+        return render_template('user.html', title=u'Данные', sections=sections_arr, 
+            table_states=TABLE_STATES,
+            section_statuses=section_statuses, is_approved=is_approved, 
+            quiz_status=quiz_status, quiz_states=QUIZ_STATES,
+            user_id=current_user.id, comments=comments, navprivate=True)
+    else:
+        return render_template('processing_consent.html', title=u'Согласие на обработку',
+         navprivate=True)
 
 @app.route('/add_vus')
 @login_required

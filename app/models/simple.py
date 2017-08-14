@@ -50,6 +50,7 @@ class User(db.Model):
     vus_id   = db.Column(db.Integer, db.ForeignKey('VUS.id'))
     approved = db.Column(db.Boolean, default=False)
     entrance_year = db.Column(db.Integer)
+    processing_consent = db.Column(db.Boolean, default=False)
 
     students_info = db.relationship('Student_info', back_populates='user', uselist=False)
 
