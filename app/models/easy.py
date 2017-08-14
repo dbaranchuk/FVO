@@ -228,7 +228,14 @@ class Students_info_lables_accessor():
 
             'personal_number' : ('spec_data', 'personal_number'),
             'voin_chast' : ('spec_data', 'military_department'),
-            'prisyaga_date' : ('spec_data', 'oath_date')
+            'prisyaga_date' : ('spec_data', 'oath_date'),
+            'voin_chast_adr' : ('spec_data', 'military_department_adr'),
+            'order_personal_number' : ('spec_data', 'order_personal_number'),
+            'order_rank' : ('spec_data', 'order_rank'),
+            'sbory_from' : ('spec_data', 'military_charges_period_from'),
+            'sbory_to' : ('spec_data', 'military_charges_period_to'),
+            'fvo_from' : ('spec_data', 'fvo_study_period_from'),
+            'fvo_to' : ('spec_data', 'fvo_study_period_to'),
 
         }
 
@@ -309,6 +316,7 @@ class Students_info_lables_accessor():
 
     def month(self, prop):
         monthNumber = self['{' + prop + '}'][3:5]
-        monthIndex = int(monthNumber) - 1
+        return int(monthNumber)
 
-        return str(monthIndex)
+    def upper_case(self, prop):
+        return self['{' + prop + '}'].upper()
