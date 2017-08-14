@@ -7,10 +7,12 @@ from app.models.student_info import User_info_table_interface
 class VUS(db.Model,User_info_table_interface):
     __tablename__ = 'VUS'
     id = db.Column(db.Integer, primary_key=True)
-    number = db.Column(db.Integer)
-    code   = db.Column(db.Integer)
-    name1  = db.Column(db.String(120))
-    name2  = db.Column(db.String(120))
+    number    = db.Column(db.Integer)
+    code      = db.Column(db.Integer)
+    name1     = db.Column(db.String(120))
+    name2     = db.Column(db.String(120))
+    rank      = db.Column(db.String(60) )
+    tech_type = db.Column(db.String(120))
 
     def to_string(self):
         return '%03d %03d' % (self.number, self.code)
@@ -21,15 +23,19 @@ class VUS(db.Model,User_info_table_interface):
         self.placeholders = {
             'number' : u'123',
             'code' : u'123',
-            'name1' : u'расчетно-аналитических станций РХБЗ',
-            'name2' : u'вычислитель',
+            'name1' : u'Расчетно-аналитических станций РХБЗ',
+            'name2' : u'Вычислитель',
+            'rank' : u'Рядовой',
+            'tech_type' : u'Расчетно-аналитические станции РХБЗ',
         }
         self.en2ru = {
             'id' : None,
-            'number' : u'номер',
-            'code' : u'код',
-            'name1' : u'Имя 1',
-            'name2' : u'Имя 2',
+            'number' : u'Номер',
+            'code' : u'Код',
+            'name1' : u'Принадлежность',
+            'name2' : u'Должность',
+            'rank' : u'Звание',
+            'tech_type' : u'Тип (марка) вооружения (военной техники)',
         }
         self.readonly_fields = set()
 

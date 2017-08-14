@@ -787,9 +787,16 @@ class Spec_data(db.Model, User_info_table_interface):
     id              = db.Column( db.Integer, primary_key = True )
     student_info_id = db.Column( db.Integer, db.ForeignKey( 'student_info.id' ) )
     
-    personal_number     = db.Column( db.String(16),  default = '' )
-    military_department = db.Column( db.String(128), default = '' )
-    oath_date           = db.Column( db.String(10),  default = '' ) # dd.mm.yyyy 
+    personal_number              = db.Column( db.String(16),  default = '' )
+    military_department          = db.Column( db.String(128), default = '' )
+    oath_date                    = db.Column( db.String(10),  default = '' )
+    military_department_adr      = db.Column( db.String(300), default = '' )
+    order_personal_number        = db.Column( db.String(300), default = '' )
+    order_rank                   = db.Column( db.String(300), default = 'Пр. №           от «     »              20   г. военного комиссара г. Москвы' )
+    military_charges_period_from = db.Column( db.String(10),  default = '' )
+    military_charges_period_to   = db.Column( db.String(10),  default = '' )
+    fvo_study_period_from        = db.Column( db.String(10),  default = '' )
+    fvo_study_period_to          = db.Column( db.String(10),  default = '' )
 
     student_info = db.relationship('Student_info', 
         back_populates = 'spec_data' )
@@ -801,12 +808,26 @@ class Spec_data(db.Model, User_info_table_interface):
             'personal_number' : u'А-123456',
             'military_department': u'12102',
             'oath_date': u'22.07.2017', 
+            'military_department_adr': u'606087, Нижегородская обл., р-н Володарский, пгт. Центральный, в/ч 12102',
+            'order_personal_number': u'123456',
+            'order_rank': u'123456',
+            'military_charges_period_from': u'15.07.2017',
+            'military_charges_period_to': u'16.08.2017',
+            'fvo_study_period_from': u'01.09.2015',
+            'fvo_study_period_to': u'30.08.2017',
         }
         self.en2ru = {
             'id': None, 
             'student_info_id' : None,
             'personal_number' : u'Личный номер',
-            'military_department': u'Воинская часть',
+            'military_department': u'Войсковая часть',
             'oath_date': u'Дата принятия присяги',
+            'military_department_adr': u'Адрес войсковой части',
+            'order_personal_number': u'Приказ о присвоении личного номера',
+            'order_rank': u'Приказ о присвоении звания',
+            'military_charges_period_from': u'Период сборов с',
+            'military_charges_period_to': u'Период сборов по',
+            'fvo_study_period_from': u'Период обучения на ФВО с',
+            'fvo_study_period_to': u'Период обучения на ФВО по',
         }
         self.readonly_fields = set()

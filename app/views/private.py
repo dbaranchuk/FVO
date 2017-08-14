@@ -257,9 +257,9 @@ def delete_document():
 def check_errors_in_input_data(table, data):
     tableclass = get_class_by_tablename(table)()
     errors = []
-    #for field, value in data.iteritems():
-    #    if len(field) and not len(value):
-    #        errors.append( u'Заполните поле "' + tableclass.get_russian_name( field ) + '"' )
+    for field, value in data.iteritems():
+        if len(field) and not len(value):
+            errors.append( u'Заполните поле "' + tableclass.get_russian_name( field ) + '"' )
     return errors
 
 def save_not_fixed_section_information(data):
