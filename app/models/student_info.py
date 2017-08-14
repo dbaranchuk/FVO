@@ -792,7 +792,7 @@ class Spec_data(db.Model, User_info_table_interface):
     oath_date                    = db.Column( db.String(10),  default = '' )
     military_department_adr      = db.Column( db.String(300), default = '' )
     order_personal_number        = db.Column( db.String(300), default = '' )
-    order_rank                   = db.Column( db.String(300), default = 'Пр. №           от «     »              20   г. военного комиссара г. Москвы' )
+    order_rank                   = db.Column( db.String(300), default = u'Пр. №           от «     »              20   г. военного комиссара г. Москвы' )
     military_charges_period_from = db.Column( db.String(10),  default = '' )
     military_charges_period_to   = db.Column( db.String(10),  default = '' )
     fvo_study_period_from        = db.Column( db.String(10),  default = '' )
