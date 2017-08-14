@@ -280,7 +280,7 @@ class Students_info_lables_accessor():
                 else:
                     return None
             except Exception as err:
-                print err
+                #print err
                 return ''
 
         return res_record if res_record != None else ''

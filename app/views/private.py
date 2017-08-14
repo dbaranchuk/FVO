@@ -481,8 +481,8 @@ def parseParagraphs(paragraphs, accessor, regex):
                 keyString += inline[i].text
                 inline[i].text = ''
             
-            if started:
-                print keyString, started, finished
+            #if started:
+                #print keyString, started, finished
 
             if started and finished:
                 inline[i].text = keyString
@@ -494,18 +494,18 @@ def parseParagraphs(paragraphs, accessor, regex):
                     #print key, value, inline[i].text
                     text = inline[i].text.replace(key, value)
                     inline[i].text = text
-                    print inline[i].text
+                    #print inline[i].text
                 started = False
                 finished = False
                 keyString = ''
-                print 'done'
+                #print 'done'
 
 def generateDocuments(data):
     userIDs = json.loads(data['userIDs'])
     docIDs = json.loads(data['docIDs'])
-    print data
+    #print data
     generationDate = data['generation_date']
-    print generationDate
+    #print generationDate
     
     users = User.query.filter(User.id.in_(userIDs)).all()
     documents = Document.query.filter(Document.id.in_(docIDs)).all()
