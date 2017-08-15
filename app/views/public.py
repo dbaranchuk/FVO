@@ -133,7 +133,7 @@ def ready():
         users = db.session.query(User).filter_by(role = 0, approved = True).order_by(desc(User.entrance_year)).order_by(User.vus_id)
     documents = Document.query.all()
 
-    vuses = VUS.query.all()
+    vuses = VUS.query.filter_by(is_active=True)
 
     userInfo = []
     for user in users:
@@ -250,7 +250,7 @@ def account_creator():
         vuses = VUS.query.get(current_user.vus_id)
         vuses = [vuses]
     else:
-        vuses = VUS.query.all()
+        vuses = VUS.query.filter_by(is_active=True)
 
     return render_template('account_creator.html', title=u'Создание аккаунтов', tab_active=4, 
         vuses=vuses, is_super_admin=current_user.role==USER_STATES['ROLE_SUPER_ADMIN'],
@@ -288,13 +288,13 @@ def profile():
         return render_template('processing_consent.html', title=u'Согласие на обработку',
          navprivate=True)
 
-@app.route('/add_vus')
+@app.route('/vuses')
 @login_required
-def add_vus():
+def vuses():
     if user_role() < 1:
         abort(404)
 
-    s = VUS();
+    s = VUS()
     fields = get_fields( 'VUS' )
     fields = [ InputValue( x[0], 
                 s.get_russian_name(x[0]), 
@@ -302,5 +302,6 @@ def add_vus():
                 s.placeholder(x[0])
                 ) for x in fields]
     fields = filter(lambda x: x.valid, fields)
-    return render_template('add_vus.html',fields=fields, 
+    vuses = VUS.query.all()
+    return render_template('vuses.html', fields=fields, vuses=vuses, 
         is_super_admin=user_role()==USER_STATES['ROLE_SUPER_ADMIN'])

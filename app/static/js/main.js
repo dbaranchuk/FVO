@@ -271,8 +271,10 @@ $(document).ready(function() {
                         '<td>' + userData[i]['vus'] + '</td>' +
                         '<td>' + userData[i]['is_approved'] + '</td>' +
                         '<td>' + '<a href="/inprocess/'+userData[i]['id']+'">' + 
-                        "<button type='button' class='btn btn-primary btn-show-from-search' data-id=" + userData[i]['id'] + 
-                        '>Показать</button></a></td>' + 
+                        "<button type='button' class='btn btn-info' data-id=" + userData[i]['id'] + 
+                        '>Показать</button></a>'  + '&nbsp&nbsp&nbsp' +
+                        "<button type='button' class='btn btn-danger btn-delete-from-search' data-id=" + userData[i]['id'] + 
+                        '>Удалить</button></a>' + '</td>' 
                         '</tr>';
                         $('#user-search-result > tbody:last-child').append(rowHtml);
                     }
@@ -327,9 +329,63 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on('click', '.btn-show-from-search', function(){
-        var id = $(this).data('id')
-    })
+    $(document).on('click', '.btn-delete-from-search', function(){
+        if (!confirm('Вы уверены? Данное действие необратимо.')) {
+            return false;
+        }
+
+        var $table_row = $(this).closest('tr');
+
+        var data = {
+            'do' : 'delete_user',
+            'user_id' : $(this).data('id'),
+        }
+
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: data,
+            success: function (res) {
+                $table_row.remove()
+            },
+            dataType: 'json',
+            async: false
+        });
+        return false;
+    });
+
+    $(document).on('click', '.btn-change-vus-state', function(){
+
+        var $table_row = $(this).closest('tr');
+        var $status = $table_row.find('.vus_status')
+        var $action = $table_row.find('.vus_actions')
+
+        var new_status = $(this).data('state')
+        var vus_id = $(this).data('id')
+        var data = {
+            'do' : 'change_vus_status',
+            'vus_id' : vus_id,
+            'new_status' : new_status,
+        }
+
+        $.ajax({
+            type: 'post',
+            url: 'post_query',
+            data: data,
+            success: function (res) {
+                if (new_status == '1') {
+                    $status.html('<span class="alert-success">да</span>')
+                    $action.html('<button type="button" class="btn btn-primary btn-change-vus-state" data-id="' + vus_id + '" data-state="0">Откл</button>')
+                } else {
+                    $status.html('<span class="alert-warning">нет</span>')
+                    $action.html('<button type="button" class="btn btn-info btn-change-vus-state" data-id="' + vus_id + '" data-state="1">Вкл</button>')   
+                }
+            },
+            dataType: 'json',
+            async: false
+        });
+        return false;
+    });
 
 /// READY 
 

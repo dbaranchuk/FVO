@@ -14,6 +14,8 @@ class VUS(db.Model,User_info_table_interface):
     rank      = db.Column(db.String(60) )
     tech_type = db.Column(db.String(120))
 
+    is_active = db.Column(db.Boolean, default=True)
+
     def to_string(self):
         return '%03d %03d' % (self.number, self.code)
 
@@ -30,6 +32,7 @@ class VUS(db.Model,User_info_table_interface):
         }
         self.en2ru = {
             'id' : None,
+            'is_active' : None,
             'number' : u'Номер',
             'code' : u'Код',
             'name1' : u'Принадлежность',

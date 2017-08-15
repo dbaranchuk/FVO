@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="ag-hor-center">
+
+        {% if not is_super_admin %}
+        <div class="alert alert-info" role="alert">
+            <strong>Информация</strong>
+            У Вас не достаточно прав для создания аккаунтов
+        </div>
+        {% else %}
+        <div class="ag-hor-center">
+            <table class="table table-hover table-striped">
+                <div align="center"><h3>Военно-учетные специальности</h3></div>
+                <thead>
+                    <tr> 
+                        <th width="7%">ВУС</th>
+                        <th>Принадлежность</th>
+                        <th>Должность</th>
+                        <th>Звание</th>
+                        <th>Тип (марка) вооружения (в. т.)</th>
+                        <th>Активна</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for vus in vuses%}
+                    <tr>
+                        <td>{{ vus.to_string() }}</td>
+                        <td>{{ vus.name1 }}</td>
+                        <td>{{ vus.name2 }}</td>
+                        <td>{{ vus.rank }}</td>
+                        <td>{{ vus.tech_type }}</td>
+                        <td class='vus_status'>
+                            {% if vus.is_active %}
+                                <span class="alert-success">да</span>
+                            {% else %}
+                                <span class="alert-warning">нет</span>
+                            {% endif %}
+                        <td class='vus_actions'>   
+                            {% if not vus.is_active %}
+                                <button type='button' class='btn btn-info btn-change-vus-state' data-id="{{ vus.id }}" data-state="1">Вкл</button>
+                            {% else %}
+                                <button type='button' class='btn btn-primary btn-change-vus-state' data-id="{{ vus.id }}" data-state="0">Откл</button>
+                            {% endif %} 
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2" align="center"></div>
+            <div class="col-md-8" align="center"> 
+                <div class="alert alert-info" role="alert">
+                    <strong>Добавление ВУС</strong>
+                </div>
+                <div class="well well-lg section_element_template_div">
+                    {% for field in fields %}
+                    <div class="input-group">
+                        <span class="input-group-addon"> {{field.rus}} </span>
+                        <input class="form-control" id="{{field.eng}}"  placeholder="{{field.placeholder}}" type="text" value="">
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-success ag-hor-center" type="button" id="add_vus_btn">
+                    Добавить
+                </button>
+                <!--a class="file-input-wrapper btn btn-default "><span>Выбрать файл</span><input type="file" style="left: -182.5px; top: 8px;"></a>-->
+                <!-- <button class="btn btn-success ag-hor-center" id="create-but-2">Создать аккаунты</button> -->
+             </div>
+             <div class="col-md-2" align="center"></div> 
+        </div> 
+        {% endif %}
+    </div>
+
+{% endblock %}

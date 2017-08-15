@@ -54,6 +54,7 @@ def get_admin_tables():
             'spec_data',
     ]
 
+
 def get_form_type(table_type):
     table2form = {
         'INTEGER': 'number',

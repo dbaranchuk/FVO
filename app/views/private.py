@@ -342,6 +342,16 @@ def approve_all_sections(data):
     db.session.commit()
     return gen_success(message = {'status':'ok'} )
 
+def change_vus_status(data):
+    vus_id = int(data['vus_id'])
+    new_status = int(data['new_status'])
+
+    vus = VUS.query.get( vus_id )
+    vus['is_active'] = new_status
+
+    db.session.commit()
+    return gen_success(message = {'status':'ok'} )
+
 def change_section_state(data):
                     
     new_state = int(data['new_state'])
@@ -370,7 +380,29 @@ def change_section_state(data):
 def send_quiz_to_check(data):
     return gen_success(message =  {'status':'ok'})
 
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    student_info = user.students_info
 
+    for table in (get_user_tables() + get_admin_tables()):
+        section = get_class_by_tablename(table)()
+        if (student_info[table]):
+            if section.is_fixed:
+                db.session.delete(student_info[table])
+            else:
+                for record in student_info[table]:
+                    db.session.delete(record) 
+    
+    db.session.delete(student_info['comments'])
+    db.session.delete(student_info)
+    db.session.delete(user)
+    db.session.commit()
+    return True
+
+def post_delete_user(data):
+    user_id = int(data['user_id'])
+    delete_user(user_id)
+    return gen_success(message =  {'status':'ok'})
 
 ### SEARCH
 
@@ -574,6 +606,8 @@ POST_METHODS.update( {
                 'send_quiz_to_check': send_quiz_to_check,
                 'change_section_state' : change_section_state,
                 'approve_all_sections' : approve_all_sections,
+                'delete_user' : post_delete_user,
+                'change_vus_status' : change_vus_status,
 
                 })
 
