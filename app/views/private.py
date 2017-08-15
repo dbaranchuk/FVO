@@ -462,6 +462,10 @@ def parseDocument(doc, accessor):
         for row in table.rows:
             for cell in row.cells:
                 parseParagraphs(cell.paragraphs, accessor, regex)
+                for table1 in cell.tables:
+                    for row1 in table1.rows:
+                        for cell1 in row1.cells:
+                            parseParagraphs(cell1.paragraphs, accessor, regex)
 
 def parseParagraphs(paragraphs, accessor, regex):
     
@@ -471,7 +475,7 @@ def parseParagraphs(paragraphs, accessor, regex):
         started = False
         finished = False
         for i in range(len(inline)):
-            #print p.text, p.style.font.name, p.style.font.italic
+            print p.text
             if len(inline[i].text) > 0 and inline[i].text[0] == '{':
                 started = True
             if len(inline[i].text) > 0 and inline[i].text[-1] == '}':
@@ -481,8 +485,8 @@ def parseParagraphs(paragraphs, accessor, regex):
                 keyString += inline[i].text
                 inline[i].text = ''
             
-            #if started:
-                #print keyString, started, finished
+            if started:
+                print keyString, started, finished
 
             if started and finished:
                 inline[i].text = keyString
@@ -498,7 +502,7 @@ def parseParagraphs(paragraphs, accessor, regex):
                 started = False
                 finished = False
                 keyString = ''
-                #print 'done'
+                print 'done'
 
 def generateDocuments(data):
     userIDs = json.loads(data['userIDs'])
