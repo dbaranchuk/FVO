@@ -23,7 +23,8 @@
             <td>Не заполнено</td>
             {% endif %}
             <td>
-                <a href="{{ url_for('to_page_approve_user', user_id=user.id)}}"><button class="btn btn-default" title="Проверить">{% if not is_readonly %}Проверить{% else %}Посмотреть{% endif %}</button></a>
+                <a href="{{ url_for('to_page_approve_user', user_id=user.id)}}"><button class="btn btn-info" title="Проверить">{% if not is_readonly %}Проверить{% else %}Посмотреть{% endif %}</button></a>
+                <button type='button' class='btn btn-danger btn-delete-from-search' data-id="{{ user.id }}">Удалить</button>'
             </td>
         </tr>
         {% endfor %}
