@@ -550,7 +550,7 @@ $(document).ready(function() {
     });
     function get_checked_vus( selector ){
         var $inputs = $(selector).find(':input')
-        var dict_checked_vus = []
+        var dict_checked_vus = Array()
         $inputs.each( function( index, value ) {
                     if ( $(value).is(":checked") ) {
                         dict_checked_vus.push($(value).val())
@@ -573,8 +573,8 @@ $(document).ready(function() {
         post_data = {
             'login' : login,
             'password' : password,
-            'vus_for_write' : checked_vus_write,
-            'vus_for_read' : checked_vus_read
+            'vus_for_write' : JSON.stringify(checked_vus_write),
+            'vus_for_read' : JSON.stringify(checked_vus_read)
         }
         $.ajax({
             type: 'post',

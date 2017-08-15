@@ -11,7 +11,7 @@ from app.models import User, VUS, Document, Student_info, Basic_information, Com
 from app.models import Certificates_change_name, Communications, Passports, International_passports
 from app.models import Registration_certificates, Middle_education, Spec_middle_education
 from app.models import High_education, Military_education, Languages, Mothers_fathers
-from app.models import Brothers_sisters_children, Married_certificates, Personal_data
+from app.models import Brothers_sisters_children, Married_certificates, Personal_data, Admins_vuses
 from app.models.easy import *
 
 from werkzeug.security import generate_password_hash
@@ -133,8 +133,12 @@ def change_admin_pswd():
 
 @app.route('/add_new_admin', methods=['POST'])
 def add_new_admin():
+    print 'begin'
     data = request.form
-    if data['vus_for_write'] & data['vus_for_read']:
+    vus_for_write = set(json.loads(data['vus_for_write']))
+    vus_for_read = set(json.loads(data['vus_for_read']))
+    print vus_for_read
+    if vus_for_write & vus_for_read:
         return gen_success(message={'status':'error', 'error':u'Есть пересечения между ВУС на запись и ВУС на чтение'})
     user = User();
     user.login = data['login']
@@ -142,13 +146,13 @@ def add_new_admin():
     user.role = USER_STATES['ROLE_ADMIN']
     db.session.add(user)
     db.session.flush()
-    for vus in data['vus_for_write']:
+    for vus in vus_for_write:
         admin_vus = Admins_vuses()
         admin_vus.user_id = user.id
         admin_vus.vus_id = vus
         admin_vus.is_write = True
         db.session.add(admin_vus)
-    for vus in data['vus_for_read']:
+    for vus in vus_for_read:
         admin_vus = Admins_vuses()
         admin_vus.user_id = user.id
         admin_vus.vus_id = vus
