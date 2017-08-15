@@ -84,3 +84,17 @@
 .ag-thin > input {
     border-width: 1px;
 }
+
+.chkbox {
+    padding-left: 10px;
+    padding-right: 20px;
+    font-weight: bold;
+}
+
+.items {
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

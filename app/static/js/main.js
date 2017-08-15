@@ -436,6 +436,111 @@ $(document).ready(function() {
         return false
     });
 
+/// Admins rule
+    $('.btn-delete-admin').click(function(){
+        post_data = {'id': this.value}
+        $.ajax({
+            type: 'post',
+            url: '/delete_admin_account',
+            data: post_data,
+            success: function (res) {
+                var msg = res['message'];
+                if(msg['status'] == 'ok'){
+                    alert('Аккаунт успешно удален')
+                    location.reload()
+                }
+                else{
+                    alert(msg['error'])
+                }
+            },
+            dataType: 'json',
+            async: true,
+        }); 
+    });
+
+    $('.btn-chng-admin-psw').click(function(){
+        var new_psw = prompt('Введите новый пароль:')
+        post_data = {'id':this.value, 'new_psw':new_psw}
+        $.ajax({
+            type: 'post',
+            url: '/change_admin_pswd',
+            data: post_data,
+            success: function (res) {
+                var msg = res['message'];
+                if(msg['status'] == 'ok'){
+                    alert('Пароль успешно изменен')
+                    location.reload()
+                }
+                else{
+                    alert(msg['error'])
+                }
+            },
+            dataType: 'json',
+            async: true,
+        }); 
+    });
+
+    $('#addAdmin').click(function() {
+        var $template = $("#section_admin_template_div")
+        var admin_html = '<div class="well well-lg admin_addition">' + $template.html() + '</div>'
+        $('#place_to_insert_admin').before(admin_html)
+        $(this).addClass('no-display');
+    });
+
+    $(document).on('click', '.btn_remove_admin_addition', function(){
+        $(this).closest('.admin_addition').remove();
+        $('#addAdmin').removeClass('no-display');
+        return false;
+    });
+    function get_checked_vus( selector ){
+        var $inputs = $(selector).find(':input')
+        var dict_checked_vus = []
+        $inputs.each( function( index, value ) {
+                    if ( $(value).is(":checked") ) {
+                        dict_checked_vus.push($(value).val())
+                    }
+                });
+        return dict_checked_vus;
+    }
+    $(document).on('click', '.btn_addition_admin', function(){
+        var $parent = $(this).closest(".admin_addition")
+        var login = $parent.find('.login').val()
+        var password = $parent.find('.password').val()
+        if( login == '' || password == '' ){
+            alert('Введите логин и/или пароль')
+            return false;
+        }
+        var $vus_for_write = $parent.find(".vus_for_write")
+        var $vus_for_read = $parent.find(".vus_for_read")
+        checked_vus_write = get_checked_vus($vus_for_write)
+        checked_vus_read = get_checked_vus($vus_for_read)
+        post_data = {
+            'login' : login,
+            'password' : password,
+            'vus_for_write' : checked_vus_write,
+            'vus_for_read' : checked_vus_read
+        }
+        $.ajax({
+            type: 'post',
+            url: '/add_new_admin',
+            data: post_data,
+            success: function (res) {
+                var msg = res['message'];
+                if(msg['status'] == 'ok'){
+                    alert('Пользователь успешно добавлен')
+                    $parent.remove()
+                    location.reload()
+                }
+                else{
+                    alert(msg['error'])
+                }
+            },
+            dataType: 'json',
+            async: true,
+        }); 
+        return false;
+    });
+
 /// add vus
     $('#add_vus_btn').click(function() {
         if( $("#number").val()=='' || $("#code").val()=='' 

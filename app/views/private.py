@@ -94,6 +94,7 @@ def comment_user():
     db.session.commit()
     return gen_success()
 
+# Rule admins
 @app.route('/make_account', methods=['POST'])
 def make_account():
     data = request.form
@@ -105,6 +106,59 @@ def make_account():
     create_admin_account(data)
     return gen_success(message={'status':'ok'})
 
+@app.route('/delete_admin_account', methods=['POST'])
+def delete_admin_account():
+    data = request.form
+    user = User.query.filter_by(id=data['id'])
+    if user:
+        user.delete()
+        db.session.commit()
+        return gen_success(message={'status':'ok'})
+    else:
+        return gen_success(message={'status':'error', 'error':u'Данный администратор уже удален'})
+
+@app.route('/change_admin_pswd', methods=['POST'])
+def change_admin_pswd():
+    data = request.form
+    user = User.query.get(data['id'])
+    if user:
+        if data['new_psw'] != u'':
+            user.password = generate_password_hash(data['new_psw'])
+            db.session.commit()
+            return gen_success(message={'status':'ok'})
+        else:
+            return gen_success(message={'status':'error','error':u'Пароль не может быть пустым'})
+    else:
+        return gen_success(message={'status':'error','error':u'Ошибка обращения к администратору'})
+
+@app.route('/add_new_admin', methods=['POST'])
+def add_new_admin():
+    data = request.form
+    if data['vus_for_write'] & data['vus_for_read']:
+        return gen_success(message={'status':'error', 'error':u'Есть пересечения между ВУС на запись и ВУС на чтение'})
+    user = User();
+    user.login = data['login']
+    user.password = generate_password_hash(data['password'])
+    user.role = USER_STATES['ROLE_ADMIN']
+    db.session.add(user)
+    db.session.flush()
+    for vus in data['vus_for_write']:
+        admin_vus = Admins_vuses()
+        admin_vus.user_id = user.id
+        admin_vus.vus_id = vus
+        admin_vus.is_write = True
+        db.session.add(admin_vus)
+    for vus in data['vus_for_read']:
+        admin_vus = Admins_vuses()
+        admin_vus.user_id = user.id
+        admin_vus.vus_id = vus
+        admin_vus.is_write = False
+        db.session.add(admin_vus)
+    db.session.commit()
+    return gen_success(message={'status':'ok'})
+
+
+######
 @app.route('/post_add_vus', methods=['POST'])
 def post_add_vus():
     data = request.form

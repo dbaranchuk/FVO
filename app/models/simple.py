@@ -14,6 +14,7 @@ class VUS(db.Model,User_info_table_interface):
     rank      = db.Column(db.String(60) )
     tech_type = db.Column(db.String(120))
 
+    users = relationship("User", secondary=Admins_vuses, back_populates="vuses")
     def to_string(self):
         return '%03d %03d' % (self.number, self.code)
 
@@ -43,7 +44,7 @@ class VUS(db.Model,User_info_table_interface):
 
 class User(db.Model):
     __tablename__ = 'user'
-    id       = db.Column(db.Integer, primary_key=True)
+    id       = db.Column(db.indexteger, primary_key=True)
     login    = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String(120), unique=False)
     role     = db.Column(db.SmallInteger, default=USER_STATES['ROLE_USER'])
@@ -53,6 +54,7 @@ class User(db.Model):
     processing_consent = db.Column(db.Boolean, default=False)
 
     students_info = db.relationship('Student_info', back_populates='user', uselist=False)
+    vuses = relationship( "VUS", secondary=Admins_vuses, back_populates="users")
 
     def get_id(self):
         return unicode(self.id)
@@ -65,6 +67,13 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r, %r>' % (self.login, self.password)
+
+class Admins_vuses(db.Model):
+    __tablename__ = 'admins_vuses'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
+    vus_id = db.Column(db.Integer, db.ForeignKey('VUS.id'))
+    is_write = db.Column(db.Boolean)
 
 class Document(db.Model):
     __tablename__ = 'document'

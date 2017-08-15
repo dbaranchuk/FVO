@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="ag-hor-center">
+    {% if not is_super_admin %}
+    <div class="alert alert-info" role="alert">
+        <strong>Информация</strong>
+        У Вас не достаточно прав для создания аккаунтов
+    </div>
+    {% else %}
+    <div class="page-header"> <h1>Администраторы</h1> </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Логин</th>
+                    <th colspan="2" style="text-align: center;">Управление</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for admin in admins %}
+                <tr>
+                    <td>{{admin.login}}</td>
+                    <td style="text-align: center;"><button type="button" value="{{admin.id}}" class="btn btn-default btn-delete-admin">Удалить</button></td>
+                    <td style="text-align: center;"><button type="button" value="{{admin.id}}" class="btn btn-default btn-chng-admin-psw">Изменить пароль</button></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <!--- TEMPLATE -->
+    <div class="well well-lg no-display" id="section_admin_template_div">
+        <button type="button" class="btn_remove_admin_addition" style="float:right"><span class=" glyphicon glyphicon-remove"></span></button>
+        <input name="new_element_start" type="hidden" value="new_element_start">
+        <div class="input-group">
+            <span class="input-group-addon"> Логин </span>
+            <input class="form-control login" type="text" value="">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon"> Пароль </span>
+            <input class="form-control password" type="text" value="">
+        </div>
+        <div class="input-group vus_for_write">
+            <span class="input-group-addon"> ВУС для записи </span>
+            <div class="items">
+            {% for vus in vuses %}
+                <div class="item">
+                    <label><input class="chkbox" type="checkbox" value="{{vus.id}}">{{vus.to_string()}}</label>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+        <div class="input-group vus_for_read">
+            <span class="input-group-addon"> ВУС для чтения </span>
+            <div class="items">
+            {% for vus in vuses %}
+                <div class="item">
+                    <label><input class="chkbox" type="checkbox" value="{{vus.id}}">{{vus.to_string()}}</label>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+        <input name="new_element_end" type="hidden" value="new_element_end">
+        <br><br>
+        <button type="button" class="btn_addition_admin btn btn-lg btn-success ag-hor-center">Добавить</button>
+    </div>
+    <!--- TEMPLATE END-->
+    <div class="no-display" id="place_to_insert_admin"></div>
+    <button type="button" id="addAdmin" class="ag-hor-center btn btn-lg btn-success">Добавить администратора</button>
+    {% endif %}
+</div>
+{% endblock %}

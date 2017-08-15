@@ -240,6 +240,16 @@ def documents():
         vuses_name_by_id=vuses_name_by_id, docs=docs, 
         is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
 
+@app.route('/rule_admins')
+@login_required
+def rule_admins():
+    if user_role() < 1:
+        abort(404)
+    vuses = VUS.query.all()
+    admins = User.query.filter(User.role > 0).filter(User.role != USER_STATES['ROLE_SUPER_ADMIN'])
+    return render_template('rule_admins.html', title=u'Управление администраторами', 
+        tab_active=7, is_super_admin=user_role()==USER_STATES['ROLE_SUPER_ADMIN'], 
+        admins=admins, vuses=vuses)
 
 @app.route('/account_creator')
 @login_required
@@ -302,5 +312,5 @@ def add_vus():
                 s.placeholder(x[0])
                 ) for x in fields]
     fields = filter(lambda x: x.valid, fields)
-    return render_template('add_vus.html',fields=fields, 
+    return render_template('add_vus.html',fields=fields, tab_active=6, 
         is_super_admin=user_role()==USER_STATES['ROLE_SUPER_ADMIN'])

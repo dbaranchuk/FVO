@@ -78,6 +78,9 @@
                 <li {% if tab_active == 6 %} class="active" {% endif %}>
                     <a href="{% if tab_active == 6 %} # {% else %} {{url_for('add_vus')}} {% endif %}">Добавление ВУС</a>
                 </li>
+                <li {% if tab_active == 7 %} class="active" {% endif %}>
+                    <a href="{% if tab_active == 7 %} # {% else %} {{url_for('rule_admins')}} {% endif %}">Администраторы</a>
+                </li>
             </ul>
             <button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
         </div><!--/.nav-collapse -->
