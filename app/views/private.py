@@ -475,7 +475,7 @@ def parseParagraphs(paragraphs, accessor, regex):
         started = False
         finished = False
         for i in range(len(inline)):
-            print p.text
+            #print p.text
             if len(inline[i].text) > 0 and inline[i].text[0] == '{':
                 started = True
             if len(inline[i].text) > 0 and inline[i].text[-1] == '}':
@@ -485,8 +485,8 @@ def parseParagraphs(paragraphs, accessor, regex):
                 keyString += inline[i].text
                 inline[i].text = ''
             
-            if started:
-                print keyString, started, finished
+            #if started:
+                #print keyString, started, finished
 
             if started and finished:
                 inline[i].text = keyString
@@ -502,7 +502,7 @@ def parseParagraphs(paragraphs, accessor, regex):
                 started = False
                 finished = False
                 keyString = ''
-                print 'done'
+                #print 'done'
 
 def generateDocuments(data):
     userIDs = json.loads(data['userIDs'])
