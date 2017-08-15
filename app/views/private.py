@@ -462,6 +462,7 @@ def parseDocument(doc, accessor):
         for row in table.rows:
             for cell in row.cells:
                 parseParagraphs(cell.paragraphs, accessor, regex)
+                # для формы 12
                 for table1 in cell.tables:
                     for row1 in table1.rows:
                         for cell1 in row1.cells:
