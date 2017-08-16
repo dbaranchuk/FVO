@@ -3,6 +3,12 @@
 
 <button class="btn single btn-lg btn-success" style="position: fixed; right: 20px; top: 3px; padding: 10px;" onclick="logout()">Выйти</button>
 
+{% if is_forbidden %}
+<div class="ag-hor-center ag-bottom-spacing">
+
+        <div class="alert alert-danger" >&nbsp Доступ к данной анкете закрыт &nbsp</div>
+</div>
+{% else %}
 <div class="ag-hor-center ag-bottom-spacing">
     {% if quiz_status == quiz_states['APPROVED'] %}
         <div class="alert alert-success" >&nbsp Анкета одобрена &nbsp</div>
@@ -196,5 +202,5 @@
     </div>
     {% endif %}
 </div>
-
+{% endif %}
 {% endblock %}

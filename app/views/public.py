@@ -218,22 +218,38 @@ def inprocess():
     return render_template('inprocess.html', title=u'В процессе', tab_active=2, users = users, 
         vuses = vuses)
 
+def get_admin_rights_for_vus(admin_id, vus_id):
+    admin = User.query.get(admin_id)
+    is_readonly  = False
+    is_forbidden = False
+    if admin.role==USER_STATES['ROLE_ADMIN']:
+        is_forbidden = True
+        admin_vuses = Admins_vuses.query.filter_by(user_id=current_user.id)
+        for vus in admin_vuses:
+            if vus.id == vus_id:
+                is_forbidden = False
+                is_readonly  = not vus.is_write
+
+    return (is_readonly, is_forbidden)
+
 @app.route('/inprocess/<user_id>')
 @login_required
 def to_page_approve_user(user_id):
     if user_role() < 1:
         abort(404)
 
+    user = User.query.get(user_id)
+    (is_readonly, is_forbidden) = get_admin_rights_for_vus(current_user.id, user.vus_id)
     sections_arr = get_sections_data_by_id(user_id, get_admin_tables() + get_user_tables())
     admin_sections = set(get_admin_tables())
 
     section_statuses = get_section_statuses(user_id)
     comments = get_section_comments(user_id)
     status = get_quiz_state(user_id)
-
+ 
     return render_template('user-admin.html', title=u'Одобрение аккаунта', sections=sections_arr, table_states=TABLE_STATES,
         quiz_status=status, section_statuses=section_statuses, user_id=user_id, navprivate=True, quiz_states=QUIZ_STATES, 
-        comments=comments, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'], admin_sections=admin_sections)
+        comments=comments, is_readonly=is_readonly, is_forbidden=is_forbidden, admin_sections=admin_sections)
 
 
 @app.route('/documents')
@@ -289,7 +305,7 @@ def account_creator():
 def search():
     if user_role() < 1:
         abort(404)
-    vuses = [];
+    vuses = []
     if user_role()==USER_STATES['ROLE_ADMIN']:
         admin_vuses = Admins_vuses.query.filter_by(user_id=current_user.id)
         vus_ids = [ x.vus_id for x in admin_vuses]
