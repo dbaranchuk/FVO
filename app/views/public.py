@@ -7,7 +7,7 @@ from app.models import User, VUS, Document, Comments, Student_info, Basic_inform
 from app.models import Certificates_change_name, Communications, Passports,International_passports
 from app.models import Registration_certificates, Middle_education, Spec_middle_education 
 from app.models import High_education, Military_education, Languages, Mothers_fathers 
-from app.models import Brothers_sisters_children, Married_certificates, Personal_data
+from app.models import Brothers_sisters_children, Married_certificates, Personal_data, Admins_vuses
 from app.models.easy import *
 from app.views.easy import *
 
@@ -126,14 +126,21 @@ def get_section_comments(user_id):
 def ready():
     if user_role() < 1:
         return redirect(url_for('profile'))
-
+    vuses = [];
     if user_role()==USER_STATES['ROLE_ADMIN']:
-        users = db.session.query(User).filter_by(role = 0, approved = True, vus_id=current_user.vus_id).order_by(desc(User.entrance_year)).order_by(User.vus_id)
+        admin_vuses = Admins_vuses.query.filter_by(user_id=current_user.id)
+        vus_ids = [ x.vus_id for x in admin_vuses if x.is_write]
+        vuses = VUS.query.filter(db.or_(VUS.id == v for v in vus_ids))\
+        .filter(VUS.is_active==True)
+        users = db.session.query(User).filter_by(role = 0, approved = True)\
+        .filter(db.or_(User.vus_id == v for v in vus_ids)).order_by(desc(User.entrance_year))\
+        .order_by(User.vus_id)
     else:
-        users = db.session.query(User).filter_by(role = 0, approved = True).order_by(desc(User.entrance_year)).order_by(User.vus_id)
+        vuses = VUS.query.filter_by(is_active=True)
+        users = db.session.query(User).filter_by(role = 0, approved = True)\
+        .order_by(desc(User.entrance_year)).order_by(User.vus_id)
+    
     documents = Document.query.all()
-
-    vuses = VUS.query.filter_by(is_active=True)
 
     userInfo = []
     for user in users:
@@ -160,7 +167,7 @@ def ready():
         })
 
     return render_template('ready.html', title=u'Готовые', tab_active=1, users=userInfo, 
-        docs=docs, vuses=vuses, is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
+        docs=docs, vuses=vuses)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -195,15 +202,21 @@ def inprocess():
     role = user_role()
     if role < 1:
         abort(404)
-    if( role == USER_STATES[ 'ROLE_ADMIN' ]):
-        users = User.query.filter_by(role = 0, approved = False, vus_id=current_user.vus_id)
+    vuses = [];
+    if user_role()==USER_STATES['ROLE_ADMIN']:
+        admin_vuses = Admins_vuses.query.filter_by(user_id=current_user.id)
+        vus_ids = [ x.vus_id for x in admin_vuses if x.is_write]
+        vuses = VUS.query.filter(db.or_(VUS.id == v for v in vus_ids)).filter(VUS.is_active==True)
+        users = db.session.query(User).filter_by(role = 0, approved = False)\
+        .filter(db.or_(User.vus_id == v for v in vus_ids)).order_by(desc(User.entrance_year))\
+        .order_by(User.vus_id)
     else:
-        users = User.query.filter_by(role = 0, approved = False)
-
-    vuses = { vus.id : vus for vus in VUS.query.all() }
-
+        vuses = VUS.query.filter_by(is_active=True)
+        users = db.session.query(User).filter_by(role = 0, approved = False)\
+        .order_by(desc(User.entrance_year)).order_by(User.vus_id)
+    vuses = { vus.id : vus for vus in vuses }
     return render_template('inprocess.html', title=u'В процессе', tab_active=2, users = users, 
-        vuses = vuses, is_readonly=role==USER_STATES['ROLE_READONLY_ADMIN'])
+        vuses = vuses)
 
 @app.route('/inprocess/<user_id>')
 @login_required
@@ -228,17 +241,20 @@ def to_page_approve_user(user_id):
 def documents():
     if user_role() < 1:
         abort(404)
-    if user_role() != USER_STATES['ROLE_ADMIN']:
-        vuses = VUS.query.all()
-        docs = Document.query.all()
+    vuses = [];
+    if user_role()==USER_STATES['ROLE_ADMIN']:
+        admin_vuses = Admins_vuses.query.filter_by(user_id=current_user.id)
+        vus_ids = [ x.vus_id for x in admin_vuses if x.is_write]
+        vuses = VUS.query.filter(db.or_(VUS.id == v for v in vus_ids))\
+        .filter(VUS.is_active==True)
+        docs = Document.query.filter(db.or_(Document.vus_id == v for v in vus_ids))
     else:
-        vuses = VUS.query.get(current_user.vus_id)
-        vuses = [vuses]
-        docs = Document.query.filter_by(vus_id=current_user.vus_id)
+        vuses = VUS.query.filter_by(is_active=True)
+        docs = Document.query.all()
+
     vuses_name_by_id = { vus.id : vus.to_string() for vus in vuses }
     return render_template('documents.html', title=u'Документы', tab_active=3, vuses=vuses, 
-        vuses_name_by_id=vuses_name_by_id, docs=docs, 
-        is_readonly=user_role()==USER_STATES['ROLE_READONLY_ADMIN'])
+        vuses_name_by_id=vuses_name_by_id, docs=docs)
 
 @app.route('/rule_admins')
 @login_required
@@ -256,23 +272,30 @@ def rule_admins():
 def account_creator():
     if user_role() < 1:
         abort(404)
-    if current_user.role==USER_STATES['ROLE_ADMIN']:
-        vuses = VUS.query.get(current_user.vus_id)
-        vuses = [vuses]
+    vuses = [];
+    if user_role()==USER_STATES['ROLE_ADMIN']:
+        admin_vuses = Admins_vuses.query.filter_by(user_id=current_user.id)
+        vus_ids = [ x.vus_id for x in admin_vuses if x.is_write]
+        vuses = VUS.query.filter(db.or_(VUS.id == v for v in vus_ids))\
+        .filter(VUS.is_active==True)
     else:
         vuses = VUS.query.filter_by(is_active=True)
 
     return render_template('account_creator.html', title=u'Создание аккаунтов', tab_active=4, 
-        vuses=vuses, is_super_admin=current_user.role==USER_STATES['ROLE_SUPER_ADMIN'],
-        is_readonly=current_user.role==USER_STATES['ROLE_READONLY_ADMIN'])
+        vuses=vuses, is_super_admin=current_user.role==USER_STATES['ROLE_SUPER_ADMIN'])
 
 @app.route('/search')
 @login_required
 def search():
     if user_role() < 1:
         abort(404)
-
-    vuses = VUS.query.all()
+    vuses = [];
+    if user_role()==USER_STATES['ROLE_ADMIN']:
+        admin_vuses = Admins_vuses.query.filter_by(user_id=current_user.id)
+        vus_ids = [ x.vus_id for x in admin_vuses]
+        vuses = VUS.query.filter(db.or_(VUS.id == v for v in vus_ids)).filter(VUS.is_active==True)
+    else:
+        vuses = VUS.query.filter_by(is_active=True)
 
     return render_template('search.html', title=u'Поиск', tab_active=5, vuses=vuses)
 

@@ -4,52 +4,13 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="ag-hor-center">
 
-        {% if is_readonly %}
+        {% if not vuses %}
         <div class="alert alert-info" role="alert">
             <strong>Информация</strong>
             У Вас не достаточно прав для создания аккаунтов
         </div>
         {% else %}
         <div class="row">
-        {% if is_super_admin %}
-            <div class="col-md-3">
-
-                <div class="alert alert-info" role="alert">
-                    <strong>Создание аккаунта администратора</strong>
-                </div> 
-
-                <div class="input-group input-group ag-hor-center ag-thin">
-                    <input type="text" id="login" class="form-control ag-input" placeholder="Логин">
-                </div>
-                <br>
-
-                <div class="input-group input-group ag-hor-center ag-thin">
-                    <input type="text" id="password" class="form-control ag-input" placeholder="Пароль">
-                </div>
-                <br>
-
-                <div class="input-group input-group ag-hor-center ag-thin">
-                    <form action="">
-                        <label><input selected type="radio" name="type_admin" id="admin_vus" value="admin_vus"class="ag-input">   По ВУС</label>
-                        <div class="form-group">
-                          <select class="form-control" id="vus_for_admin">
-                              {% for vus in vuses %}
-                              <option value="{{vus.id}}">{{vus.to_string()}}</option>
-                              {% endfor %}
-                          </select>
-                        </div>
-                        <label><input type="radio" name="type_admin" id="admin_readonly" value="admin_readonly" class="ag-input">   Только для чтения</label>
-                    </form>
-                </div>
-                <br>
-
-                <button class="btn btn-success ag-hor-center" type="button" id="create-but-1">
-                    Создать аккаунт
-                </button>
-                <br>
-
-            </div> 
-        {% endif %}
             <div class="col-md-9"> 
 
                 <div class="alert alert-info" role="alert">
